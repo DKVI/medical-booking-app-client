@@ -12,15 +12,9 @@ function AppRoutes() {
     // Route mặc định ("/")
     {
       path: "/",
-      element: <Navigate to={isLoggedIn ? "/home" : "/login"} />,
+      element: <Navigate to={"/home"} />,
     },
     // Routes yêu cầu đăng nhập
-    {
-      path: "/home",
-      element: isLoggedIn ? <MainLayout /> : <Navigate to="/login" />,
-      children: [{ path: "", element: <Home /> }],
-    },
-    // Routes không yêu cầu đăng nhập
     {
       path: "/login",
       element: <AuthLayout />,
