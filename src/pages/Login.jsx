@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import FormLogin from "../components/FormLogin";
+import FormAuth from "../components/FormAuth";
 function Login() {
   const navigate = useNavigate();
 
@@ -10,8 +10,16 @@ function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-gray-100">
-      <FormLogin onLogin={handleLogin} />
+    <div
+      className="flex flex-col items-center justify-center"
+      style={{
+        backgroundImage: "url(/2-banner.jpg)",
+        backgroundPosition: "center",
+        backgroundRepeat: "none",
+        backgroundSize: "cover",
+      }}
+    >
+      <FormAuth onLogin={handleLogin} />
     </div>
   );
 }

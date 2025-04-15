@@ -6,8 +6,7 @@ function AuthenLayout() {
     localStorage.clear();
   });
   return (
-    <div style={{ textAlign: "center", padding: "2rem" }}>
-      <h1>Welcome to Medical Booking App</h1>
+    <div style={{ textAlign: "center" }}>
       <Outlet />
     </div>
   );
