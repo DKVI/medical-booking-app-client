@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarDays,
@@ -6,9 +7,15 @@ import {
   faNotesMedical,
 } from "@fortawesome/free-solid-svg-icons";
 import ContactForm from "../components/ContactForm";
+
 function Home() {
   return (
-    <div className="w-full">
+    <motion.div
+      className="w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
       <section
         className="banner"
         style={{
@@ -21,11 +28,14 @@ function Home() {
           fontSize: "3rem",
         }}
       >
-        <div
+        <motion.div
           className="banner-text w-full h-full lg:w-1/2 flex align-middle"
           style={{
             backdropFilter: "opacity(0.5)",
           }}
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
         >
           <div className="inline-block m-auto">
             <h2
@@ -45,21 +55,22 @@ function Home() {
             >
               Connecting You to Care - Anytime - Anywhere.
             </p>
-            <p></p>
             <div className="pt-[30px]">
-              <a
+              <motion.a
                 type="button"
                 href="#services"
                 className="bg-white text-[20px] px-[15px] py-[10px] border cursor-pointer transition-all ease-in-out duration-700 rounded-[0px] hover:rounded-[20px]"
                 style={{
                   color: "var(--base-color)",
                 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 Learn More
-              </a>
+              </motion.a>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
       <section
         className=" lg:p-[80px]"
@@ -79,27 +90,39 @@ function Home() {
           >
             OUR SERVICES
           </h3>
-          <div
+          <motion.div
             className="flex pt-[80px] pb-[80px] justify-center"
             style={{ gap: "80px" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
           >
-            <div className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]">
+            <motion.div
+              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
+              whileHover={{ scale: 1.05 }}
+            >
               <FontAwesomeIcon icon={faCalendarDays} />
               <h4 className="text-[18px]">Online Appointment Booking</h4>
               <p className="text-[12px] mt-[12px]">
                 Find doctors, browse specialties, and book appointments quickly
                 and easily—anytime, anywhere.
               </p>
-            </div>
-            <div className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]">
+            </motion.div>
+            <motion.div
+              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
+              whileHover={{ scale: 1.05 }}
+            >
               <FontAwesomeIcon icon={faHospital} />
               <h4 className="text-[18px]">Trusted Hospital & Clinic Network</h4>
               <p className="text-[12px] mt-[12px]">
                 Access a wide network of verified healthcare providers for
                 reliable and professional medical care.
               </p>
-            </div>
-            <div className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]">
+            </motion.div>
+            <motion.div
+              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
+              whileHover={{ scale: 1.05 }}
+            >
               <FontAwesomeIcon icon={faNotesMedical} />
               <h4 className="text-[18px]">
                 Health Records & Appointment Reminders
@@ -108,12 +131,12 @@ function Home() {
                 Keep track of your medical history and get automatic reminders
                 for upcoming visits or follow-ups.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
           <div>
             <a
               type="button"
-              href="/sign-up"
+              href="/account"
               className="bg-white px-[15px] hover:px-[24px] py-[10px] border cursor-pointer transition-all ease-in-out duration-700 rounded-[0px] hover:rounded-[20px] hover:text-white text-[var(--base-color)] hover:bg-[var(--base-color)]"
               style={{
                 fontSize: "20px",
@@ -193,7 +216,7 @@ function Home() {
       <section>
         <ContactForm />
       </section>
-    </div>
+    </motion.div>
   );
 }
 

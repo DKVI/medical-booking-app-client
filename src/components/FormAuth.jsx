@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import authApi from "../api/auth.api";
+import Cookies from "universal-cookie";
 import {
   Box,
   Button,
@@ -12,26 +15,60 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import LoadingScreen from "./LoadingScreen";
 
-function FormAuth({ onLogin, onRegister }) {
+function FormAuth() {
+  const cookies = new Cookies();
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({
     username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
   const [generalError, setGeneralError] = useState("");
+  const [onLoading, setOnLoading] = useState(false); // Thêm state onLoading
+  const navigate = useNavigate();
 
+  const onLogin = async (data) => {
+    const res = await authApi.login(data);
+    if (res.success) {
+      const cookieValue = "Bearer " + res.token;
+      cookies.set("token", cookieValue, { path: "/", maxAge: 3600 });
+      navigate("/dashboard");
+    } else {
+      setOnLoading(false);
+      setGeneralError(res.message);
+    }
+  };
+
+  const onRegister = async (data) => {
+    console.log(data);
+  };
   const validate = () => {
     let isValid = true;
-    const newErrors = { username: "", password: "", confirmPassword: "" };
+    const newErrors = {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
 
     if (!username.trim()) {
       newErrors.username = "Username is required";
+      isValid = false;
+    }
+
+    if (!isLogin && !email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!isLogin && !/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Invalid email format";
       isValid = false;
     }
 
@@ -52,22 +89,24 @@ function FormAuth({ onLogin, onRegister }) {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setGeneralError("");
     if (validate()) {
-      if (isLogin) {
-        if (username === "admin" && password === "admin123") {
+      setOnLoading(true); // Bật trạng thái loading
+      console.log(onLoading);
+      try {
+        if (isLogin) {
           if (onLogin) {
             onLogin({ username, password });
           }
         } else {
-          setGeneralError("Username or password was wrong!");
+          if (onRegister) {
+            onRegister({ username, email, password });
+          }
         }
-      } else {
-        if (onRegister) {
-          onRegister({ username, password });
-        }
+      } catch (error) {
+        setGeneralError(error.message || "An error occurred");
       }
     }
   };
@@ -75,6 +114,7 @@ function FormAuth({ onLogin, onRegister }) {
   return (
     <Container component="main" className="pt-[100px]" maxWidth="xs">
       <CssBaseline />
+      {onLoading && <LoadingScreen />}
       <div className="bg-white px-5 pb-10 pt-1 rounded-[20px]">
         <Box
           sx={{
@@ -112,6 +152,21 @@ function FormAuth({ onLogin, onRegister }) {
               error={!!errors.username}
               helperText={errors.username}
             />
+            {!isLogin && (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            )}
             <TextField
               margin="normal"
               required
@@ -191,11 +246,13 @@ function FormAuth({ onLogin, onRegister }) {
                   setIsLogin(!isLogin);
                   setErrors({
                     username: "",
+                    email: "",
                     password: "",
                     confirmPassword: "",
                   });
                   setGeneralError("");
                   setUsername("");
+                  setEmail("");
                   setPassword("");
                   setConfirmPassword("");
                 }}

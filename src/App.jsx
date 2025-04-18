@@ -5,12 +5,13 @@ import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import ClientLayout from "./layouts/ClientLayout";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
 
   return useRoutes([
-    // Default route ("/")
     {
       path: "/",
       element: <Navigate to="/home" />,
@@ -23,11 +24,15 @@ function AppRoutes() {
     },
     // Login route
     {
-      path: "/login",
+      path: "/account",
       element: <AuthLayout />,
       children: [{ path: "", element: <Login /> }],
     },
-    // 404 route
+    {
+      path: "/dashboard",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <Dashboard /> }],
+    },
     { path: "*", element: <NotFound /> },
   ]);
 }
