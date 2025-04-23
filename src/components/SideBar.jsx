@@ -1,10 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import "../App.css";
-import { faGear, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendarDays,
+  faChartSimple,
+  faGear,
+  faRightFromBracket,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ConfirmDialog from "./ConfirmDialog";
+import Cookies from "universal-cookie";
+import LoadingScreen from "./LoadingScreen";
 
 export default function SideBar() {
+  const cookies = new Cookies();
+  const navigate = new useNavigate();
+  const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+  const [onLoading, setOnLoading] = useState(false);
+  const handleCloseLogoutDialog = () => {
+    setOpenLogoutDialog(false);
+  };
+  const handleLogout = () => {
+    cookies.remove("token");
+    setOnLoading(true);
+    navigate("/account");
+  };
   return (
     <div
       className="w-[200px] shadow-2xl p-5 flex flex-col justify-between"
@@ -19,21 +40,21 @@ export default function SideBar() {
       <div className="main-menu flex flex-col gap-4">
         <Link className="flex items-center gap-2">
           <FontAwesomeIcon
-            icon={faGear}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Setting</p>
-        </Link>
-        <Link className="flex items-center gap-2">
-          <FontAwesomeIcon
-            icon={faGear}
+            icon={faChartSimple}
             className="text-[var(--base-color)] text-xl"
           />
           <p className="text-[var(--base-color)]">Dashboard</p>
         </Link>
         <Link className="flex items-center gap-2">
           <FontAwesomeIcon
-            icon={faGear}
+            icon={faCalendarDays}
+            className="text-[var(--base-color)] text-xl"
+          />
+          <p className="text-[var(--base-color)]">Booking</p>
+        </Link>
+        <Link className="flex items-center gap-2">
+          <FontAwesomeIcon
+            icon={faUser}
             className="text-[var(--base-color)] text-xl"
           />
           <p className="text-[var(--base-color)]">Profile</p>
@@ -49,13 +70,26 @@ export default function SideBar() {
           />
           <p className="text-[var(--base-color)]">Setting</p>
         </Link>
-        <Link className="flex items-center gap-2">
+        <Link
+          className="flex items-center gap-2"
+          onClick={() => {
+            setOpenLogoutDialog(true);
+          }}
+        >
           <FontAwesomeIcon
             icon={faRightFromBracket}
             className="text-[var(--base-color)] text-xl"
           />
           <p className="text-[var(--base-color)]">Logout</p>
         </Link>
+        <ConfirmDialog
+          isOpen={openLogoutDialog}
+          handleClose={handleCloseLogoutDialog}
+          title={"Come back soon!"}
+          description={"Are you sure you want to Log out?"}
+          callback={handleLogout}
+        />
+        {onLoading && <LoadingScreen />}{" "}
       </div>
     </div>
   );

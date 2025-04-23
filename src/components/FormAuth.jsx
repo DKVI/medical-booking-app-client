@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingScreen from "./LoadingScreen";
+import VerifyEmail from "./VerifyEmail";
 
 function FormAuth() {
   const cookies = new Cookies();
@@ -25,6 +26,8 @@ function FormAuth() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [createAccount, setCreateAccount] = useState(false);
+  const [token, setToken] = useState("");
   const [errors, setErrors] = useState({
     username: "",
     email: "",
@@ -38,7 +41,7 @@ function FormAuth() {
   const onLogin = async (data) => {
     const res = await authApi.login(data);
     if (res.success) {
-      const cookieValue = "Bearer " + res.token;
+      const cookieValue = res.token;
       cookies.set("token", cookieValue, { path: "/", maxAge: 3600 });
       navigate("/dashboard");
     } else {
@@ -48,7 +51,17 @@ function FormAuth() {
   };
 
   const onRegister = async (data) => {
-    console.log(data);
+    const res = await authApi.register(data);
+    if (res.success) {
+      const cookieValue = res.token;
+      setToken(cookieValue);
+      setOnLoading(false);
+      cookies.set("token", cookieValue, { path: "/", maxAge: 3600 });
+      setCreateAccount(true);
+    } else {
+      setOnLoading(false);
+      setGeneralError(res.message);
+    }
   };
   const validate = () => {
     let isValid = true;
@@ -262,6 +275,9 @@ function FormAuth() {
             </Typography>
           </Box>
         </Box>
+        {createAccount && (
+          <VerifyEmail username={username} email={email} token={token} />
+        )}
       </div>
     </Container>
   );

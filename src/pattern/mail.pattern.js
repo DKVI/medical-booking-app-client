@@ -1,5 +1,5 @@
-export default mailPattern = {
-  createAccount(username, verificationLink) {
+const mailPattern = {
+  createAccount: (username, verificationLink) => {
     return `
             Hello ${username},
 
@@ -12,14 +12,14 @@ export default mailPattern = {
             Medical Booking App Team
         `;
   },
-  confirmAppointment(
+  confirmAppointment: (
     appointmentNumber,
     address,
     doctorName,
     specialty,
     appointmentDate,
     appointmentTime
-  ) {
+  ) => {
     return `
             Dear Patient,
 
@@ -39,3 +39,5 @@ export default mailPattern = {
         `;
   },
 };
+
+export default mailPattern;

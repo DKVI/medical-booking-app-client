@@ -6,7 +6,7 @@ export default function LoadingScreen() {
     <div
       className="w-[100vw] h-[100vh] flex"
       style={{
-        backgroundColor: "rgba(0, 0, 0, 0.2)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         top: 0,
         left: 0,
         right: 0,
