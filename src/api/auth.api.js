@@ -27,6 +27,19 @@ const authApi = {
       return error.response?.data || error.message;
     }
   },
+
+  getByToken: async (token) => {
+    try {
+      const response = await axiosInstance.get("/authen/getbytoken", {
+        headers: {
+          Authorization: `Beaer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return error.response?.data || error.message;
+    }
+  },
 };
 
 export default authApi;

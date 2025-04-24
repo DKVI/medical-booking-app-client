@@ -1,9 +1,9 @@
 import axiosInstance from "./axios.config";
 
-const specialtyApi = {
+const patientApi = {
   getAll: async () => {
     try {
-      const res = await axiosInstance.get("/specialty");
+      const res = await axiosInstance.get("/patient");
       return res.data;
     } catch (err) {
       return err.respone?.data || err.message;
@@ -11,7 +11,7 @@ const specialtyApi = {
   },
   getById: async (id) => {
     try {
-      const res = await axiosInstance.get(`/specialty/${id}`);
+      const res = await axiosInstance.get(`/patient/${id}`);
       return res.data;
     } catch (err) {
       return err.respone?.data || err.message;
@@ -19,4 +19,4 @@ const specialtyApi = {
   },
 };
 
-export default specialtyApi;
+export default patientApi;

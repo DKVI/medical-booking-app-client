@@ -12,6 +12,7 @@ function ClientLayout() {
           position: "relative",
           minHeight: "100vh",
           boxSizing: "border-box",
+          overflowX: "hidden",
         }}
       >
         <Outlet />

@@ -3,9 +3,13 @@ import Cookies from "universal-cookie";
 import "../App.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Import Framer Motion
 
 export default function Header() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
+
   useEffect(() => {
     const cookies = new Cookies();
     const token = cookies.get("token");
@@ -16,8 +20,13 @@ export default function Header() {
     }
   }, []);
 
+  const slideDownVariants = {
+    hidden: { opacity: 0, y: -50 }, // Bắt đầu ở trên và mờ
+    visible: { opacity: 1, y: 0 }, // Hiển thị và trượt xuống
+  };
+
   return (
-    <div
+    <motion.div
       className="flex glass-morphism w-full h-[80px] lg:fixed absolute py-2 px-2 lg:py-3 lg:px-10"
       style={{
         top: 0,
@@ -29,6 +38,10 @@ export default function Header() {
         color: "#fff",
         justifyContent: "space-between",
       }}
+      initial="hidden"
+      animate="visible"
+      transition={{ duration: 0.5 }} // Thời gian hiệu ứng
+      variants={slideDownVariants}
     >
       <div className="h-full">
         <img
@@ -36,6 +49,10 @@ export default function Header() {
           className="h-full"
           style={{
             filter: "drop-shadow(0px 4px 6px white)",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            navigate("/dashboard");
           }}
         />
       </div>
@@ -78,6 +95,6 @@ export default function Header() {
           </>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
