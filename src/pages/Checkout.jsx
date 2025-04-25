@@ -12,6 +12,13 @@ import specialtyApi from "../api/specialty.api";
 import doctorApi from "../api/doctor.api";
 import LoadingScreen from "../components/LoadingScreen";
 import { motion } from "framer-motion"; // Import Framer Motion
+import PayPal from "../components/PayPal";
+import { Snackbar, Alert, Slide } from "@mui/material";
+
+// Hiệu ứng trượt cho Snackbar
+function SlideTransition(props) {
+  return <Slide {...props} direction="down" />;
+}
 
 function Checkout() {
   const navigate = useNavigate();
@@ -24,12 +31,15 @@ function Checkout() {
   const [detailCheckout, setDetailCheckout] = useState(null);
   const [workschedule, setWorkSchedule] = useState({});
   const [doctor, setDoctor] = useState(null);
+  const [purchase, setPurchase] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
     if (!res.success) {
       navigate("/account");
     }
   };
+
   const getUser = async (token) => {
     try {
       const res = await authApi.getByToken(token);
@@ -59,6 +69,9 @@ function Checkout() {
       setPatient(res.patient);
     } catch (err) {}
   };
+  function SlideTransition(props) {
+    return <Slide {...props} direction="down" />;
+  }
 
   const getDoctorById = async (id) => {
     try {
@@ -161,18 +174,8 @@ function Checkout() {
             initial="hidden"
             animate="visible"
             transition={{ duration: 0.5, delay: 0.2 }}
-            variants={slideUpVariants}
           >
-            <h4
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-                color: "var(--base-color)",
-                marginBottom: "10px",
-              }}
-            >
-              Facility
-            </h4>
+            <h4>Facility</h4>
             <div className="px-[40px]">
               <div
                 style={{
@@ -476,31 +479,80 @@ function Checkout() {
             <p
               style={{
                 fontSize: "16px",
-                color: "red",
+                fontWeight: "bold",
+                color: purchase ? "green" : "red",
               }}
             >
-              Not Paid
+              {purchase ? "Payment Successful" : "Not Paid"}
             </p>
           </div>
 
-          <button
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "var(--base-color)",
-              color: "white",
+          {!purchase && (
+            <PayPal
+              purchase={() => {
+                setPurchase(true);
+                setOpenSnackbar(true);
+              }}
+            />
+          )}
+        </div>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000} // Tự động ẩn sau 6 giây
+          onClose={() => setOpenSnackbar(false)} // Đóng Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center" }} // Vị trí hiển thị
+          TransitionComponent={SlideTransition} // Hiệu ứng trượt
+          sx={{
+            "& .MuiSnackbarContent-root": {
+              backgroundColor: "#4caf50", // Màu nền xanh lá
+              color: "#fff", // Màu chữ trắng
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Đổ bóng
+              borderRadius: "8px", // Bo góc
+            },
+          }}
+        >
+          <Alert
+            onClose={() => setOpenSnackbar(false)}
+            severity="success" // Loại thông báo (success, error, warning, info)
+            icon={
+              <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#fff" }} />
+            } // Biểu tượng
+            sx={{
+              display: "flex",
+              alignItems: "center",
               fontSize: "16px",
               fontWeight: "bold",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              marginTop: "20px",
+              "& .MuiAlert-icon": {
+                marginRight: "10px",
+              },
             }}
-            onClick={() => alert("Payment successful!")}
           >
-            Pay Now
-          </button>
-        </div>
+            <div style={{ textAlign: "left" }}>
+              <p style={{ margin: 0 }}>🎉 Payment Successful!</p>
+              <p style={{ margin: 0 }}>
+                <strong>Location:</strong> {facility?.name}, {facility?.address}
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong>Date:</strong>{" "}
+                {new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong>Time:</strong> {workschedule?.times}
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong>Booking ID:</strong> {detailCheckout?.id}
+              </p>
+              <p style={{ margin: 0 }}>
+                We will send you an email as soon as possible.
+              </p>
+            </div>
+          </Alert>
+        </Snackbar>
       </motion.div>
     </div>
   );

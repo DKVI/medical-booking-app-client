@@ -9,14 +9,12 @@ import "./index.css"; // Import TailwindCSS hoặc các style khác
 
 // Tạo root container với React 18 API
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      {" "}
-      {/* Bọc App trong BrowserRouter */}
-      <ThemeProvider theme={theme}>
-        <CssBaseline /> {/* Đặt lại CSS mặc định */}
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    {" "}
+    {/* Bọc App trong BrowserRouter */}
+    <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Đặt lại CSS mặc định */}
+      <App />
+    </ThemeProvider>
+  </BrowserRouter>
 );
