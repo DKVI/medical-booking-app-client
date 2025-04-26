@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import React from "react";
+import purchaseApi from "../api/purchase.api";
 
-function PayPal({ purchase }) {
+function PayPal({ schedulingDetailId, purchase }) {
   const paypal = useRef();
 
   useEffect(() => {
@@ -20,8 +21,11 @@ function PayPal({ purchase }) {
             });
           },
           onApprove: function (data, actions) {
-            return actions.order.capture().then(function (details) {
-              purchase(); // Gọi hàm purchase khi giao dịch thành công
+            return actions.order.capture().then(async function (details) {
+              const result = await purchaseApi.approve(schedulingDetailId);
+              if (result.success) {
+                purchase();
+              }
             });
           },
           onError: function (err) {},

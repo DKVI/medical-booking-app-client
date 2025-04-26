@@ -14,6 +14,8 @@ import LoadingScreen from "../components/LoadingScreen";
 import { motion } from "framer-motion"; // Import Framer Motion
 import PayPal from "../components/PayPal";
 import { Snackbar, Alert, Slide } from "@mui/material";
+import purchaseApi from "../api/purchase.api";
+import emailApi from "../api/mail.api";
 
 // Hiệu ứng trượt cho Snackbar
 function SlideTransition(props) {
@@ -25,11 +27,11 @@ function Checkout() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [user, setUser] = useState(null);
-  const [facility, setFacility] = useState({});
-  const [patient, setPatient] = useState({});
-  const [specialty, setSpecialty] = useState({});
+  const [facility, setFacility] = useState(null);
+  const [patient, setPatient] = useState(null);
+  const [specialty, setSpecialty] = useState(null);
   const [detailCheckout, setDetailCheckout] = useState(null);
-  const [workschedule, setWorkSchedule] = useState({});
+  const [workschedule, setWorkSchedule] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [purchase, setPurchase] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -93,6 +95,12 @@ function Checkout() {
   const getDetailCheckoutById = async (id) => {
     try {
       const res = await scheduleDetailApi.getById(id);
+
+      const purchaseDetail = await purchaseApi.getBySchedulingDetailId(id);
+      console.log(purchaseDetail);
+      if (purchaseDetail.purchase.status === "Purchased") {
+        setPurchase(true);
+      }
       const detail = res.schedulingDetail?.[0]; // Kiểm tra nếu có dữ liệu
       if (!detail) {
         console.error("No detail found for the given ID");
@@ -487,14 +495,36 @@ function Checkout() {
             </p>
           </div>
 
-          {!purchase && (
-            <PayPal
-              purchase={() => {
-                setPurchase(true);
-                setOpenSnackbar(true);
-              }}
-            />
-          )}
+          {!purchase &&
+            user &&
+            detailCheckout &&
+            doctor &&
+            specialty &&
+            workschedule &&
+            facility && (
+              <PayPal
+                schedulingDetailId={id}
+                purchase={async () => {
+                  setPurchase(true);
+                  setOpenSnackbar(true);
+                  console.log(user?.email);
+                  // Gửi email xác nhận
+                  await emailApi.sendAppointmentConfirmation(
+                    user?.email, // Email của người dùng
+                    detailCheckout?.id, // Mã đặt lịch
+                    `${facility?.name}, ${facility?.address}`, // Địa chỉ
+                    doctor?.fullname, // Tên bác sĩ
+                    specialty?.name, // Chuyên khoa
+                    new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    }), // Ngày
+                    workschedule?.times // Giờ
+                  );
+                }}
+              />
+            )}
         </div>
 
         <Snackbar

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom"; // Import useSearchParams
 import Cookies from "universal-cookie";
 import authApi from "../api/auth.api";
 import {
@@ -36,6 +36,8 @@ const fadeInVariants = {
 function Booking() {
   const cookies = new Cookies();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // Lấy tham số từ URL
+  const mode = searchParams.get("mode"); // Lấy giá trị của tham số "mode"
   const [facility, setFacility] = useState([]);
   const [selectedFacilityId, setSelectedFacilityId] = useState(null);
   const [specialty, setSpecialty] = useState([]);
@@ -175,8 +177,13 @@ function Booking() {
     };
   }, []);
   const onBooking = async () => {
+    if (!selectedWorkScheduleId || !selectedDate) {
+      setErrorMessage("Please complete all required fields before confirming.");
+      return;
+    }
+
     const uniqueId = uuidv4();
-    setOnLoading(true);
+    setOnLoading(true); // Bật trạng thái loading
     const body = {
       id: uniqueId,
       doctor_id: selectedDoctorId,
@@ -184,72 +191,84 @@ function Booking() {
       workschedule_id: selectedWorkScheduleId,
       date: selectedDate.format("YYYY-MM-DD"),
     };
-    const response = new Promise(async (resolve, reject) => {
-      try {
-        const res = await scheduleDetailApi.create(body);
-        resolve(() => {
-          setOnLoading(false);
-          setScheduleDetailId(uniqueId);
-          return res;
-        });
-      } catch (err) {
-        reject(err);
-      }
-    });
-    setTimeout(() => {
-      response
-        .then(() => {
-          setOnLoading(false);
-          setScheduleDetailId(uniqueId);
-          setOpenDialog(true);
-          setTitle("Notification");
-          setBookingId(uniqueId);
-          setNotification(
-            `Booking successful with ID: ${uniqueId}. Please proceed with payment to confirm your appointment.`
-          );
-        })
-        .catch((err) => err);
-    }, 2000);
+
+    try {
+      const res = await scheduleDetailApi.create(body);
+      setTimeout(() => {
+        setOnLoading(false); // Tắt trạng thái loading sau 1 giây
+        setScheduleDetailId(uniqueId);
+        setOpenDialog(true); // Hiển thị dialog xác nhận
+        setTitle("Booking Successful");
+        setNotification(
+          `Your booking has been successfully created with ID: ${uniqueId}. You will now be redirected to the checkout page.`
+        );
+        setBookingId(uniqueId); // Lưu ID để chuyển hướng
+      }, 1500); // Thời gian loading là 1 giây
+    } catch (err) {
+      setOnLoading(false);
+      setErrorMessage("Failed to confirm booking. Please try again.");
+      console.error("Booking error:", err);
+    }
   };
   const handleDialogClose = (confirm) => {
     setOpenDialog(false);
-    if (isFullInfo) {
-      if (confirm) {
-        navigate(`/checkout?id=${bookingId}`);
-      } else {
-      }
-    } else {
-      if (confirm) {
-        navigate("/checkout/profile");
-      } else {
-        navigate("/dashboard");
-      }
+    if (confirm) {
+      navigate(`/checkout?id=${bookingId}`); // Chuyển đến trang checkout với ID
     }
   };
 
+  useEffect(() => {
+    if (mode === "doctor") {
+      const storedUserId = localStorage.getItem("userId");
+      const storedDoctorId = localStorage.getItem("doctorId");
+      const storedFacilityId = localStorage.getItem("facilityId");
+      const storedSpecialtyId = localStorage.getItem("specialtyId");
+
+      if (
+        storedUserId &&
+        storedFacilityId &&
+        storedSpecialtyId &&
+        storedDoctorId
+      ) {
+        setSelectedFacilityId(storedFacilityId);
+        setSelectedSpecialtyId(storedSpecialtyId);
+        setSelectedDoctorId(storedDoctorId);
+
+        // Tự động điền giá trị vào Autocomplete
+        const selectedFacility = facility.find(
+          (f) => f.id === storedFacilityId
+        );
+        const selectedSpecialty = specialty.find(
+          (s) => s.id === storedSpecialtyId
+        );
+        const selectedDoctor = doctor.find((d) => d.id === storedDoctorId);
+
+        if (selectedFacility) {
+          setSelectedFacilityId(selectedFacility.id);
+        }
+        if (selectedSpecialty) {
+          setSelectedSpecialtyId(selectedSpecialty.id);
+        }
+        if (selectedDoctor) {
+          setSelectedDoctorId(selectedDoctor.id);
+        }
+
+        setActiveStep(3); // Chuyển đến bước chọn ngày và giờ
+      }
+    }
+  }, [mode, specialty, facility, doctor]);
+
   const canProceedToNextStep = () => {
     switch (activeStep) {
-      case 0: // Bước 1: Chọn Facility
-        if (!selectedFacilityId) {
-          setErrorMessage("Please select a facility.");
-          return false;
-        }
-        break;
-      case 1: // Bước 2: Chọn Specialty
-        if (!selectedSpecialtyId) {
-          setErrorMessage("Please select a specialty.");
-          return false;
-        }
-        break;
-      case 2: // Bước 3: Chọn Doctor
-        if (!selectedDoctorId) {
-          setErrorMessage("Please select a doctor.");
-          return false;
-        }
-        break;
       case 3: // Bước 4: Chọn Date
         if (!selectedDate) {
           setErrorMessage("Please pick a date.");
+          return false;
+        }
+        break;
+      case 4: // Bước 5: Confirm
+        if (!selectedWorkScheduleId) {
+          setErrorMessage("Please select a time slot.");
           return false;
         }
         break;
@@ -262,273 +281,281 @@ function Booking() {
   };
 
   return (
-    <div
-      className="dashboard-container"
-      style={{
-        marginLeft: "200px",
-        marginTop: "80px",
-        width: "calc(100vw - 200px)",
-        padding: "40px", // Thêm padding cho container chính
-        backgroundColor: "#f4f6f8",
-      }}
-    >
-      {/* AlertDialog */}
-      <Dialog
-        open={openDialog}
-        onClose={() => handleDialogClose(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {notification}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleDialogClose(false)} color="primary">
-            No
-          </Button>
-          <Button
-            onClick={() => handleDialogClose(true)}
-            color="primary"
-            autoFocus
-          >
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {onLoading && <LoadingScreen />}
-      <Stepper
-        activeStep={activeStep}
-        alternativeLabel
-        sx={{ marginBottom: "40px" }} // Thêm khoảng cách dưới Stepper
-      >
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-      {/* Step 1: Choose Facility */}
-      {activeStep === 0 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.5 }}
-          variants={fadeInVariants}
-        >
-          <Card
-            sx={{
-              marginBottom: "40px", // Thêm khoảng cách dưới Card
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Choose Facility
-            </Typography>
-            <Autocomplete
-              options={facility}
-              getOptionLabel={(option) => option.name || ""}
-              value={facility.find((f) => f.id === selectedFacilityId) || null}
-              onChange={(event, newValue) => {
-                setSelectedFacilityId(newValue?.id || null);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Choose Facility"
-                  variant="outlined"
-                />
-              )}
-              disabled={facility.length === 0}
-            />
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Step 2: Choose Specialty */}
-      {activeStep === 1 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.5 }}
-          variants={fadeInVariants}
-        >
-          <Card
-            sx={{
-              marginBottom: "40px", // Thêm khoảng cách dưới Card
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Choose Specialty
-            </Typography>
-            <Autocomplete
-              options={specialty}
-              getOptionLabel={(option) => option.name || ""}
-              value={
-                specialty.find((s) => s.id === selectedSpecialtyId) || null
-              }
-              onChange={(event, newValue) => {
-                setSelectedSpecialtyId(newValue?.id || null);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Choose Specialty"
-                  variant="outlined"
-                />
-              )}
-              disabled={!selectedFacilityId || specialty.length === 0}
-            />
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Step 3: Choose Doctor */}
-      {activeStep === 2 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.5 }}
-          variants={fadeInVariants}
-        >
-          <Card
-            sx={{
-              marginBottom: "40px", // Thêm khoảng cách dưới Card
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Choose Doctor
-            </Typography>
-            <Autocomplete
-              options={doctor}
-              getOptionLabel={(option) => option.fullname || ""}
-              value={doctor.find((d) => d.id === selectedDoctorId) || null}
-              onChange={(event, newValue) => {
-                setSelectedDoctorId(newValue?.id || null);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Choose Doctor"
-                  variant="outlined"
-                />
-              )}
-              disabled={!selectedSpecialtyId || doctor.length === 0}
-            />
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Step 4: Pick Date */}
-      {activeStep === 3 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.5 }}
-          variants={fadeInVariants}
-        >
-          <Card
-            sx={{
-              marginBottom: "40px", // Thêm khoảng cách dưới Card
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Pick Date
-            </Typography>
-            <WeekdayDatePicker
-              onDateChange={(date) => {
-                setSelectedDate(date);
-              }}
-            />
-          </Card>
-        </motion.div>
-      )}
-
-      {/* Step 5: Confirm */}
-      {activeStep === 4 && (
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          transition={{ duration: 0.5 }}
-          variants={fadeInVariants}
-        >
-          <Card
-            sx={{
-              marginBottom: "40px", // Thêm khoảng cách dưới Card
-              padding: "20px",
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Confirm Booking Information
-            </Typography>
-            <WorkScheduleElement
-              workschedule={workschedule}
-              selectedWorkScheduleId={selectedWorkScheduleId}
-              setSelectedWorkScheduleId={setSelectedWorkScheduleId}
-            />
-          </Card>
-        </motion.div>
-      )}
+    <>
+      // Hiển thị màn hình loading
       <div
+        className="dashboard-container"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "20px",
-          padding: "0 100px 0 100px",
+          marginLeft: "200px",
+          marginTop: "80px",
+          width: "calc(100vw - 200px)",
+          padding: "40px", // Thêm padding cho container chính
+          backgroundColor: "#f4f6f8",
         }}
       >
-        {/* Nút Back */}
-        <Button
-          style={{ width: "200px" }}
-          variant="outlined"
-          color="secondary"
-          onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
-          disabled={activeStep === 0}
+        {/* Stepper */}
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel
+          sx={{ marginBottom: "40px" }} // Thêm khoảng cách dưới Stepper
         >
-          Back
-        </Button>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
 
-        {/* Nút Next hoặc Confirm */}
-        <Button
-          style={{ width: "200px", marginTop: "10px" }}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (activeStep === steps.length - 1) {
-              // Nếu ở bước cuối cùng, gọi hàm onBooking
-              onBooking();
-            } else if (canProceedToNextStep()) {
-              // Nếu không ở bước cuối cùng, chuyển sang bước tiếp theo
-              setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
-            }
+        {/* Nội dung các bước */}
+        {/* Step 1: Choose Facility */}
+        {activeStep === 0 && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.5 }}
+            variants={fadeInVariants}
+          >
+            <Card
+              sx={{
+                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Choose Facility
+              </Typography>
+              <Autocomplete
+                options={facility}
+                getOptionLabel={(option) => option.name || ""}
+                value={
+                  facility.find((f) => f.id === selectedFacilityId) || null
+                }
+                onChange={(event, newValue) => {
+                  setSelectedFacilityId(newValue?.id || null);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose Facility"
+                    variant="outlined"
+                  />
+                )}
+                disabled={facility.length === 0}
+              />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Step 2: Choose Specialty */}
+        {activeStep === 1 && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.5 }}
+            variants={fadeInVariants}
+          >
+            <Card
+              sx={{
+                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Choose Specialty
+              </Typography>
+              <Autocomplete
+                options={specialty}
+                getOptionLabel={(option) => option.name || ""}
+                value={
+                  specialty.find((s) => s.id === selectedSpecialtyId) || null
+                }
+                onChange={(event, newValue) => {
+                  setSelectedSpecialtyId(newValue?.id || null);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose Specialty"
+                    variant="outlined"
+                  />
+                )}
+                disabled={!selectedFacilityId || specialty.length === 0}
+              />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Step 3: Choose Doctor */}
+        {activeStep === 2 && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.5 }}
+            variants={fadeInVariants}
+          >
+            <Card
+              sx={{
+                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Choose Doctor
+              </Typography>
+              <Autocomplete
+                options={doctor}
+                getOptionLabel={(option) => option.fullname || ""}
+                value={doctor.find((d) => d.id === selectedDoctorId) || null}
+                onChange={(event, newValue) => {
+                  setSelectedDoctorId(newValue?.id || null);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose Doctor"
+                    variant="outlined"
+                  />
+                )}
+                disabled={!selectedSpecialtyId || doctor.length === 0}
+              />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Step 4: Pick Date */}
+        {activeStep === 3 && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.5 }}
+            variants={fadeInVariants}
+          >
+            <Card
+              sx={{
+                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Pick Date
+              </Typography>
+              <WeekdayDatePicker
+                onDateChange={(date) => {
+                  setSelectedDate(date);
+                }}
+              />
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Step 5: Confirm */}
+        {activeStep === 4 && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            transition={{ duration: 0.5 }}
+            variants={fadeInVariants}
+          >
+            <Card
+              sx={{
+                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                padding: "20px",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Confirm Booking Information
+              </Typography>
+              <WorkScheduleElement
+                workschedule={workschedule}
+                selectedWorkScheduleId={selectedWorkScheduleId}
+                setSelectedWorkScheduleId={setSelectedWorkScheduleId}
+              />
+            </Card>
+          </motion.div>
+        )}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: "20px",
+            padding: "0 100px 0 100px",
           }}
         >
-          {activeStep === steps.length - 1 ? "Confirm" : "Next"}
-        </Button>
+          {/* Nút Back */}
+          {!(mode === "doctor" && activeStep === 3) && (
+            <Button
+              style={{ width: "200px" }}
+              variant="outlined"
+              color="secondary"
+              onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
+              disabled={activeStep === 0}
+            >
+              Back
+            </Button>
+          )}
 
-        {/* Hiển thị thông báo lỗi */}
-        {errorMessage && (
-          <Typography
-            variant="body2"
-            color="error"
-            sx={{ marginTop: "10px", textAlign: "center" }}
+          {/* Nút Next hoặc Confirm */}
+          <Button
+            style={{ width: "200px", marginTop: "10px" }}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              if (activeStep === steps.length - 1) {
+                // Nếu ở bước cuối cùng, gọi hàm onBooking
+                if (canProceedToNextStep()) {
+                  onBooking();
+                }
+              } else if (canProceedToNextStep()) {
+                // Nếu không ở bước cuối cùng, chuyển sang bước tiếp theo
+                setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
+              }
+            }}
           >
-            {errorMessage}
-          </Typography>
-        )}
+            {activeStep === steps.length - 1 ? "Confirm" : "Next"}
+          </Button>
+
+          {/* Hiển thị thông báo lỗi */}
+          {errorMessage && (
+            <Typography
+              variant="body2"
+              color="error"
+              sx={{ marginTop: "10px", textAlign: "center" }}
+            >
+              {errorMessage}
+            </Typography>
+          )}
+        </div>
+        <Dialog
+          open={openDialog}
+          onClose={() => handleDialogClose(true)} // Đóng dialog và chuyển hướng
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {notification}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => handleDialogClose(true)} // Chuyển hướng đến trang checkout
+              color="primary"
+              autoFocus
+            >
+              Proceed to Checkout
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
-    </div>
+      {onLoading && <LoadingScreen />}
+    </>
   );
 }
 

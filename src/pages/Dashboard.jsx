@@ -70,6 +70,7 @@ function Dashboard() {
 
           {/* Block 2: Find Doctor */}
           <motion.div
+            onClick={() => navigate("/doctor")}
             className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
             initial="hidden"
             animate="visible"

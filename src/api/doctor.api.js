@@ -27,6 +27,23 @@ const doctorApi = {
       return err.respone?.data || err.message;
     }
   },
+
+  getBySpecialtyId: async (specialtyId) => {
+    try {
+      const res = await axiosInstance.get(`/doctor?specialtyId=${specialtyId}`);
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
+  search: async (keyword) => {
+    try {
+      const res = await axiosInstance.get(`/doctor?keyword=${keyword}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
 };
 
 export default doctorApi;
