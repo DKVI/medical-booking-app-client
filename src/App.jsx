@@ -10,6 +10,7 @@ import ClientLayout from "./layouts/ClientLayout";
 import Booking from "./pages/Booking";
 import Checkout from "./pages/Checkout";
 import Doctor from "./pages/Doctor";
+import History from "./pages/History";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -50,6 +51,11 @@ function AppRoutes() {
       path: "/doctor",
       element: <ClientLayout />,
       children: [{ path: "", element: <Doctor /> }],
+    },
+    {
+      path: "/history",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <History /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

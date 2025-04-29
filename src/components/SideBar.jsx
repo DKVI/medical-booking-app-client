@@ -52,21 +52,21 @@ export default function SideBar() {
     >
       {/* Main Menu (Phần trên) */}
       <div className="main-menu flex flex-col gap-4">
-        <Link className="flex items-center gap-2">
+        <Link className="flex items-center gap-2" to={"/dashboard"}>
           <FontAwesomeIcon
             icon={faChartSimple}
             className="text-[var(--base-color)] text-xl"
           />
           <p className="text-[var(--base-color)]">Dashboard</p>
         </Link>
-        <Link className="flex items-center gap-2">
+        <Link className="flex items-center gap-2" to={"/booking-type"}>
           <FontAwesomeIcon
             icon={faCalendarDays}
             className="text-[var(--base-color)] text-xl"
           />
           <p className="text-[var(--base-color)]">Booking</p>
         </Link>
-        <Link className="flex items-center gap-2">
+        <Link className="flex items-center gap-2" to={"/profile"}>
           <FontAwesomeIcon
             icon={faUser}
             className="text-[var(--base-color)] text-xl"
@@ -77,7 +77,7 @@ export default function SideBar() {
 
       {/* Sub Menu (Phần dưới) */}
       <div className="sub-menu flex flex-col gap-4">
-        <Link className="flex items-center gap-2">
+        <Link className="flex items-center gap-2" to={"/setting"}>
           <FontAwesomeIcon
             icon={faGear}
             className="text-[var(--base-color)] text-xl"

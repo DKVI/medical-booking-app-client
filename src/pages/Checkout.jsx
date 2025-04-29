@@ -484,24 +484,40 @@ function Checkout() {
             >
               Payment Status
             </h5>
-            <p
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: purchase ? "green" : "red",
-              }}
-            >
-              {purchase ? "Payment Successful" : "Not Paid"}
-            </p>
+            {new Date(detailCheckout?.date).setHours(0, 0, 0, 0) <
+              new Date().setHours(0, 0, 0, 0) && !purchase ? (
+              <p
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "red",
+                }}
+              >
+                Expired
+              </p>
+            ) : (
+              <p
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: purchase ? "green" : "red",
+                }}
+              >
+                {purchase ? "Payment Successful" : "Not Paid"}
+              </p>
+            )}
           </div>
 
+          {/* Ẩn nút PayPal nếu đã hết hạn và chưa được Purchased */}
           {!purchase &&
             user &&
             detailCheckout &&
             doctor &&
             specialty &&
             workschedule &&
-            facility && (
+            facility &&
+            new Date(detailCheckout?.date).setHours(0, 0, 0, 0) >=
+              new Date().setHours(0, 0, 0, 0) && (
               <PayPal
                 schedulingDetailId={id}
                 purchase={async () => {

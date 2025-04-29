@@ -18,6 +18,14 @@ const scheduleDetailApi = {
       return error.response?.data || error.message;
     }
   },
+  getAll: async () => {
+    try {
+      const respone = await axiosInstance.get(`/schedulingDetail/`);
+      return respone.data;
+    } catch (error) {
+      return error.response?.data || error.message;
+    }
+  },
 };
 
 export default scheduleDetailApi;

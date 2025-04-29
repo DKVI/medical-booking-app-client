@@ -1,0 +1,36 @@
+.react-calendar {
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.react-calendar__tile {
+  height: 40px; /* Tăng chiều cao để tránh nội dung bị cắt */
+  text-align: center;
+  overflow: hidden; /* Ẩn nội dung tràn */
+  white-space: nowrap; /* Không cho phép xuống dòng */
+  text-overflow: ellipsis; /* Loại bỏ dấu ... nếu không cần */
+}
+
+.react-calendar__tile--active {
+  background: var(--base-color);
+  color: white;
+  border-radius: 8px;
+}
+
+.react-calendar__navigation button {
+  font-size: 14px;
+  overflow: hidden; /* Ẩn nội dung tràn */
+  white-space: nowrap; /* Không cho phép xuống dòng */
+  text-overflow: ellipsis; /* Loại bỏ dấu ... nếu không cần */
+}
+
+.react-calendar__month-view__weekdays {
+  color: var(--base-color);
+  font-size: 14px;
+  overflow: hidden; /* Ẩn nội dung tràn */
+  white-space: nowrap; /* Không cho phép xuống dòng */
+  text-overflow: ellipsis; /* Loại bỏ dấu ... nếu không cần */
+}

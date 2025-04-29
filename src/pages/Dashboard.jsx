@@ -6,16 +6,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarDays,
   faClockRotateLeft,
+  faGear,
   faNotesMedical,
   faUser,
   faUserDoctor,
 } from "@fortawesome/free-solid-svg-icons";
 import LoadingScreen from "../components/LoadingScreen";
 import { motion } from "framer-motion";
+import CalendarBlock from "../components/CalendarBlock"; // Import CalendarBlock
 
 const zoomInVariants = {
   hidden: { opacity: 0, scale: 0.8 },
   visible: { opacity: 1, scale: 1 },
+};
+const calendarBlockVariants = {
+  hidden: { opacity: 0, scale: 0.8 }, // Bắt đầu nhỏ và mờ
+  visible: { opacity: 1, scale: 1 }, // Hiển thị rõ ràng và kích thước bình thường
+};
+const timesBlockVariants = {
+  hidden: { opacity: 0, scale: 0.8 }, // Bắt đầu nhỏ và mờ
+  visible: { opacity: 1, scale: 1 }, // Hiển thị rõ ràng với độ mờ 1
 };
 
 function Dashboard() {
@@ -37,7 +47,7 @@ function Dashboard() {
   }, []);
   return (
     <div
-      className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] h-[calc(100vh-80px)] flex"
+      className="dashboard-container overflow-hidden ml-[200px] mt-[80px] w-[calc(100vw-200px)] h-[calc(100vh-80px)] flex"
       style={{
         backgroundImage: "url(/3-banner.gif)",
         // backgroundColor: "var(--base-color)",
@@ -45,113 +55,143 @@ function Dashboard() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="m-auto">
-        {onLoading && <LoadingScreen />}
-        <div className="flex gap-[50px] p-[25px]">
-          {/* Block 1: Booking */}
-          <motion.div
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
-            onClick={() => navigate("/booking")}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: 0.1 }}
-            variants={zoomInVariants}
-          >
-            <div className="m-auto">
-              <div>
-                <FontAwesomeIcon
-                  className="text-[40px] py-5"
-                  icon={faCalendarDays}
-                />
+      <div className="m-auto flex">
+        <div className="m-auto">
+          {onLoading && <LoadingScreen />}
+          <div className="flex gap-[50px] p-[25px]">
+            {/* Block 1: Booking */}
+            <motion.div
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              onClick={() => navigate("/booking")}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.1 }}
+              variants={zoomInVariants}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5"
+                    icon={faCalendarDays}
+                  />
+                </div>
+                <div>Booking</div>
               </div>
-              <div>Booking</div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Block 2: Find Doctor */}
-          <motion.div
-            onClick={() => navigate("/doctor")}
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: 0.2 }}
-            variants={zoomInVariants}
-          >
-            <div className="m-auto">
-              <div>
-                <FontAwesomeIcon
-                  className="text-[40px] py-5"
-                  icon={faUserDoctor}
-                />
+            {/* Block 2: Find Doctor */}
+            <motion.div
+              onClick={() => navigate("/doctor")}
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              variants={zoomInVariants}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5"
+                    icon={faUserDoctor}
+                  />
+                </div>
+                <div>Find Doctor</div>
               </div>
-              <div>Find Doctor</div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Block 3: History */}
-          <motion.div
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: 0.3 }}
-            variants={zoomInVariants}
-          >
-            <div className="m-auto">
-              <div>
-                <FontAwesomeIcon
-                  className="text-[40px] py-5"
-                  icon={faClockRotateLeft}
-                />
+            {/* Block 3: History */}
+            <motion.div
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              variants={zoomInVariants}
+              onClick={() => {
+                navigate("/history");
+              }}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5"
+                    icon={faClockRotateLeft}
+                  />
+                </div>
+                <div>History</div>
               </div>
-              <div>History</div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
+          <div className="flex gap-[50px] p-[25px]">
+            {/* Block 4: Medical Note */}
+            <motion.div
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.4 }}
+              variants={zoomInVariants}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5"
+                    icon={faNotesMedical}
+                  />
+                </div>
+                <div>Medical Note</div>
+              </div>
+            </motion.div>
+
+            {/* Block 6: Profile */}
+            <motion.div
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.6 }}
+              variants={zoomInVariants}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon className="text-[40px] py-5" icon={faUser} />
+                </div>
+                <div>Profile</div>
+              </div>
+            </motion.div>
+            {/* Block 5: Calendar */}
+            <motion.div
+              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.5 }}
+              variants={zoomInVariants}
+            >
+              <div className="m-auto">
+                <div>
+                  <FontAwesomeIcon className="text-[40px] py-5" icon={faGear} />
+                </div>
+                <div>Setting</div>
+              </div>
+            </motion.div>
+            {/* Move CalendarBlock to calendar-block */}
+          </div>
         </div>
-        <div className="flex gap-[50px] p-[25px]">
-          {/* Block 4: Medical Note */}
+        <motion.div
+          className="times-block w-[400px] p-[20px] bg-white flex-col flex shadow-lg rounded-[20px] mt-[20px]"
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.5 }} // Thời gian hiệu ứng
+          variants={timesBlockVariants} // Sử dụng animation variants
+        >
           <motion.div
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+            className="calendar-container mb-[20px]"
             initial="hidden"
             animate="visible"
-            transition={{ duration: 0.5, delay: 0.4 }}
-            variants={zoomInVariants}
+            transition={{ duration: 0.5, delay: 0.5 }} // Thời gian hiệu ứng
+            variants={calendarBlockVariants} // Sử dụng animation variants cho CalendarBlock
           >
-            <div className="m-auto">
-              <div>
-                <FontAwesomeIcon
-                  className="text-[40px] py-5"
-                  icon={faNotesMedical}
-                />
-              </div>
-              <div>Medical Note</div>
-            </div>
+            <CalendarBlock />
           </motion.div>
-
-          {/* Block 5: Empty Block */}
-          <motion.div
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: 0.5 }}
-            variants={zoomInVariants}
-          ></motion.div>
-
-          {/* Block 6: Profile */}
-          <motion.div
-            className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.5, delay: 0.6 }}
-            variants={zoomInVariants}
-          >
-            <div className="m-auto">
-              <div>
-                <FontAwesomeIcon className="text-[40px] py-5" icon={faUser} />
-              </div>
-              <div>Profile</div>
-            </div>
-          </motion.div>
-        </div>
+          <div className="clock-container"></div>
+        </motion.div>
       </div>
     </div>
   );

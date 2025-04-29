@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion"; // Import framer-motion
 import {
   Box,
   Container,
@@ -99,123 +100,147 @@ const ContactForm = () => {
   ];
 
   return (
-    <Container
-      maxWidth="lg"
-      sx={{ py: 8 }}
-      className="text-[var(--base-color)]"
+    <motion.div
+      className={`contact-form-container w-full p-[80px] bg-white shadow-lg rounded-[20px]`}
+      initial={{ opacity: 0, y: 50 }} // Bắt đầu từ dưới với độ mờ 0
+      animate={{ opacity: 1, y: 0 }} // Trượt lên với độ mờ 1
+      transition={{ duration: 1 }} // Thời gian hiệu ứng
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%", // Chiếm toàn bộ chiều ngang
+        maxWidth: "1200px", // Giới hạn chiều rộng tối đa
+        margin: "0 auto", // Căn giữa
+      }}
     >
-      <h3 className="lg:m-[20px] text-[48px] font-bold">CONTACT US</h3>
-      <Typography
-        variant="h6"
-        align="center"
-        color="text.secondary"
-        sx={{ mb: 8 }}
+      <Container
+        maxWidth="lg"
+        sx={{
+          width: "100%", // Chiếm toàn bộ chiều ngang
+          maxWidth: "1200px", // Giới hạn chiều rộng tối đa
+          height: "100%",
+          margin: "0 auto", // Căn giữa
+          boxSizing: "border-box", // Đảm bảo padding không làm tràn nội dung
+        }}
+        className="text-[var(--base-color)]"
       >
-        We'd love to hear from you. Please fill out this form or reach out using
-        one of the options below.
-      </Typography>
+        <h3 className="lg:m-[20px] text-[48px] font-bold">CONTACT US</h3>
+        <Typography
+          variant="h6"
+          align="center"
+          color="text.secondary"
+          sx={{ mb: 8 }}
+        >
+          We'd love to hear from you. Please fill out this form or reach out
+          using one of the options below.
+        </Typography>
 
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={6}>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-            }}
-          >
-            <TextField
-              fullWidth
-              label="Full Name"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              error={!!errors.fullName}
-              helperText={errors.fullName}
-              required
-              autoComplete="name"
-            />
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
-              required
-              autoComplete="email"
-            />
-            <TextField
-              fullWidth
-              label="Phone Number"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              error={!!errors.phone}
-              helperText={errors.phone}
-              required
-              autoComplete="tel"
-            />
-            <TextField
-              fullWidth
-              label="Message"
-              name="message"
-              multiline
-              rows={4}
-              value={formData.message}
-              onChange={handleChange}
-              error={!!errors.message}
-              helperText={errors.message}
-              required
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
               sx={{
-                py: 2,
-                mt: 2,
-                backgroundColor: "primary.main",
-                "&:hover": {
-                  backgroundColor: "primary.dark",
-                },
+                display: "flex",
+                flexDirection: "column",
+                gap: 3,
               }}
             >
-              Send Message
-            </Button>
-          </Box>
-        </Grid>
+              <TextField
+                fullWidth
+                label="Full Name"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                error={!!errors.fullName}
+                helperText={errors.fullName}
+                required
+                autoComplete="name"
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                required
+                autoComplete="email"
+              />
+              <TextField
+                fullWidth
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                error={!!errors.phone}
+                helperText={errors.phone}
+                required
+                autoComplete="tel"
+              />
+              <TextField
+                fullWidth
+                label="Message"
+                name="message"
+                multiline
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                error={!!errors.message}
+                helperText={errors.message}
+                required
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                sx={{
+                  py: 2,
+                  mt: 2,
+                  backgroundColor: "primary.main",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                }}
+              >
+                Send Message
+              </Button>
+            </Box>
+          </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={3}>
-            {contactCards.map((card, index) => (
-              <Grid item xs={12} sm={6} key={index}>
-                <StyledCard>
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box sx={{ mb: 2, color: "primary.main" }}>{card.icon}</Box>
-                    <Typography variant="h6" gutterBottom>
-                      {card.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {card.description}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      {card.action}
-                    </Button>
-                  </CardActions>
-                </StyledCard>
-              </Grid>
-            ))}
+          <Grid item xs={12} md={6}>
+            <Grid container spacing={3}>
+              {contactCards.map((card, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <StyledCard>
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Box sx={{ mb: 2, color: "primary.main" }}>
+                        {card.icon}
+                      </Box>
+                      <Typography variant="h6" gutterBottom>
+                        {card.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.description}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small" color="primary">
+                        {card.action}
+                      </Button>
+                    </CardActions>
+                  </StyledCard>
+                </Grid>
+              ))}
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </motion.div>
   );
 };
 
