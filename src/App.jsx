@@ -11,6 +11,7 @@ import Booking from "./pages/Booking";
 import Checkout from "./pages/Checkout";
 import Doctor from "./pages/Doctor";
 import History from "./pages/History";
+import BookingType from "./pages/BookingType";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -56,6 +57,11 @@ function AppRoutes() {
       path: "/history",
       element: <ClientLayout />,
       children: [{ path: "", element: <History /> }],
+    },
+    {
+      path: "/booking-type",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <BookingType /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);
