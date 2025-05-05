@@ -17,6 +17,14 @@ const patientApi = {
       return err.respone?.data || err.message;
     }
   },
+  update: async (data) => {
+    try {
+      const res = await axiosInstance.post("/patient", data);
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
 };
 
 export default patientApi;

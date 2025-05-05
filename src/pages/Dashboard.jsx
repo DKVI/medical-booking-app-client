@@ -61,7 +61,7 @@ function Dashboard() {
           <div className="flex gap-[50px] p-[25px]">
             {/* Block 1: Booking */}
             <motion.div
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
               onClick={() => navigate("/booking")}
               initial="hidden"
               animate="visible"
@@ -71,7 +71,7 @@ function Dashboard() {
               <div className="m-auto">
                 <div>
                   <FontAwesomeIcon
-                    className="text-[40px] py-5"
+                    className="text-[40px] py-5 transition-all duration-300"
                     icon={faCalendarDays}
                   />
                 </div>
@@ -82,7 +82,7 @@ function Dashboard() {
             {/* Block 2: Find Doctor */}
             <motion.div
               onClick={() => navigate("/doctor")}
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -91,7 +91,7 @@ function Dashboard() {
               <div className="m-auto">
                 <div>
                   <FontAwesomeIcon
-                    className="text-[40px] py-5"
+                    className="text-[40px] py-5 transition-all duration-300"
                     icon={faUserDoctor}
                   />
                 </div>
@@ -101,19 +101,17 @@ function Dashboard() {
 
             {/* Block 3: History */}
             <motion.div
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
+              onClick={() => navigate("/history")}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.3 }}
               variants={zoomInVariants}
-              onClick={() => {
-                navigate("/history");
-              }}
             >
               <div className="m-auto">
                 <div>
                   <FontAwesomeIcon
-                    className="text-[40px] py-5"
+                    className="text-[40px] py-5 transition-all duration-300"
                     icon={faClockRotateLeft}
                   />
                 </div>
@@ -124,7 +122,8 @@ function Dashboard() {
           <div className="flex gap-[50px] p-[25px]">
             {/* Block 4: Medical Note */}
             <motion.div
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
+              onClick={() => navigate("/medical-note")}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -133,7 +132,7 @@ function Dashboard() {
               <div className="m-auto">
                 <div>
                   <FontAwesomeIcon
-                    className="text-[40px] py-5"
+                    className="text-[40px] py-5 transition-all duration-300"
                     icon={faNotesMedical}
                   />
                 </div>
@@ -143,7 +142,8 @@ function Dashboard() {
 
             {/* Block 6: Profile */}
             <motion.div
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
+              onClick={() => navigate("/profile")}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.6 }}
@@ -151,14 +151,18 @@ function Dashboard() {
             >
               <div className="m-auto">
                 <div>
-                  <FontAwesomeIcon className="text-[40px] py-5" icon={faUser} />
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5 transition-all duration-300"
+                    icon={faUser}
+                  />
                 </div>
                 <div>Profile</div>
               </div>
             </motion.div>
-            {/* Block 5: Calendar */}
+            {/* Block 5: Setting */}
             <motion.div
-              className="p-[12px] shadow-xl cursor-pointer hover:opacity-80 w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px]"
+              className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300"
+              onClick={() => navigate("/settings")}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.5 }}
@@ -166,7 +170,10 @@ function Dashboard() {
             >
               <div className="m-auto">
                 <div>
-                  <FontAwesomeIcon className="text-[40px] py-5" icon={faGear} />
+                  <FontAwesomeIcon
+                    className="text-[40px] py-5 transition-all duration-300"
+                    icon={faGear}
+                  />
                 </div>
                 <div>Setting</div>
               </div>

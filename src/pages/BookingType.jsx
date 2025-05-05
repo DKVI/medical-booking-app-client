@@ -62,64 +62,66 @@ function BookingType() {
           onClick={() => {
             navigate("/booking");
           }}
-          className="h-[400px] cursor-pointer bg-[var(--base-color)] shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between"
+          className="h-[400px] cursor-pointer bg-white shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-[var(--base-color)] hover:text-white hover:scale-95"
         >
           <h2
-            className="text-white font-bold"
+            className="text-[var(--base-color)] font-bold transition-all duration-300"
             style={{
-              textShadow: "2px 2px 4px #cccc", // Shadow cho tiêu đề
+              textShadow: "2px 2px 4px #cccc",
+              color: "inherit", // Kế thừa màu từ card cha
             }}
           >
             FIND FACILITY
           </h2>
           <div
-            className="flex h-[200px]"
+            className="flex h-[200px] transition-all duration-300"
             style={{
               backgroundImage: "url(/vector-hospital.png)",
               backgroundPosition: "center",
               backgroundSize: "cover",
-              borderRadius: "10px", // Bo góc cho ảnh
+              borderRadius: "10px",
             }}
           ></div>
           <div
-            className="description text-white text-[12px]"
+            className="description text-[14px] transition-all duration-300"
             style={{
-              textShadow: "1px 1px 3px #cccc", // Shadow cho mô tả
+              textShadow: "1px 1px 3px #cccc",
+              color: "inherit", // Kế thừa màu từ card cha
             }}
           >
             Easily schedule appointments through partnered hospitals. Browse
             departments and choose the right specialist for your needs.
           </div>
         </div>
-
-        {/* FIND DOCTOR */}
         <div
           onClick={() => {
             navigate("/doctor");
           }}
-          className="h-[400px] cursor-pointer bg-[var(--base-color)] shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between"
+          className="h-[400px] cursor-pointer bg-white shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-[var(--base-color)] hover:text-white hover:scale-95"
         >
           <h2
-            className="text-white font-bold"
+            className="text-[var(--base-color)] font-bold transition-all duration-300"
             style={{
-              textShadow: "2px 2px 4px #cccc", // Shadow cho tiêu đề
+              textShadow: "2px 2px 4px #cccc",
+              color: "inherit", // Kế thừa màu từ card cha
             }}
           >
             FIND DOCTOR
           </h2>
           <div
-            className="flex h-[200px]"
+            className="flex h-[200px] transition-all duration-300"
             style={{
               backgroundImage: "url(/vector-doctor.png)",
               backgroundPosition: "center",
               backgroundSize: "cover",
-              borderRadius: "10px", // Bo góc cho ảnh
+              borderRadius: "10px",
             }}
           ></div>
           <div
-            className="description text-white text-[12px]"
+            className="description text-[14px] transition-all duration-300"
             style={{
-              textShadow: "1px 1px 3px #cccc", // Shadow cho mô tả
+              textShadow: "1px 1px 3px #cccc",
+              color: "inherit", // Kế thừa màu từ card cha
             }}
           >
             Connect with your preferred doctor and book an appointment
