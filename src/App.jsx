@@ -13,6 +13,7 @@ import Doctor from "./pages/Doctor";
 import History from "./pages/History";
 import BookingType from "./pages/BookingType";
 import Profile from "./pages/Profile";
+import Setting from "./pages/Setting";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -68,6 +69,11 @@ function AppRoutes() {
       path: "/profile",
       element: <ClientLayout />,
       children: [{ path: "", element: <Profile /> }],
+    },
+    {
+      path: "/setting",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <Setting /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

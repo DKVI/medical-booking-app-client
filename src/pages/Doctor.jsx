@@ -122,7 +122,6 @@ function Doctor() {
         transition={{ duration: 0.5 }}
       >
         <div className="doctor-page p-6 m-auto">
-          {/* Tiêu đề */}
           <h1
             className="text-3xl font-bold mb-6 text-center"
             style={{
@@ -132,8 +131,6 @@ function Doctor() {
           >
             Search for Doctors
           </h1>
-
-          {/* Ô tìm kiếm */}
           <div className="mb-6">
             <input
               type="text"
@@ -143,12 +140,10 @@ function Doctor() {
               className="border border-gray-300 rounded-lg p-3 w-full shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--base-color)]"
             />
           </div>
-
-          {/* Hiển thị danh sách bác sĩ */}
           <div
             className="doctor-list-container"
             style={{
-              minHeight: "300px", // Chiều cao tối thiểu để tránh giật
+              minHeight: "300px",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -162,7 +157,6 @@ function Doctor() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <AnimatePresence>
                   {doctors.map((doctor) => {
-                    // Tìm specialty và facility tương ứng
                     const specialty = specialties?.find(
                       (s) => s.id === doctor.specialty_id
                     );

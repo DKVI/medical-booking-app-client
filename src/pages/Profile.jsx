@@ -136,8 +136,8 @@ function Profile() {
 
   // Animation Variants
   const fieldVariants = {
-    hidden: { opacity: 0, y: 50 }, // Bắt đầu từ dưới và mờ
-    visible: { opacity: 1, y: 0 }, // Hiện lên và về vị trí ban đầu
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -150,14 +150,13 @@ function Profile() {
         exit="exit"
         transition={{ duration: 0.5 }}
       >
-        {/* Thẻ H1 với hiệu ứng */}
         <motion.h1
           variants={fieldVariants}
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.5, delay: 0.05 }}
           style={{
-            color: "var(--base-color)", // Màu base-color
+            color: "var(--base-color)",
             textAlign: "center",
             marginBottom: "20px",
             fontWeight: "bold",
@@ -178,7 +177,6 @@ function Profile() {
           }}
         >
           <Grid container spacing={3}>
-            {/* Username (Disabled) */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -200,8 +198,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* Fullname */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -224,8 +220,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* ID Number */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -248,8 +242,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* Insurance Number */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -272,8 +264,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* Phone Number */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -296,8 +286,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* Gmail */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -320,8 +308,6 @@ function Profile() {
                 />
               </motion.div>
             </Grid>
-
-            {/* Gender */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -348,8 +334,6 @@ function Profile() {
                 </TextField>
               </motion.div>
             </Grid>
-
-            {/* Submit Button */}
             <Grid item xs={12}>
               <motion.div
                 variants={fieldVariants}
@@ -374,8 +358,6 @@ function Profile() {
           </Grid>
         </Box>
       </motion.div>
-
-      {/* Dialog */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog}>
         <DialogTitle>Notification</DialogTitle>
         <DialogContent>{dialogMessage}</DialogContent>

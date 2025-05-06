@@ -12,13 +12,14 @@ import { Link, useNavigate } from "react-router-dom";
 import ConfirmDialog from "./ConfirmDialog";
 import Cookies from "universal-cookie";
 import LoadingScreen from "./LoadingScreen";
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion } from "framer-motion";
 
 export default function SideBar() {
   const cookies = new Cookies();
   const navigate = new useNavigate();
   const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
   const [onLoading, setOnLoading] = useState(false);
+  const [onHover, setOnHover] = useState(false);
 
   const handleCloseLogoutDialog = () => {
     setOpenLogoutDialog(false);
@@ -30,59 +31,87 @@ export default function SideBar() {
     navigate("/account");
   };
 
-  const slideInVariants = {
-    hidden: { opacity: 0, x: -200 }, // Bắt đầu ở ngoài màn hình bên trái
-    visible: { opacity: 1, x: 0 }, // Hiển thị và trượt vào vị trí ban đầu
-  };
-
   return (
     <motion.div
-      className="w-[200px] shadow-2xl p-5 flex flex-col justify-between"
+      className={`shadow-2xl p-5 flex flex-col justify-between transition-all duration-300 ${
+        onHover ? "w-[200px]" : "w-[60px]"
+      }`}
       style={{
         position: "fixed",
         top: "80px",
         bottom: "0",
         left: "0",
         backgroundColor: "white",
+        overflow: "hidden",
       }}
-      initial="hidden"
-      animate="visible"
-      transition={{ duration: 0.5 }} // Thời gian hiệu ứng
-      variants={slideInVariants}
+      onMouseEnter={() => setOnHover(true)}
+      onMouseLeave={() => setOnHover(false)}
     >
-      {/* Main Menu (Phần trên) */}
+      {/* Main Menu */}
       <div className="main-menu flex flex-col gap-4">
         <Link className="flex items-center gap-2" to={"/dashboard"}>
-          <FontAwesomeIcon
-            icon={faChartSimple}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Dashboard</p>
+          <div className="icon-wrapper">
+            <FontAwesomeIcon
+              icon={faChartSimple}
+              className="text-[var(--base-color)] text-xl"
+            />
+          </div>
+          <p
+            className={`text-[var(--base-color)] transition-opacity duration-300 ${
+              onHover ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Dashboard
+          </p>
         </Link>
         <Link className="flex items-center gap-2" to={"/booking-type"}>
-          <FontAwesomeIcon
-            icon={faCalendarDays}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Booking</p>
+          <div className="icon-wrapper">
+            <FontAwesomeIcon
+              icon={faCalendarDays}
+              className="text-[var(--base-color)] text-xl"
+            />
+          </div>
+          <p
+            className={`text-[var(--base-color)] transition-opacity duration-300 ${
+              onHover ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Booking
+          </p>
         </Link>
         <Link className="flex items-center gap-2" to={"/profile"}>
-          <FontAwesomeIcon
-            icon={faUser}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Profile</p>
+          <div className="icon-wrapper">
+            <FontAwesomeIcon
+              icon={faUser}
+              className="text-[var(--base-color)] text-xl"
+            />
+          </div>
+          <p
+            className={`text-[var(--base-color)] transition-opacity duration-300 ${
+              onHover ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Profile
+          </p>
         </Link>
       </div>
 
-      {/* Sub Menu (Phần dưới) */}
+      {/* Sub Menu */}
       <div className="sub-menu flex flex-col gap-4">
         <Link className="flex items-center gap-2" to={"/setting"}>
-          <FontAwesomeIcon
-            icon={faGear}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Setting</p>
+          <div className="icon-wrapper">
+            <FontAwesomeIcon
+              icon={faGear}
+              className="text-[var(--base-color)] text-xl"
+            />
+          </div>
+          <p
+            className={`text-[var(--base-color)] transition-opacity duration-300 ${
+              onHover ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Setting
+          </p>
         </Link>
         <Link
           className="flex items-center gap-2"
@@ -90,11 +119,19 @@ export default function SideBar() {
             setOpenLogoutDialog(true);
           }}
         >
-          <FontAwesomeIcon
-            icon={faRightFromBracket}
-            className="text-[var(--base-color)] text-xl"
-          />
-          <p className="text-[var(--base-color)]">Logout</p>
+          <div className="icon-wrapper">
+            <FontAwesomeIcon
+              icon={faRightFromBracket}
+              className="text-[var(--base-color)] text-xl"
+            />
+          </div>
+          <p
+            className={`text-[var(--base-color)] transition-opacity duration-300 ${
+              onHover ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            Logout
+          </p>
         </Link>
         <ConfirmDialog
           isOpen={openLogoutDialog}
@@ -103,7 +140,7 @@ export default function SideBar() {
           description={"Are you sure you want to Log out?"}
           callback={handleLogout}
         />
-        {onLoading && <LoadingScreen />}{" "}
+        {onLoading && <LoadingScreen />}
       </div>
     </motion.div>
   );
