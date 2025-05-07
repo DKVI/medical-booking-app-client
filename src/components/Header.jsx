@@ -12,7 +12,16 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import authApi from "../api/auth.api";
-import { CircularProgress } from "@mui/material"; // Import CircularProgress từ MUI
+import {
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material"; // Import CircularProgress và các component Dialog từ MUI
+import LoadingScreen from "./LoadingScreen";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -20,7 +29,8 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false); // State để hiển thị menu người dùng
   const [user, setUser] = useState("");
   const [loadingAvatar, setLoadingAvatar] = useState(true); // State để kiểm tra trạng thái loading avatar
-
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false); // State để kiểm soát Dialog Logout
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const cookies = new Cookies();
     const token = cookies.get("token");
@@ -44,9 +54,22 @@ export default function Header() {
   };
 
   const handleLogout = () => {
+    setLogoutDialogOpen(true); // Mở Dialog xác nhận Logout
+  };
+
+  const confirmLogout = () => {
+    setLoading(true);
     const cookies = new Cookies();
-    cookies.remove("token");
-    navigate("/account");
+    cookies.remove("token"); // Xóa token
+    setLogoutDialogOpen(false); // Đóng Dialog
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/account");
+    }, 1000);
+  };
+
+  const handleCloseLogoutDialog = () => {
+    setLogoutDialogOpen(false); // Đóng Dialog
   };
 
   const slideDownVariants = {
@@ -72,6 +95,7 @@ export default function Header() {
       transition={{ duration: 0.5 }}
       variants={slideDownVariants}
     >
+      {loading && <LoadingScreen />}
       <div className="h-full">
         <img
           src="/icon.png"
@@ -107,13 +131,10 @@ export default function Header() {
               {showUserMenu && (
                 <div
                   className="absolute right-0 w-[200px] bg-white shadow-lg rounded-lg p-5 z-50"
-                  style={{
-                    border: "1px solid var(--base-color)",
-                  }}
                   onMouseEnter={() => setShowUserMenu(true)} // Giữ menu hiển thị khi hover vào menu
                   onMouseLeave={() => setShowUserMenu(false)} // Ẩn menu khi rời khỏi menu
                 >
-                  <div className="p-3">
+                  <div className="px-3 py-1">
                     {/* Hiển thị loading hoặc avatar */}
                     {loadingAvatar ? (
                       <div className="flex justify-center items-center h-[150px]">
@@ -128,14 +149,19 @@ export default function Header() {
                         alt="User Avatar"
                       />
                     )}
-                    <div className="flex mb-4">
+                    <div
+                      className="flex mb-4 py-3"
+                      style={{
+                        borderBottom: "1px solid var(--base-color)",
+                      }}
+                    >
                       <p className="text-[var(--base-color)] text-[20px] font-bold m-auto">
                         Hi, {user.username}!
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-[12px]">
-                    <div>
+                    <div className="hover:opacity-70">
                       <FontAwesomeIcon icon={faChartSimple} />
                       <Link
                         className="w-full text-left text-[var(--base-color)] hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
@@ -145,7 +171,7 @@ export default function Header() {
                         Go to Dashboard
                       </Link>
                     </div>
-                    <div>
+                    <div className="hover:opacity-70">
                       <FontAwesomeIcon icon={faGear} />
                       <Link
                         className="w-full text-left text-[var(--base-color)] hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
@@ -155,7 +181,7 @@ export default function Header() {
                         Settings
                       </Link>
                     </div>
-                    <div>
+                    <div className="hover:opacity-70">
                       <FontAwesomeIcon icon={faRightFromBracket} color="red" />
                       <Link
                         className="w-full text-left text-red-500 hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
@@ -191,6 +217,22 @@ export default function Header() {
           </>
         )}
       </div>
+
+      {/* Dialog Logout */}
+      <Dialog open={logoutDialogOpen} onClose={handleCloseLogoutDialog}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to logout?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseLogoutDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={confirmLogout} color="secondary">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </motion.div>
   );
 }

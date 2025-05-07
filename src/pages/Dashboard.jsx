@@ -155,7 +155,7 @@ function Dashboard() {
             {/* Block 5: Setting */}
             <motion.div
               className="p-[12px] shadow-xl cursor-pointer hover:scale-95 hover:bg-[var(--base-color)] hover:text-white w-[200px] h-[200px] flex text-[var(--base-color)] bg-white rounded-[20px] transition-all duration-300 border-[2px] border-[var(--base-color)]"
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate("/setting")}
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.5 }}

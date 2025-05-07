@@ -40,6 +40,15 @@ const authApi = {
       return error.response?.data || error.message;
     }
   },
+
+  changePassword: async (data) => {
+    try {
+      const res = await axiosInstance.post("/authen/change-password", data);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
 };
 
 export default authApi;

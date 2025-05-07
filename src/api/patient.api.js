@@ -25,6 +25,14 @@ const patientApi = {
       return err.respone?.data || err.message;
     }
   },
+  changeAvt: async (data) => {
+    try {
+      const res = await axiosInstance.post("/patient/changeAvt", data);
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
 };
 
 export default patientApi;
