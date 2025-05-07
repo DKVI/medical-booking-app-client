@@ -12,8 +12,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  CircularProgress,
 } from "@mui/material";
-import { motion } from "framer-motion"; // Import Framer Motion
+import { motion } from "framer-motion";
+import LoadingScreen from "../components/LoadingScreen";
+import AvatarChoosing from "../components/AvatarChoosing";
 
 function Setting() {
   const navigate = useNavigate();
@@ -23,7 +26,12 @@ function Setting() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
-
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false); // State cho dialog logout
+  const [loading, setLoading] = useState(false); // State cho loading screen
+  const [avatar, setAvatar] = useState("");
+  const [loadingAvatar, setLoadingAvatar] = useState(false);
+  const [user, setUser] = useState(null);
+  const [openAvtMenu, setOpenAvtMenu] = useState(false);
   useEffect(() => {
     const token = cookies.get("token");
     if (!token) {
@@ -33,12 +41,25 @@ function Setting() {
     }
   }, []);
 
+  const getUser = async (token) => {
+    try {
+      const res = await authApi.getByToken(token);
+      setUser(res.user);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
     if (!res.success) {
       navigate("/account");
+    } else {
+      await getUser(token);
     }
   };
+
+  const saveAvt = () => {};
 
   const handlePasswordChange = async () => {
     if (!oldPassword || !newPassword || !confirmPassword) {
@@ -67,12 +88,50 @@ function Setting() {
   };
 
   const handleLogout = () => {
-    cookies.remove("token");
-    navigate("/account");
+    setLogoutDialogOpen(true); // Mở dialog logout
+  };
+
+  const confirmLogout = () => {
+    setLogoutDialogOpen(false); // Đóng dialog logout
+    setLoading(true); // Hiển thị loading screen
+    setTimeout(() => {
+      cookies.remove("token");
+      setLoading(false); // Tắt loading screen
+      navigate("/account"); // Chuyển về trang đăng nhập
+    }, 1000); // Loading trong 1 giây
   };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
+  };
+
+  const handleCloseLogoutDialog = () => {
+    setLogoutDialogOpen(false); // Đóng dialog logout
+  };
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoadingAvatar(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const res = await authApi.updateAvatar(formData); // API cập nhật avatar
+      if (res.success) {
+        setAvatar(res.avatar); // Cập nhật avatar mới
+        setDialogMessage("Avatar updated successfully!");
+      } else {
+        setDialogMessage("Failed to update avatar. Please try again.");
+      }
+    } catch (error) {
+      setDialogMessage("An error occurred while updating avatar.");
+    }
+
+    setLoadingAvatar(false);
+    setDialogOpen(true);
   };
 
   // Animation Variants
@@ -91,11 +150,13 @@ function Setting() {
     >
       <Box
         sx={{
-          marginLeft: "200px",
+          marginLeft: "auto",
+          marginRight: "auto",
           marginTop: "80px",
-          width: "calc(100vw - 200px)",
+          width: "50%",
           padding: "40px",
           backgroundColor: "#f4f6f8",
+          textAlign: "center",
         }}
       >
         <Typography
@@ -109,9 +170,45 @@ function Setting() {
           Settings
         </Typography>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} direction="column" alignItems="center">
+          {/* Change Avatar */}
+          <Grid item xs={5}>
+            <Typography variant="h6" gutterBottom>
+              Change Avatar
+            </Typography>
+            <div className="flex flex-col items-center">
+              {loadingAvatar ? (
+                <div className="flex justify-center items-center h-[150px]">
+                  <CircularProgress color="primary" />
+                </div>
+              ) : (
+                <img
+                  src={user?.avatar}
+                  alt="User Avatar"
+                  className="mb-4 rounded-full shadow-lg"
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+              <Button
+                onClick={() => setOpenAvtMenu(true)}
+                variant="contained"
+                component="label"
+                className="bg-[var(--base-color)]"
+              >
+                Change Avatar
+              </Button>
+              {openAvtMenu && (
+                <AvatarChoosing onBack={() => setOpenAvtMenu(false)} />
+              )}
+            </div>
+          </Grid>
+
           {/* Change Password */}
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <Typography variant="h6" gutterBottom>
               Change Password
             </Typography>
@@ -149,7 +246,7 @@ function Setting() {
           </Grid>
 
           {/* Logout */}
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <Typography variant="h6" gutterBottom>
               Logout
             </Typography>
@@ -176,6 +273,25 @@ function Setting() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Logout Dialog */}
+        <Dialog open={logoutDialogOpen} onClose={handleCloseLogoutDialog}>
+          <DialogTitle>Confirm Logout</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to logout?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseLogoutDialog} color="primary">
+              No
+            </Button>
+            <Button onClick={confirmLogout} color="secondary">
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Loading Screen */}
+        {loading && <LoadingScreen />}
       </Box>
     </motion.div>
   );
