@@ -14,6 +14,8 @@ import History from "./pages/History";
 import BookingType from "./pages/BookingType";
 import Profile from "./pages/Profile";
 import Setting from "./pages/Setting";
+import MedicalNote from "./pages/MedicalNote";
+import DetailNote from "./pages/DetailNote";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -74,6 +76,16 @@ function AppRoutes() {
       path: "/setting",
       element: <ClientLayout />,
       children: [{ path: "", element: <Setting /> }],
+    },
+    {
+      path: "/medical-note",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <MedicalNote /> }],
+    },
+    {
+      path: "/detail-note",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <DetailNote /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

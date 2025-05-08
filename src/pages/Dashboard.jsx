@@ -108,7 +108,7 @@ function Dashboard() {
                     icon={faClockRotateLeft}
                   />
                 </div>
-                <div>History</div>
+                <div>History Purchase</div>
               </div>
             </motion.div>
           </div>
