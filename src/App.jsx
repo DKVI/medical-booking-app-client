@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import Setting from "./pages/Setting";
 import MedicalNote from "./pages/MedicalNote";
 import DetailNote from "./pages/DetailNote";
+import DoctorDetail from "./pages/DoctorDetail";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -86,6 +87,11 @@ function AppRoutes() {
       path: "/detail-note",
       element: <ClientLayout />,
       children: [{ path: "", element: <DetailNote /> }],
+    },
+    {
+      path: "/doctor-detail",
+      element: <ClientLayout />,
+      children: [{ path: "", element: <DoctorDetail /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

@@ -7,6 +7,7 @@ import facilityApi from "../api/facility.api";
 import authApi from "../api/auth.api"; // API for authentication
 import Cookies from "universal-cookie"; // For handling cookies
 import LoadingScreen from "../components/LoadingScreen"; // Import LoadingScreen component
+import rateApi from "../api/rate.api";
 
 function Doctor() {
   const [searchKeyword, setSearchKeyword] = useState(""); // Từ khóa tìm kiếm
@@ -17,7 +18,7 @@ function Doctor() {
   const [facilities, setFacilities] = useState(null); // Danh sách cơ sở y tế
   const [user, setUser] = useState(null); // Thông tin người dùng
   const navigate = useNavigate();
-
+  const [rates, setRates] = useState([]);
   // Hàm lấy token từ cookie và xác thực
   const verifyUser = async (token) => {
     try {
@@ -53,6 +54,12 @@ function Doctor() {
     setFacilities(res.facilities);
   };
 
+  const getAllRates = async () => {
+    const res = await rateApi.getAll();
+    setRates(res.rates);
+    console.log(res.rates);
+  };
+
   useEffect(() => {
     const cookies = new Cookies();
     const token = cookies.get("token"); // Lấy token từ cookie
@@ -65,6 +72,7 @@ function Doctor() {
     }
     getSpecialties();
     getFacilities();
+    getAllRates();
 
     // Hiển thị màn hình loading trong 1.5 giây
     const timer = setTimeout(() => {
@@ -87,6 +95,7 @@ function Doctor() {
     setLoading(true);
     const res = await doctorApi.search(keyword); // Gọi API tìm kiếm bác sĩ
     setDoctors(res.doctors || []); // Cập nhật danh sách bác sĩ
+    console.log(res.doctors);
     setLoading(false);
   };
 
@@ -163,45 +172,74 @@ function Doctor() {
                     const facility = facilities?.find(
                       (f) => f.id === doctor.facility_id
                     );
+                    const doctorRate =
+                      rates.find((rate) => rate.doctorId === doctor.id)
+                        ?.average || 0;
 
                     return (
                       <motion.div
-                        key={doctor.doctorId}
+                        key={doctor.id}
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 50 }}
                         transition={{ duration: 0.5 }}
-                        className="doctor-card border border-gray-300 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                        className="doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white"
                       >
-                        <img
-                          src={
-                            doctor.gender === "Male"
-                              ? "/doctor-avt-male.png"
-                              : "/doctor-avt-female.png"
-                          }
-                          alt={doctor.fullname}
-                          className="w-full h-40 object-cover rounded-lg mb-4"
-                        />
-                        <h2 className="text-xl font-bold text-center text-[var(--base-color)]">
+                        {/* Avatar */}
+                        <div
+                          className="w-full h-40 mb-4 bg-cover bg-center rounded-lg"
+                          style={{
+                            backgroundImage: `url(${
+                              doctor.gender === "Male"
+                                ? "/doctor-avt-male.png"
+                                : "/doctor-avt-female.png"
+                            })`,
+                          }}
+                        ></div>
+
+                        {/* Doctor Info */}
+                        <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
                           {doctor.fullname}
                         </h2>
-                        <p className="text-gray-600 text-center">
+                        <p className="text-gray-600 text-center mb-1">
                           {specialty?.name || "N/A"}
                         </p>
-                        <p className="text-gray-600 text-center">
+                        <p className="text-gray-600 text-center mb-4">
                           {facility?.name || "N/A"}
                         </p>
-                        <button
-                          onClick={() => handleBooking(doctor.id)}
-                          className="mt-4 text-white px-4 py-2 rounded-lg w-full transition-transform duration-300 transform hover:scale-105"
-                          style={{
-                            backgroundColor: "var(--base-color)",
-                            border: "none",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Book Appointment
-                        </button>
+
+                        {/* Rating */}
+                        <div className="flex items-center justify-center mb-4">
+                          <span className="text-yellow-500 text-lg mr-2">
+                            ★
+                          </span>
+                          <span className="text-gray-700 font-medium">
+                            {doctorRate}
+                          </span>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() => handleBooking(doctor.id)}
+                            className="flex-1 text-white px-4 py-2 rounded-lg transition-transform duration-300 transform hover:scale-105"
+                            style={{
+                              backgroundColor: "var(--base-color)",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Book Appointment
+                          </button>
+                          <button
+                            onClick={() =>
+                              navigate(`/doctor-detail?id=${doctor.id}`)
+                            }
+                            className="flex-1 text-[var(--base-color)] border border-[var(--base-color)] px-4 py-2 rounded-lg transition-transform duration-300 transform hover:scale-105 hover:bg-[var(--base-color)] hover:text-white"
+                          >
+                            Detail
+                          </button>
+                        </div>
                       </motion.div>
                     );
                   })}
