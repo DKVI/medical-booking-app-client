@@ -309,7 +309,16 @@ function DetailNote() {
                   >
                     Name:
                   </label>
-                  <p>{doctor?.fullname}</p>
+                  <p
+                    onClick={() => navigate(`/doctor-detail?id=${doctor?.id}`)} // Điều hướng đến trang chi tiết bác sĩ
+                    style={{
+                      color: "var(--base-color)",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {doctor?.fullname}
+                  </p>
                 </div>
                 <div
                   style={{

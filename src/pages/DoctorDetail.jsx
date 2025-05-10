@@ -7,6 +7,27 @@ import rateApi from "../api/rate.api";
 import Cookies from "universal-cookie";
 import LoadingScreen from "../components/LoadingScreen";
 import ultis from "../ultis";
+import { Button } from "@mui/material";
+import authApi from "../api/auth.api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHospital,
+  faLocationDot,
+  faPhone,
+  faStethoscope,
+} from "@fortawesome/free-solid-svg-icons";
+import { motion } from "framer-motion";
+
+// Các biến thể hiệu ứng
+const containerVariants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.2 } },
+};
 
 function DoctorDetail() {
   const location = useLocation();
@@ -14,10 +35,41 @@ function DoctorDetail() {
   const id = queryParams.get("id");
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
-  const [specialty, setSpecialty] = useState(null);
-  const [facility, setFacility] = useState(null);
+  const [specialties, setSpecialties] = useState(null);
+  const [facilities, setFacilites] = useState(null);
   const [rates, setRates] = useState([]); // Danh sách đánh giá
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const verifyUser = async (token) => {
+    try {
+      const res = await authApi.verify(token);
+      if (!res.success) {
+        navigate("/account"); // Điều hướng về trang đăng nhập nếu token không hợp lệ
+      }
+    } catch (err) {
+      console.error("Token verification failed:", err);
+      navigate("/account"); // Điều hướng về trang đăng nhập nếu có lỗi
+    }
+  };
+
+  // Hàm lấy thông tin người dùng
+  const getUser = async (token) => {
+    try {
+      const res = await authApi.getByToken(token);
+      setUser(res.user); // Lưu thông tin người dùng vào state
+      console.log(res.user);
+    } catch (err) {
+      console.error("Failed to fetch user information:", err);
+      navigate("/account"); // Điều hướng về trang đăng nhập nếu có lỗi
+    }
+  };
+  const handleBooking = (doctorId) => {
+    localStorage.setItem("doctorId", doctor.id);
+    localStorage.setItem("facilityId", facilities?.id || "");
+    localStorage.setItem("specialtyId", specialties?.id || "");
+    localStorage.setItem("userId", user?.id || "");
+
+    navigate(`/booking?mode=doctor`);
+  };
 
   // Hàm lấy thông tin bác sĩ theo ID
   const getDoctorById = async (doctorId) => {
@@ -33,7 +85,7 @@ function DoctorDetail() {
   const getSpecialtyById = async (specialtyId) => {
     try {
       const res = await specialtyApi.getById(specialtyId);
-      setSpecialty(res.specialty);
+      setSpecialties(res.specialty);
     } catch (err) {
       console.error("Failed to fetch specialty details:", err);
     }
@@ -43,7 +95,7 @@ function DoctorDetail() {
   const getFacilityById = async (facilityId) => {
     try {
       const res = await facilityApi.getById(facilityId);
-      setFacility(res.facility);
+      setFacilites(res.facility);
     } catch (err) {
       console.error("Failed to fetch facility details:", err);
     }
@@ -54,6 +106,7 @@ function DoctorDetail() {
     try {
       const res = await rateApi.getByDoctorId(doctorId);
       setRates(res.rates);
+      console.log(res.rates);
     } catch (err) {
       console.error("Failed to fetch rates:", err);
     }
@@ -78,39 +131,56 @@ function DoctorDetail() {
     return stars;
   };
 
+  const calculateAverageRating = (rates) => {
+    if (!rates || rates.length === 0) return 0; // Nếu không có đánh giá, trả về 0
+    const totalStars = rates.reduce((sum, rate) => sum + rate.star_no, 0); // Tính tổng số sao
+    return totalStars / rates.length; // Chia tổng số sao cho số lượng đánh giá
+  };
+
   useEffect(() => {
     const cookies = new Cookies();
-    const token = cookies.get("token");
+    const token = cookies.get("token"); // Lấy token từ cookie
+    console.log(token);
     if (!token) {
       navigate("/account");
     } else {
-      getDoctorById(id).then(() => {
-        if (doctor) {
-          getSpecialtyById(doctor.specialty_id);
-          getFacilityById(doctor.facility_id);
-          getRatesByDoctorId(doctor.id);
-        }
-      });
+      verifyUser(token);
+      getUser(token);
+      getDoctorById(id);
     }
-  }, [id, navigate, doctor]);
+  }, []);
+
+  useEffect(() => {
+    if (doctor) {
+      getSpecialtyById(doctor.specialty_id);
+      getFacilityById(doctor.facility_id);
+      getRatesByDoctorId(id);
+    }
+  }, [doctor]);
 
   return (
-    <div className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8]">
+    <motion.div
+      className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8]"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {doctor ? (
         <div className="flex gap-8">
           {/* Phần chi tiết bác sĩ (7 phần) */}
-          <div
+          <motion.div
             className="flex-1 bg-white p-8 rounded-lg"
             style={{ boxShadow: "2px 2px 10px 4px #cccc" }}
+            variants={cardVariants}
           >
-            <h1 className="text-4xl font-bold mb-6 text-center text-[var(--base-color)]">
+            <h3 className="text-4xl font-bold mb-6 text-center text-[var(--base-color)]">
               {doctor.fullname}
-            </h1>
+            </h3>
             <div className="flex flex-col md:flex-row gap-8">
               {/* Avatar */}
-              <div className="flex justify-center md:justify-start">
+              <div className="flex justify-center md:justify-start flex-col items-center">
                 <div
-                  className="w-48 h-48 bg-cover bg-center rounded-full"
+                  className="w-48 h-48 bg-cover bg-center rounded-full pb-[100%]"
                   style={{
                     boxShadow: "2px 2px 10px 4px #cccc",
                     backgroundImage: `url(${
@@ -120,58 +190,104 @@ function DoctorDetail() {
                     })`,
                   }}
                 ></div>
+
+                {/* Dòng hiển thị rating */}
+                <div className="flex items-center mt-4">
+                  <div className="flex text-yellow-500 text-lg">
+                    {renderStars(calculateAverageRating(rates))}
+                  </div>
+                  <p className="text-gray-700 text-sm font-medium ml-2">
+                    {calculateAverageRating(rates).toFixed(1)} / 5
+                  </p>
+                </div>
               </div>
 
               {/* Doctor Info */}
               <div className="flex-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <p className="text-lg text-gray-700">
-                    <strong>Gender:</strong> {doctor.gender}
-                  </p>
-                  <p className="text-lg text-gray-700">
-                    <strong>Phone Number:</strong> {doctor.phone_no}
-                  </p>
-                  <p className="text-lg text-gray-700">
-                    <strong>Specialty:</strong> {specialty?.name || "N/A"}
-                  </p>
-                  <p className="text-lg text-gray-700">
-                    <strong>Facility:</strong> {facility?.name || "N/A"}
-                  </p>
-                  <p className="text-lg text-gray-700">
-                    <strong>Status:</strong> {doctor.status}
-                  </p>
+                <div className="flex flex-col gap-4 text-left">
+                  <div>
+                    <p className="text-sm text-[var(--base-color)] font-bold">
+                      <FontAwesomeIcon icon={faStethoscope} className="px-1" />{" "}
+                      Specialty:
+                    </p>
+                    <p className="text-[16px] pl-8">
+                      {specialties?.name || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[var(--base-color)] font-bold">
+                      <FontAwesomeIcon icon={faHospital} className="px-1" />
+                      Facility:
+                    </p>
+                    <p className="text-[16px] pl-8">
+                      {facilities?.name || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[var(--base-color)] font-bold">
+                      <FontAwesomeIcon icon={faLocationDot} className="px-1" />
+                      Address:
+                    </p>
+                    <p className="text-[16px] pl-8">
+                      {facilities?.address || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[var(--base-color)] font-bold">
+                      <FontAwesomeIcon icon={faPhone} className="px-1" />
+                      Contact:
+                    </p>
+                    <p className="text-[16px] pl-8">
+                      {"(+84) " + doctor.phone_no}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Buttons */}
             <div className="flex gap-4 mt-8 justify-center">
-              <button
-                onClick={() => navigate(`/booking?doctorId=${doctor.id}`)}
-                className="text-white px-6 py-3 rounded-lg transition-transform duration-300 transform hover:scale-105"
-                style={{
-                  backgroundColor: "var(--base-color)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                Book Appointment
-              </button>
-              <button
-                onClick={() => navigate(-1)}
-                className="text-[var(--base-color)] border border-[var(--base-color)] px-6 py-3 rounded-lg transition-transform duration-300 transform hover:scale-105 hover:bg-[var(--base-color)] hover:text-white"
-              >
-                Back
-              </button>
+              <div className="flex gap-4">
+                {/* Book Appointment Button */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleBooking(doctor.id)}
+                  className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
+                  style={{
+                    backgroundColor: "var(--base-color)", // Sử dụng màu base-color
+                    color: "white",
+                    fontSize: "16px",
+                  }}
+                >
+                  Book
+                </Button>
+
+                {/* View Details Button */}
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => navigate(-1)}
+                  className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
+                  style={{
+                    borderColor: "var(--base-color)", // Viền màu base-color
+                    color: "var(--base-color)", // Chữ màu base-color
+                    fontSize: "16px",
+                  }}
+                >
+                  Back
+                </Button>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Phần đánh giá (3 phần) */}
-          <div
+          <motion.div
             className="w-1/3 bg-white p-6 rounded-lg"
             style={{
               boxShadow: "2px 2px 10px 4px #cccc",
             }}
+            variants={cardVariants}
           >
             <h2 className="text-2xl font-bold mb-4 text-center text-[var(--base-color)]">
               Ratings & Reviews
@@ -186,14 +302,26 @@ function DoctorDetail() {
                       boxShadow: "2px 2px 10px 4px #cccc",
                     }}
                   >
-                    <h3 className="text-[var(--base-color)] font-semibold text-left">
-                      {rate.fullname}
-                    </h3>
-                    <div className="flex">{renderStars(rate.star_no)}</div>
-                    <div className="flex text-[12px]">
+                    <div className="flex items-center gap-4">
+                      {/* Avatar */}
+                      <div
+                        className="w-12 h-12 bg-cover bg-center rounded-full"
+                        style={{
+                          backgroundImage: `url(${
+                            rate.avatar || "/default-avatar.png"
+                          })`,
+                        }}
+                      ></div>
+                      {/* User Name */}
+                      <h3 className="text-[var(--base-color)] font-semibold text-left">
+                        {rate.fullname}
+                      </h3>
+                    </div>
+                    <div className="flex mt-2">{renderStars(rate.star_no)}</div>
+                    <div className="flex text-[12px] text-gray-500 mt-1">
                       {ultis.formatDate(rate.date)}
                     </div>
-                    <p className="text-sm text-gray-800 text-left mt-1 p-3">
+                    <p className="text-sm text-gray-800 text-left mt-2">
                       {rate.comments}
                     </p>
                   </div>
@@ -202,12 +330,12 @@ function DoctorDetail() {
             ) : (
               <p className="text-center text-gray-500">No reviews available.</p>
             )}
-          </div>
+          </motion.div>
         </div>
       ) : (
         <p className="text-center text-gray-500">Doctor not found.</p>
       )}
-    </div>
+    </motion.div>
   );
 }
 

@@ -8,6 +8,7 @@ import authApi from "../api/auth.api"; // API for authentication
 import Cookies from "universal-cookie"; // For handling cookies
 import LoadingScreen from "../components/LoadingScreen"; // Import LoadingScreen component
 import rateApi from "../api/rate.api";
+import { Button } from "@mui/material";
 
 function Doctor() {
   const [searchKeyword, setSearchKeyword] = useState(""); // Từ khóa tìm kiếm
@@ -77,7 +78,7 @@ function Doctor() {
     // Hiển thị màn hình loading trong 1.5 giây
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500);
+    }, 1000);
 
     return () => clearTimeout(timer); // Dọn dẹp timer khi component unmount
   }, []);
@@ -163,7 +164,7 @@ function Doctor() {
                 Loading doctors...
               </p>
             ) : doctors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <AnimatePresence>
                   {doctors.map((doctor) => {
                     const specialty = specialties?.find(
@@ -183,11 +184,11 @@ function Doctor() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 50 }}
                         transition={{ duration: 0.5 }}
-                        className="doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white"
+                        className="doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white w-[250px] mx-auto"
                       >
                         {/* Avatar */}
                         <div
-                          className="w-full h-40 mb-4 bg-cover bg-center rounded-lg"
+                          className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
                           style={{
                             backgroundImage: `url(${
                               doctor.gender === "Male"
@@ -201,10 +202,10 @@ function Doctor() {
                         <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
                           {doctor.fullname}
                         </h2>
-                        <p className="text-gray-600 text-center mb-1">
+                        <p className="text-gray-600 text-[12px] text-center mb-1">
                           {specialty?.name || "N/A"}
                         </p>
-                        <p className="text-gray-600 text-center mb-4">
+                        <p className="text-gray-600 text-[12px] text-center mb-4">
                           {facility?.name || "N/A"}
                         </p>
 
@@ -220,25 +221,37 @@ function Doctor() {
 
                         {/* Buttons */}
                         <div className="flex gap-4">
-                          <button
+                          {/* Book Appointment Button */}
+                          <Button
+                            variant="contained"
+                            color="primary"
                             onClick={() => handleBooking(doctor.id)}
-                            className="flex-1 text-white px-4 py-2 rounded-lg transition-transform duration-300 transform hover:scale-105"
+                            className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
                             style={{
-                              backgroundColor: "var(--base-color)",
-                              border: "none",
-                              cursor: "pointer",
+                              backgroundColor: "var(--base-color)", // Sử dụng màu base-color
+                              color: "white",
+                              fontSize: "12px",
                             }}
                           >
-                            Book Appointment
-                          </button>
-                          <button
+                            Book
+                          </Button>
+
+                          {/* View Details Button */}
+                          <Button
+                            variant="outlined"
+                            color="primary"
                             onClick={() =>
                               navigate(`/doctor-detail?id=${doctor.id}`)
                             }
-                            className="flex-1 text-[var(--base-color)] border border-[var(--base-color)] px-4 py-2 rounded-lg transition-transform duration-300 transform hover:scale-105 hover:bg-[var(--base-color)] hover:text-white"
+                            className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
+                            style={{
+                              borderColor: "var(--base-color)", // Viền màu base-color
+                              color: "var(--base-color)", // Chữ màu base-color
+                              fontSize: "12px",
+                            }}
                           >
-                            Detail
-                          </button>
+                            Details
+                          </Button>
                         </div>
                       </motion.div>
                     );
@@ -253,7 +266,6 @@ function Doctor() {
           </div>
         </div>
       </motion.div>
-      {isLoading && <LoadingScreen />}
     </>
   );
 }
