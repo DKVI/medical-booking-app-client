@@ -482,301 +482,309 @@ function DetailNote() {
         transition={{ duration: 0.5, delay: 0.5 }} // Hiệu ứng trượt với độ trễ
         variants={slideUpVariants}
       >
-        {detailCheckout?.status === "Done" ? (
-          // Hiển thị Medical Notes
-          <div>
-            <h4
-              style={{
-                fontSize: "20px",
-                color: "var(--base-color)",
-                marginBottom: "20px",
-                textAlign: "center",
-                paddingBottom: "20px",
-                borderBottom: "1px solid var(--base-color)",
-                fontWeight: "bold",
-              }}
-            >
-              Prescription
-            </h4>
+        {(() => {
+          const currentDate = new Date();
+          const appointmentDate = new Date(detailCheckout?.date);
+          const appointmentTime = workschedule?.times
+            ? workschedule.times.split(":")
+            : null;
 
-            {/* Notes */}
-            <div
-              style={{
-                marginBottom: "20px",
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "#555",
-                paddingBottom: "20px",
-                borderBottom: "1px solid var(--base-color)",
-              }}
-            >
-              <h5
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  color: "var(--base-color)",
-                  marginBottom: "10px",
-                  textAlign: "left",
-                }}
-              >
-                Notes:
-              </h5>
-              <p
-                style={{
-                  padding: "0 20px 0 20px",
-                  color: "#555",
-                  marginTop: "10px",
-                  textAlign: "left",
-                }}
-              >
-                {prescription?.notes || "No notes available."}
-              </p>
-            </div>
+          if (appointmentTime) {
+            appointmentDate.setHours(parseInt(appointmentTime[0], 10));
+            appointmentDate.setMinutes(parseInt(appointmentTime[1], 10));
+          }
 
-            {/* Medicines */}
-            <div>
-              <h5
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  color: "var(--base-color)",
-                  marginBottom: "10px",
-                  textAlign: "left",
-                }}
-              >
-                Medicines:
-              </h5>
-              {prescription?.medicines?.length > 0 ? (
-                <div className="px-[20px]">
-                  {prescription.medicines.map((medicine, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        marginBottom: "10px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        color: "#555",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <span>{medicine.name}</span>
-                        <span style={{ color: "var(--base-color)" }}>
-                          x{medicine.quantity}
-                        </span>
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "normal",
-                          color: "#888",
-                          marginTop: "5px",
-                          textAlign: "left",
-                          marginLeft: "20px",
-                        }}
-                      >
-                        {medicine.dosage || "No dosage information available"}
-                      </div>
-                    </div>
-                  ))}
+          if (
+            detailCheckout?.status === "Process" &&
+            appointmentDate <= currentDate
+          ) {
+            // Trạng thái "Expired"
+            return (
+              <div>
+                <h4
+                  style={{
+                    fontSize: "20px",
+                    color: "var(--base-color)",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    paddingBottom: "20px",
+                    borderBottom: "1px solid var(--base-color)",
+                  }}
+                >
+                  Appointment Status
+                </h4>
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "10px",
+                    backgroundColor: "#f8d7da",
+                    borderRadius: "8px",
+                    border: "1px solid #f5c6cb",
+                  }}
+                >
+                  <h5
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      color: "#721c24",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Expired
+                  </h5>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#721c24",
+                    }}
+                  >
+                    This appointment has expired and cannot be refunded.
+                  </p>
                 </div>
-              ) : (
-                <p style={{ color: "red", fontWeight: "bold" }}>
-                  No medicines prescribed.
-                </p>
-              )}
-            </div>
-          </div>
-        ) : (
-          // Hiển thị Payment Details
-          <div>
-            <h4
-              style={{
-                fontSize: "20px",
-                color: "var(--base-color)",
-                marginBottom: "20px",
-                textAlign: "center",
-                paddingBottom: "20px",
-                borderBottom: "1px solid var(--base-color)",
-              }}
-            >
-              Payment Details
-            </h4>
-
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "20px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  borderBottom: "1px solid var(--base-color)",
-                  color: "#555",
-                  paddingBottom: "20px",
-                }}
-              >
-                <span className="font-normal">Appointment Charge:</span>
-                <span style={{ color: "var(--base-color)" }}> $0.5</span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "20px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  color: "#555",
-                }}
-              >
-                <span>Total Price:</span>
-                <span style={{ color: "var(--base-color)" }}> $0.5</span>
-              </div>
-            </div>
-
-            {/* Payment Status Block */}
-            <div
-              style={{
-                marginTop: "20px",
-                padding: "10px",
-                backgroundColor: "#f9f9f9",
-                borderRadius: "8px",
-                border: "1px solid var(--base-color)",
-              }}
-            >
-              <h5
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  color: "var(--base-color)",
-                  marginBottom: "10px",
-                }}
-              >
-                Payment Status
-              </h5>
-              {new Date(detailCheckout?.date).setHours(0, 0, 0, 0) <
-                new Date().setHours(0, 0, 0, 0) && !purchase ? (
-                <p
+            );
+          } else if (detailCheckout?.status === "Done") {
+            // Trạng thái "Done" - Hiển thị đơn thuốc và đánh giá
+            return (
+              <div>
+                <h4
                   style={{
-                    fontSize: "16px",
+                    fontSize: "20px",
+                    color: "var(--base-color)",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    paddingBottom: "20px",
+                    borderBottom: "1px solid var(--base-color)",
                     fontWeight: "bold",
-                    color: "red",
                   }}
                 >
-                  Expired
-                </p>
-              ) : (
-                <p
+                  Prescription
+                </h4>
+                {/* Notes */}
+                <div
                   style={{
+                    marginBottom: "20px",
                     fontSize: "16px",
                     fontWeight: "bold",
-                    color: purchase ? "green" : "red",
+                    color: "#555",
+                    paddingBottom: "20px",
+                    borderBottom: "1px solid var(--base-color)",
                   }}
                 >
-                  {purchase ? "Payment Successful" : "Not Paid"}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-        {/* Doctor Review */}
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "20px",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "12px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
-            border: "1px solid var(--base-color)",
-          }}
-        >
-          <h4
-            style={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              color: "var(--base-color)",
-              marginBottom: "20px",
-              textAlign: "center",
-            }}
-          >
-            Doctor Review
-          </h4>
-          <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "var(--base-color)",
-                display: "block",
-                marginBottom: "10px",
-              }}
-            >
-              Rating:
-            </label>
-            <div
-              style={{ display: "flex", gap: "10px", justifyContent: "center" }}
-            >
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FontAwesomeIcon
-                  key={star}
-                  icon={faStar}
+                  <h5
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      color: "var(--base-color)",
+                      marginBottom: "10px",
+                      textAlign: "left",
+                    }}
+                  >
+                    Notes:
+                  </h5>
+                  <p
+                    style={{
+                      padding: "0 20px 0 20px",
+                      color: "#555",
+                      marginTop: "10px",
+                      textAlign: "left",
+                    }}
+                  >
+                    {prescription?.notes || "No notes available."}
+                  </p>
+                </div>
+                {/* Medicines */}
+                <div>
+                  <h5
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      color: "var(--base-color)",
+                      marginBottom: "10px",
+                      textAlign: "left",
+                    }}
+                  >
+                    Medicines:
+                  </h5>
+                  {prescription?.medicines?.length > 0 ? (
+                    <div className="px-[20px]">
+                      {prescription.medicines.map((medicine, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            marginBottom: "10px",
+                            fontSize: "16px",
+                            fontWeight: "bold",
+                            color: "#555",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <span>{medicine.name}</span>
+                            <span style={{ color: "var(--base-color)" }}>
+                              x{medicine.quantity}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              fontSize: "14px",
+                              fontWeight: "normal",
+                              color: "#888",
+                              marginTop: "5px",
+                              textAlign: "left",
+                              marginLeft: "20px",
+                            }}
+                          >
+                            {medicine.dosage ||
+                              "No dosage information available"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ color: "red", fontWeight: "bold" }}>
+                      No medicines prescribed.
+                    </p>
+                  )}
+                </div>
+                {/* Rate Section */}
+                <div
                   style={{
-                    fontSize: "24px",
-                    cursor: "pointer",
-                    color: star <= rating ? "gold" : "gray", // Ngôi sao được chọn có màu vàng, còn lại màu xám
+                    marginTop: "20px",
+                    padding: "10px",
+                    backgroundColor: "#f9f9f9",
+                    borderRadius: "8px",
+                    border: "1px solid var(--base-color)",
                   }}
-                  onClick={() => setRating(star)} // Cập nhật trạng thái khi chọn ngôi sao
-                />
-              ))}
-            </div>
-          </div>
-          <div style={{ marginBottom: "20px" }}>
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                color: "var(--base-color)",
-                display: "block",
-                marginBottom: "10px",
-              }}
-            >
-              Notes:
-            </label>
-            <textarea
-              placeholder="Write your feedback here..."
-              rows="4"
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid var(--base-color)",
-              }}
-            ></textarea>
-          </div>
-          <button
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "var(--base-color)",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: "8px",
-              border: "none",
-              cursor: "pointer",
-            }}
-            onClick={() =>
-              alert(`Thank you for your feedback! Rating: ${rating}`)
-            }
-          >
-            Submit Review
-          </button>
-        </div>
+                >
+                  <h5
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      color: "var(--base-color)",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Rate Your Appointment
+                  </h5>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <FontAwesomeIcon
+                        key={star}
+                        icon={faStar}
+                        style={{
+                          fontSize: "24px",
+                          cursor: "pointer",
+                          color: star <= rating ? "gold" : "gray", // Ngôi sao được chọn có màu vàng, còn lại màu xám
+                        }}
+                        onClick={() => setRating(star)} // Cập nhật trạng thái khi chọn ngôi sao
+                      />
+                    ))}
+                  </div>
+                  <textarea
+                    placeholder="Write your feedback here..."
+                    rows="4"
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      marginTop: "10px",
+                      borderRadius: "8px",
+                      border: "1px solid var(--base-color)",
+                    }}
+                  ></textarea>
+                  <button
+                    style={{
+                      marginTop: "10px",
+                      width: "100%",
+                      padding: "10px",
+                      backgroundColor: "var(--base-color)",
+                      color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "8px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      alert(`Thank you for your feedback! Rating: ${rating}`)
+                    }
+                  >
+                    Submit Review
+                  </button>
+                </div>
+              </div>
+            );
+          } else {
+            // Trạng thái "In Process"
+            return (
+              <div>
+                <h4
+                  style={{
+                    fontSize: "20px",
+                    color: "var(--base-color)",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    paddingBottom: "20px",
+                    borderBottom: "1px solid var(--base-color)",
+                  }}
+                >
+                  Appointment Detail
+                </h4>
+                <div
+                  style={{
+                    marginTop: "20px",
+                    padding: "10px",
+                    backgroundColor: "#fff3cd",
+                    borderRadius: "8px",
+                    border: "1px solid #ffeeba",
+                  }}
+                >
+                  <h5
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                      color: "#856404",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    Reminder
+                  </h5>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#856404",
+                    }}
+                  >
+                    Your appointment is scheduled for{" "}
+                    <strong>
+                      {new Date(detailCheckout?.date).toLocaleDateString(
+                        "vi-VN",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}
+                    </strong>{" "}
+                    at <strong>{workschedule?.times || "N/A"}</strong>. Please
+                    complete your appointment to receive your prescription.
+                  </p>
+                </div>
+              </div>
+            );
+          }
+        })()}
       </motion.div>
       <Snackbar
         open={openSnackbar}

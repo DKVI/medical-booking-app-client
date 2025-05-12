@@ -122,127 +122,127 @@ function MedicalNote() {
 
       <div className="w-full flex-col flex gap-[20px]">
         {schedulingDetail && schedulingDetail.length > 0 && purchases ? (
-          schedulingDetail.map((detail, index) => {
-            const purchase = purchases?.find(
-              (e) => e.scheduling_details_id === detail.id
-            );
-            return (
-              <motion.div
-                key={index}
-                className="w-full py-5 px-10 flex shadow-xl justify-between rounded-[20px] cursor-pointer"
-                style={{ alignItems: "center" }}
-                initial={{ opacity: 0, y: 50 }} // Bắt đầu mờ và trượt xuống
-                animate={{ opacity: 1, y: 0 }} // Hiển thị khi vào viewport
-                transition={{ duration: 0.5, delay: index * 0.1 }} // Thời gian và độ trễ
-              >
-                <div className="card-icon flex justify-start flex-none">
-                  <FontAwesomeIcon
-                    className="text-[var(--base-color)] text-[40px]"
-                    icon={faCalendar}
-                  />
-                </div>
-                <div
-                  className="description w-4/6 justify-items-start"
-                  onClick={() => handleDetail(detail.id)}
+          schedulingDetail
+            .filter((detail) => {
+              const purchase = purchases?.find(
+                (e) => e.scheduling_details_id === detail.id
+              );
+              return purchase?.status === "Purchased"; // Chỉ render nếu trạng thái là "Purchased"
+            })
+            .sort((a, b) => {
+              const purchaseA = purchases?.find(
+                (e) => e.scheduling_details_id === a.id
+              );
+              const purchaseB = purchases?.find(
+                (e) => e.scheduling_details_id === b.id
+              );
+              return (purchaseB?.id || 0) - (purchaseA?.id || 0); // Sắp xếp giảm dần theo id purchase
+            })
+            .map((detail, index) => {
+              const purchase = purchases?.find(
+                (e) => e.scheduling_details_id === detail.id
+              );
+              return (
+                <motion.div
+                  key={index}
+                  className="w-full py-5 px-10 flex shadow-xl justify-between rounded-[20px] cursor-pointer"
+                  style={{ alignItems: "center" }}
+                  initial={{ opacity: 0, y: 50 }} // Bắt đầu mờ và trượt xuống
+                  animate={{ opacity: 1, y: 0 }} // Hiển thị khi vào viewport
+                  transition={{ duration: 0.5, delay: index * 0.1 }} // Thời gian và độ trễ
                 >
-                  <h2 className="text-[var(--base-color)] font-bold text-[24px]">
-                    Appointment
-                  </h2>
-                  <p className="text-gray-700 text-sm">
-                    Facility: {detail.facility_name || "N/A"}
-                  </p>
-                  <p className="text-gray-700 text-sm">
-                    Specialty: {detail.specialty_name || "N/A"}
-                  </p>
-                  <p className="text-gray-700 text-sm">
-                    Doctor: {detail.doctor_name || "N/A"}
-                  </p>
-                </div>
-                <div
-                  className="status-times w-1/6 flex-col flex justify-end gap-[10px]"
-                  style={{ alignContent: "flex-end", flexWrap: "wrap" }}
-                >
-                  {detail.status === "Process" ? (
-                    <div
-                      className="bg-red-500 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
-                      style={{ fontWeight: "bold" }}
-                    >
-                      In Process
-                    </div>
-                  ) : (
-                    <div
-                      className="bg-green-500 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
-                      style={{ fontWeight: "bold" }}
-                    >
-                      Completed
-                    </div>
-                  )}
-                  <div className="date text-[var(--base-color)] font-bold text-sm">
-                    <span
-                      style={{
-                        fontSize: "16px",
-                        color: "var(--base-color)", // Màu base-color
-                      }}
-                    >
-                      {new Date(detail.date).toLocaleDateString("vi-VN", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </span>
+                  <div className="card-icon flex justify-start flex-none">
+                    <FontAwesomeIcon
+                      className="text-[var(--base-color)] text-[40px]"
+                      icon={faCalendar}
+                    />
                   </div>
-                  <div className="times text-[var(--base-color)] font-bold text-sm">
-                    <span
-                      style={{
-                        fontSize: "16px",
-                        color: "var(--base-color)", // Màu base-color
-                      }}
-                    >
-                      {detail.times || "N/A"}
-                    </span>
+                  <div
+                    className="description w-4/6 justify-items-start"
+                    onClick={() => handleDetail(detail.id)}
+                  >
+                    <h2 className="text-[var(--base-color)] font-bold text-[24px]">
+                      Appointment
+                    </h2>
+                    <p className="text-gray-700 text-sm">
+                      Facility: {detail.facility_name || "N/A"}
+                    </p>
+                    <p className="text-gray-700 text-sm">
+                      Specialty: {detail.specialty_name || "N/A"}
+                    </p>
+                    <p className="text-gray-700 text-sm">
+                      Doctor: {detail.doctor_name || "N/A"}
+                    </p>
                   </div>
-                </div>
-                {/* Dấu 3 chấm và menu thả xuống */}
-                <IconButton
-                  aria-label="more"
-                  aria-controls={`menu-${index}`}
-                  aria-haspopup="true"
-                  onClick={(event) => handleMenuClick(event, index)} // Truyền index
-                >
-                  <MoreVertIcon style={{ color: "var(--base-color)" }} />
-                </IconButton>
-                <Menu
-                  id={`menu-${index}`}
-                  anchorEl={anchorEls[index]} // Sử dụng anchorEl riêng cho từng thẻ
-                  open={Boolean(anchorEls[index])} // Kiểm tra xem menu có mở không
-                  onClose={() => handleMenuClose(index)} // Đóng menu cho thẻ tương ứng
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}
-                >
-                  <MenuItem onClick={() => handleDetail(detail.id)}>
-                    Detail
-                  </MenuItem>
-                  {/* Chỉ hiển thị "Cancel" nếu trạng thái là Pending và không phải Expired */}
-                  {purchase?.status === "Pending" &&
-                    new Date(detail.date).setHours(0, 0, 0, 0) >
-                      new Date().setHours(0, 0, 0, 0) && (
-                      <MenuItem onClick={() => handleCancel(detail.id)}>
-                        Cancel
-                      </MenuItem>
+                  <div
+                    className="status-times w-1/6 flex-col flex justify-end gap-[10px]"
+                    style={{ alignContent: "flex-end", flexWrap: "wrap" }}
+                  >
+                    {detail.status === "Process" ? (
+                      <div
+                        className="bg-red-500 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        In Process
+                      </div>
+                    ) : (
+                      <div
+                        className="bg-green-500 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        Completed
+                      </div>
                     )}
-                  {/* Hiển thị "Delete" nếu ngày đã Expired và trạng thái không phải Purchased */}
-                  {purchase?.status !== "Purchased" &&
-                    new Date(detail.date).setHours(0, 0, 0, 0) <=
-                      new Date().setHours(0, 0, 0, 0) && (
-                      <MenuItem onClick={() => handleDelete(detail.id)}>
-                        Delete
-                      </MenuItem>
-                    )}
-                </Menu>
-              </motion.div>
-            );
-          })
+                    <div className="date text-[var(--base-color)] font-bold text-sm">
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          color: "var(--base-color)", // Màu base-color
+                        }}
+                      >
+                        {new Date(detail.date).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <div className="times text-[var(--base-color)] font-bold text-sm">
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          color: "var(--base-color)", // Màu base-color
+                        }}
+                      >
+                        {detail.times || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Dấu 3 chấm và menu thả xuống */}
+                  <IconButton
+                    aria-label="more"
+                    aria-controls={`menu-${index}`}
+                    aria-haspopup="true"
+                    onClick={(event) => handleMenuClick(event, index)} // Truyền index
+                  >
+                    <MoreVertIcon style={{ color: "var(--base-color)" }} />
+                  </IconButton>
+                  <Menu
+                    id={`menu-${index}`}
+                    anchorEl={anchorEls[index]} // Sử dụng anchorEl riêng cho từng thẻ
+                    open={Boolean(anchorEls[index])} // Kiểm tra xem menu có mở không
+                    onClose={() => handleMenuClose(index)} // Đóng menu cho thẻ tương ứng
+                    MenuListProps={{
+                      "aria-labelledby": "basic-button",
+                    }}
+                  >
+                    <MenuItem onClick={() => handleDetail(detail.id)}>
+                      Detail
+                    </MenuItem>
+                  </Menu>
+                </motion.div>
+              );
+            })
         ) : (
           <p className="text-gray-500 text-center mt-4">
             No scheduling details available.
