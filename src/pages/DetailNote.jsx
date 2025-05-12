@@ -18,10 +18,21 @@ import doctorApi from "../api/doctor.api";
 import LoadingScreen from "../components/LoadingScreen";
 import { motion } from "framer-motion"; // Import Framer Motion
 import PayPal from "../components/PayPal";
-import { Snackbar, Alert, Slide } from "@mui/material";
+import {
+  Snackbar,
+  Alert,
+  Slide,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 import purchaseApi from "../api/purchase.api";
 import emailApi from "../api/mail.api";
 import prescriptionApi from "../api/prescription.api";
+import rateApi from "../api/rate.api";
 
 // Hiệu ứng trượt cho Snackbar
 function SlideTransition(props) {
@@ -40,12 +51,14 @@ function DetailNote() {
   const [workschedule, setWorkSchedule] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [purchase, setPurchase] = useState(false);
+  const [feedback, setFeedback] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [prescription, setPrescription] = useState({
     notes: "",
     medicines: [],
   });
   const [rating, setRating] = useState(0); // Thêm state cho rating
+  const [openDialog, setOpenDialog] = useState(false); // Thêm state cho Dialog
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
     if (!res.success) {
@@ -168,8 +181,20 @@ function DetailNote() {
     getUser(token);
     getDetailCheckoutById(id);
     getPrescriptionBySchedulingId(id);
+    getRatingById(id);
   }, []);
 
+  const getRatingById = async (id) => {
+    try {
+      const res = await rateApi.getBySchedulingId(id);
+
+      setRating(res.rate.star_no);
+      setFeedback(res.rate.comments);
+      console.log(res.rate);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const getWorkScheduleById = async (id) => {
     try {
       const res = await workscheduleApi.getById(id);
@@ -181,7 +206,16 @@ function DetailNote() {
     hidden: { opacity: 0, y: 50 }, // Bắt đầu ở dưới và mờ
     visible: { opacity: 1, y: 0 }, // Hiển thị và trượt lên
   };
-
+  const handelRate = async (body) => {
+    try {
+      const result = await rateApi.create(body);
+      if (result.success) {
+        setOpenDialog(true); // Hiển thị Dialog
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8] flex gap-[20px]">
       <motion.div
@@ -657,10 +691,11 @@ function DetailNote() {
                 <div
                   style={{
                     marginTop: "20px",
-                    padding: "10px",
-                    backgroundColor: "#f9f9f9",
+                    padding: "20px",
+                    backgroundColor: "#fff",
                     borderRadius: "8px",
                     border: "1px solid var(--base-color)",
+                    boxShadow: "2px 2px 10px 4px #cccc",
                   }}
                 >
                   <h5
@@ -669,59 +704,159 @@ function DetailNote() {
                       fontWeight: "bold",
                       color: "var(--base-color)",
                       marginBottom: "10px",
+                      textAlign: "center",
                     }}
                   >
-                    Rate Your Appointment
+                    {rating > 0 ? "Your Feedback" : "Rate Your Appointment"}
                   </h5>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <FontAwesomeIcon
-                        key={star}
-                        icon={faStar}
+
+                  {rating > 0 ? (
+                    // Hiển thị đánh giá ở dạng chỉ đọc
+                    <div>
+                      <div
                         style={{
-                          fontSize: "24px",
-                          cursor: "pointer",
-                          color: star <= rating ? "gold" : "gray", // Ngôi sao được chọn có màu vàng, còn lại màu xám
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          justifyContent: "center",
+                          marginBottom: "10px",
                         }}
-                        onClick={() => setRating(star)} // Cập nhật trạng thái khi chọn ngôi sao
-                      />
-                    ))}
-                  </div>
-                  <textarea
-                    placeholder="Write your feedback here..."
-                    rows="4"
-                    style={{
-                      width: "100%",
-                      padding: "10px",
-                      marginTop: "10px",
-                      borderRadius: "8px",
-                      border: "1px solid var(--base-color)",
-                    }}
-                  ></textarea>
-                  <button
-                    style={{
-                      marginTop: "10px",
-                      width: "100%",
-                      padding: "10px",
-                      backgroundColor: "var(--base-color)",
-                      color: "white",
-                      fontWeight: "bold",
-                      borderRadius: "8px",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                    onClick={() =>
-                      alert(`Thank you for your feedback! Rating: ${rating}`)
-                    }
-                  >
-                    Submit Review
-                  </button>
+                      >
+                        <div className="flex text-yellow-500 text-lg">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <FontAwesomeIcon
+                              key={star}
+                              icon={faStar}
+                              style={{
+                                fontSize: "24px",
+                                color: star <= rating ? "gold" : "gray",
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-gray-700 text-sm font-medium">
+                          {rating} / 5
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: "var(--base-color)",
+                          }}
+                        >
+                          Name:
+                        </span>
+                        <span>{user?.fullname || "Anonymous"}</span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: "var(--base-color)",
+                          }}
+                        >
+                          Date:
+                        </span>
+                        <span>
+                          {new Date(detailCheckout?.date).toLocaleDateString(
+                            "vi-VN",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
+                      </div>
+                      <p
+                        style={{
+                          marginTop: "20px",
+                          textAlign: "left",
+                          fontSize: "14px",
+                          color: "#555",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        {feedback || "No comments provided."}
+                      </p>
+                    </div>
+                  ) : (
+                    // Hiển thị form đánh giá
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <FontAwesomeIcon
+                            key={star}
+                            icon={faStar}
+                            style={{
+                              fontSize: "24px",
+                              cursor: "pointer",
+                              color: star <= rating ? "gold" : "gray",
+                            }}
+                            onClick={() => setRating(star)} // Cập nhật trạng thái khi chọn ngôi sao
+                          />
+                        ))}
+                      </div>
+                      <textarea
+                        placeholder="Write your feedback here..."
+                        rows="4"
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          marginTop: "10px",
+                          borderRadius: "8px",
+                          border: "1px solid var(--base-color)",
+                        }}
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                      ></textarea>
+                      <button
+                        style={{
+                          marginTop: "10px",
+                          width: "100%",
+                          padding: "10px",
+                          backgroundColor: "var(--base-color)",
+                          color: "white",
+                          fontWeight: "bold",
+                          borderRadius: "8px",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          const newDate = detailCheckout.date.split("T")[0];
+                          handelRate({
+                            patient_id: detailCheckout.patient_id,
+                            doctor_id: detailCheckout.doctor_id,
+                            date: newDate,
+                            star_no: rating,
+                            comments: feedback,
+                            scheduling_id: detailCheckout.id,
+                          });
+                        }}
+                      >
+                        Submit Review
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -788,9 +923,12 @@ function DetailNote() {
       </motion.div>
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={6000} // Tự động ẩn sau 6 giây
-        onClose={() => setOpenSnackbar(false)} // Đóng Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }} // Vị trí hiển thị
+        autoHideDuration={null} // Không tự động ẩn
+        onClose={() => {
+          setOpenSnackbar(false);
+          window.location.reload(); // Reload lại trang
+        }}
+        anchorOrigin={{ vertical: "center", horizontal: "center" }} // Hiển thị ở giữa màn hình
         TransitionComponent={SlideTransition} // Hiệu ứng trượt
         sx={{
           "& .MuiSnackbarContent-root": {
@@ -798,15 +936,19 @@ function DetailNote() {
             color: "#fff", // Màu chữ trắng
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)", // Đổ bóng
             borderRadius: "8px", // Bo góc
+            textAlign: "center",
           },
         }}
       >
         <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity="success" // Loại thông báo (success, error, warning, info)
+          onClose={() => {
+            setOpenSnackbar(false);
+            window.location.reload(); // Reload lại trang
+          }}
+          severity="success"
           icon={
             <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#fff" }} />
-          } // Biểu tượng
+          }
           sx={{
             display: "flex",
             alignItems: "center",
@@ -817,31 +959,79 @@ function DetailNote() {
             },
           }}
         >
-          <div style={{ textAlign: "left" }}>
-            <p style={{ margin: 0 }}>🎉 Payment Successful!</p>
-            <p style={{ margin: 0 }}>
-              <strong>Location:</strong> {facility?.name}, {facility?.address}
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Date:</strong>{" "}
-              {new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              })}
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Time:</strong> {workschedule?.times}
-            </p>
-            <p style={{ margin: 0 }}>
-              <strong>Booking ID:</strong> {detailCheckout?.id}
-            </p>
-            <p style={{ margin: 0 }}>
-              We will send you an email as soon as possible.
-            </p>
+          <div>
+            <p style={{ margin: 0 }}>🎉 Thank you for your feedback!</p>
+            <button
+              style={{
+                marginTop: "10px",
+                padding: "10px 20px",
+                backgroundColor: "white",
+                color: "var(--base-color)",
+                fontWeight: "bold",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setOpenSnackbar(false);
+                window.location.reload(); // Reload lại trang
+              }}
+            >
+              OK
+            </button>
           </div>
         </Alert>
       </Snackbar>
+      <Dialog
+        open={openDialog}
+        onClose={() => {
+          setOpenDialog(false);
+          window.location.reload(); // Reload lại trang
+        }}
+        aria-labelledby="thank-you-dialog-title"
+        aria-describedby="thank-you-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: "#4caf50", // Nền màu xanh lá
+            color: "#fff", // Chữ màu trắng
+            borderRadius: "12px", // Bo góc
+            textAlign: "center",
+            padding: "20px",
+          },
+        }}
+      >
+        <DialogTitle
+          id="thank-you-dialog-title"
+          style={{ fontSize: "24px", fontWeight: "bold" }}
+        >
+          🎉 Thank You!
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="thank-you-dialog-description"
+            style={{ fontSize: "16px", color: "#fff" }}
+          >
+            Your feedback has been submitted successfully!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenDialog(false);
+              window.location.reload(); // Reload lại trang
+            }}
+            style={{
+              backgroundColor: "white",
+              color: "#4caf50",
+              fontWeight: "bold",
+              borderRadius: "8px",
+              padding: "10px 20px",
+            }}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
