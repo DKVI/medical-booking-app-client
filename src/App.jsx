@@ -17,6 +17,9 @@ import Setting from "./pages/Setting";
 import MedicalNote from "./pages/MedicalNote";
 import DetailNote from "./pages/DetailNote";
 import DoctorDetail from "./pages/DoctorDetail";
+import LoginDoctor from "./pages/LoginDoctor";
+import DoctorLayout from "./layouts/DoctorLayout";
+import DashboardDoctor from "./pages/DashboardDoctor";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -92,6 +95,16 @@ function AppRoutes() {
       path: "/doctor-detail",
       element: <ClientLayout />,
       children: [{ path: "", element: <DoctorDetail /> }],
+    },
+    {
+      path: "/for-doctor/login",
+      element: <AuthLayout />,
+      children: [{ path: "", element: <LoginDoctor /> }],
+    },
+    {
+      path: "/for-doctor/dashboard",
+      element: <DoctorLayout />,
+      children: [{ path: "", element: <DashboardDoctor /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

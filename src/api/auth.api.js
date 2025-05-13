@@ -18,6 +18,14 @@ const authApi = {
       return error.response?.data || error.message;
     }
   },
+  loginDoctor: async (data) => {
+    try {
+      const response = await axiosInstance.post(`/authen/doctor/login`, data);
+      return response.data;
+    } catch (error) {
+      return error.response?.data || error.message;
+    }
+  },
 
   verify: async (token) => {
     try {

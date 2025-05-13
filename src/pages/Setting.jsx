@@ -21,7 +21,15 @@ import {
 import { motion } from "framer-motion";
 import LoadingScreen from "../components/LoadingScreen";
 import AvatarChoosing from "../components/AvatarChoosing";
-import { Lock, Logout, Person } from "@mui/icons-material";
+import {
+  Lock,
+  Logout,
+  Person,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 
 function Setting() {
   const navigate = useNavigate();
@@ -42,6 +50,14 @@ function Setting() {
     newPassword: "",
     confirmPassword: "",
   });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleShowOldPassword = () => setShowOldPassword(!showOldPassword);
+  const toggleShowNewPassword = () => setShowNewPassword(!showNewPassword);
+  const toggleShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
 
   useEffect(() => {
     const token = cookies.get("token");
@@ -192,10 +208,10 @@ function Setting() {
 
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: 50 }} // Bắt đầu với opacity 0 và trượt từ dưới lên
+      animate={{ opacity: 1, y: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
+      exit={{ opacity: 0, y: 50 }} // Khi thoát, trượt xuống và mờ dần
+      transition={{ duration: 0.5 }} // Thời gian chuyển đổi
     >
       <Box
         sx={{
@@ -210,58 +226,198 @@ function Setting() {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{
-            color: "var(--base-color)",
-            paddingBottom: "30px",
-            fontWeight: "bold",
-          }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }} // Bắt đầu với opacity 0 và thu nhỏ
+          animate={{ opacity: 1, scale: 1 }} // Hiển thị với opacity 1 và kích thước bình thường
+          transition={{ duration: 0.5, delay: 0.2 }} // Thời gian và độ trễ
         >
-          Setting
-        </Typography>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              color: "var(--base-color)",
+              paddingBottom: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            Setting
+          </Typography>
+        </motion.div>
 
         <Grid container spacing={4}>
           {/* Change Avatar */}
           <Grid item xs={12} sm={6}>
-            <Card
-              sx={{
-                padding: "20px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              }}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }} // Bắt đầu với opacity 0 và trượt từ trái
+              animate={{ opacity: 1, x: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
+              transition={{ duration: 0.5, delay: 0.3 }} // Thời gian và độ trễ
             >
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{
-                    color: "var(--base-color)", // Màu base color
-                    paddingY: "12px", // py-3
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Person sx={{ marginRight: "8px" }} />
-                  Change Avatar
-                </Typography>
-                <div className="flex flex-col items-center">
-                  {loadingAvatar ? (
-                    <CircularProgress color="primary" />
-                  ) : (
-                    <Avatar
-                      src={user?.avatar}
-                      alt="User Avatar"
+              <Card
+                sx={{
+                  padding: "20px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{
+                      color: "var(--base-color)",
+                      paddingY: "12px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Person sx={{ marginRight: "8px" }} />
+                    Change Avatar
+                  </Typography>
+                  <div className="flex flex-col items-center">
+                    {loadingAvatar ? (
+                      <CircularProgress color="primary" />
+                    ) : (
+                      <Avatar
+                        src={user?.avatar}
+                        alt="User Avatar"
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          marginBottom: "16px",
+                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        }}
+                      />
+                    )}
+                    <Button
+                      onClick={() => setOpenAvtMenu(true)}
+                      variant="contained"
                       sx={{
-                        width: 100,
-                        height: 100,
-                        marginBottom: "16px",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                        backgroundColor: "var(--base-color)",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "darkblue",
+                        },
                       }}
-                    />
-                  )}
+                    >
+                      Change Avatar
+                    </Button>
+                    {openAvtMenu && (
+                      <AvatarChoosing
+                        idUser={user.user_id}
+                        onBack={() => setOpenAvtMenu(false)}
+                      />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </Grid>
+
+          {/* Change Password */}
+          <Grid item xs={12} sm={6}>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }} // Bắt đầu với opacity 0 và trượt từ phải
+              animate={{ opacity: 1, x: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
+              transition={{ duration: 0.5, delay: 0.4 }} // Thời gian và độ trễ
+            >
+              <Card
+                sx={{
+                  padding: "20px",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{
+                      color: "var(--base-color)",
+                      paddingY: "12px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <Lock sx={{ marginRight: "8px" }} />
+                    Change Password
+                  </Typography>
+                  <TextField
+                    label="Old Password"
+                    type={showOldPassword ? "text" : "password"} // Hiển thị hoặc ẩn mật khẩu
+                    fullWidth
+                    value={oldPassword}
+                    onChange={(e) => {
+                      setOldPassword(e.target.value);
+                      setErrors({ ...errors, oldPassword: "" });
+                    }}
+                    error={!!errors.oldPassword}
+                    helperText={errors.oldPassword}
+                    sx={{ marginBottom: "16px" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={toggleShowOldPassword}>
+                            {showOldPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    label="New Password"
+                    type={showNewPassword ? "text" : "password"} // Hiển thị hoặc ẩn mật khẩu
+                    fullWidth
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      setErrors({ ...errors, newPassword: "" });
+                    }}
+                    error={!!errors.newPassword}
+                    helperText={errors.newPassword}
+                    sx={{ marginBottom: "16px" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={toggleShowNewPassword}>
+                            {showNewPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    label="Confirm New Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    fullWidth
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      setErrors({ ...errors, confirmPassword: "" });
+                    }}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                    sx={{ marginBottom: "16px" }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={toggleShowConfirmPassword}>
+                            {showConfirmPassword ? (
+                              <Visibility />
+                            ) : (
+                              <VisibilityOff />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
                   <Button
-                    onClick={() => setOpenAvtMenu(true)}
                     variant="contained"
                     sx={{
                       backgroundColor: "var(--base-color)",
@@ -270,96 +426,13 @@ function Setting() {
                         backgroundColor: "darkblue",
                       },
                     }}
+                    onClick={handlePasswordChange}
                   >
-                    Change Avatar
+                    Change Password
                   </Button>
-                  {openAvtMenu && (
-                    <AvatarChoosing
-                      idUser={user.user_id}
-                      onBack={() => setOpenAvtMenu(false)}
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Change Password */}
-          <Grid item xs={12} sm={6}>
-            <Card
-              sx={{
-                padding: "20px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{
-                    color: "var(--base-color)", // Màu base color
-                    paddingY: "12px", // py-3
-                    fontWeight: "bold",
-                  }}
-                >
-                  <Lock sx={{ marginRight: "8px" }} />
-                  Change Password
-                </Typography>
-                <TextField
-                  label="Old Password"
-                  type="password"
-                  fullWidth
-                  value={oldPassword}
-                  onChange={(e) => {
-                    setOldPassword(e.target.value);
-                    setErrors({ ...errors, oldPassword: "" });
-                  }}
-                  error={!!errors.oldPassword}
-                  helperText={errors.oldPassword}
-                  sx={{ marginBottom: "16px" }}
-                />
-                <TextField
-                  label="New Password"
-                  type="password"
-                  fullWidth
-                  value={newPassword}
-                  onChange={(e) => {
-                    setNewPassword(e.target.value);
-                    setErrors({ ...errors, newPassword: "" });
-                  }}
-                  error={!!errors.newPassword}
-                  helperText={errors.newPassword}
-                  sx={{ marginBottom: "16px" }}
-                />
-                <TextField
-                  label="Confirm New Password"
-                  type="password"
-                  fullWidth
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    setErrors({ ...errors, confirmPassword: "" });
-                  }}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
-                  sx={{ marginBottom: "16px" }}
-                />
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "var(--base-color)",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "darkblue",
-                    },
-                  }}
-                  onClick={handlePasswordChange}
-                >
-                  Change Password
-                </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Grid>
 
           {/* Logout */}
