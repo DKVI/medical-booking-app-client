@@ -17,6 +17,7 @@ import {
   faStethoscope,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
+import baseURL from "../api/baseURL.api";
 
 // Các biến thể hiệu ứng
 const containerVariants = {
@@ -76,6 +77,7 @@ function DoctorDetail() {
     try {
       const res = await doctorApi.getById(doctorId);
       setDoctor(res.doctor);
+      console.log(res.doctor);
     } catch (err) {
       console.error("Failed to fetch doctor details:", err);
     }
@@ -183,11 +185,7 @@ function DoctorDetail() {
                   className="w-48 h-48 bg-cover bg-center rounded-full pb-[100%]"
                   style={{
                     boxShadow: "2px 2px 10px 4px #cccc",
-                    backgroundImage: `url(${
-                      doctor.gender === "Male"
-                        ? "/doctor-avt-male.png"
-                        : "/doctor-avt-female.png"
-                    })`,
+                    backgroundImage: `url(${baseURL + doctor.avatar})`,
                   }}
                 ></div>
 
@@ -308,7 +306,7 @@ function DoctorDetail() {
                         className="w-12 h-12 bg-cover bg-center rounded-full"
                         style={{
                           backgroundImage: `url(${
-                            rate.avatar || "/default-avatar.png"
+                            baseURL + rate.avatar || "/default-avatar.png"
                           })`,
                         }}
                       ></div>

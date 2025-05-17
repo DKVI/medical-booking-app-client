@@ -36,7 +36,7 @@ function History() {
     try {
       await scheduleDetailApi.cancel(id); // Gọi API hủy lịch
       alert("Lịch đã được hủy thành công!");
-      await getShedulingDetail(); // Cập nhật lại danh sách
+      await getShedulingDetail(user.patient_id); // Cập nhật lại danh sách
     } catch (err) {
       console.error("Hủy lịch thất bại:", err);
       alert("Hủy lịch thất bại!");
@@ -61,16 +61,17 @@ function History() {
     try {
       const res = await authApi.getByToken(token);
       setUser(res.user); // Lưu thông tin người dùng vào state
-      await getShedulingDetail();
+      console.log(res.user);
+      await getShedulingDetail(res.user.patient_id);
     } catch (err) {
       console.error("Failed to fetch user information:", err);
       navigate("/account"); // Điều hướng về trang đăng nhập nếu có lỗi
     }
   };
 
-  const getShedulingDetail = async () => {
+  const getShedulingDetail = async (id) => {
     try {
-      const res = await scheduleDetailApi.getAll();
+      const res = await scheduleDetailApi.getByPatientId(id);
       setSchedulingDetail(res.schedulingDetails);
       console.log(res.schedulingDetails);
       await getPurchases();

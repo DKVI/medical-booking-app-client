@@ -22,6 +22,7 @@ const patientApi = {
       const res = await axiosInstance.post("/patient", data);
       return res.data;
     } catch (err) {
+      console.log({ err });
       return err.respone?.data || err.message;
     }
   },

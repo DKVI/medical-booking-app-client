@@ -57,6 +57,18 @@ const authApi = {
       return err.response?.data || err.message;
     }
   },
+  getDoctorByToken: async (token) => {
+    try {
+      const res = await axiosInstance.get("/authen/doctor/getByToken", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
 };
 
 export default authApi;

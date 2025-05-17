@@ -6,22 +6,67 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { Cookie } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+import authApi from "../api/auth.api";
+import baseURL from "../api/baseURL.api";
 
 function SideBarDoctor() {
+  const cookie = new Cookies();
+  const doctorToken = cookie.get("token");
+  const navigate = useNavigate();
+  const [doctor, setDoctor] = useState({
+    user_id: null,
+    doctor_id: null,
+    fullname: null,
+    username: null,
+    email: null,
+    phone_no: null,
+    identity_no: null,
+    gender: null,
+    avatar: null,
+    facility_name: null,
+    specialty_name: null,
+  });
+
+  const getDoctorByToken = async (doctorToken) => {
+    try {
+      const res = await authApi.getDoctorByToken(doctorToken);
+      if (res.success) {
+        setDoctor(res.doctor);
+        console.log(res.doctor);
+      } else {
+        navigate("/for-doctor/login");
+        console.log(res.message);
+      }
+    } catch (err) {
+      navigate("/for-doctor/login");
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getDoctorByToken(doctorToken);
+  }, []);
   return (
     <div className="px-5 py-3 w-[300px] shadow-2xl bg-white h-full fixed top-0 left-0">
       <div>
         <div className="h-[150px] w-full flex">
-          <img className="h-full m-auto shadow" src="/doctor-avt-male.png" />
+          <img
+            className="h-full m-auto shadow rounded-full"
+            src={baseURL + doctor.avatar}
+          />
         </div>
         <div className="text-center">
           <h3 className="text-[24px] pt-6 text-[var(--base-color)] font-bold">
-            Dr. Hoàng Văn An
+            {doctor.fullname}
           </h3>
-          <p className="text-[16px] py-3 border-b-2 opacity-70 text-[var(--base-color)]">
-            Nội tổng quát
+          <p className="text-[16px] pt-3 opacity-90 text-[var(--base-color)]">
+            {doctor.specialty_name}
+          </p>
+          <p className="text-[16px] py-3 border-b-2 opacity-90 text-[var(--base-color)]">
+            {doctor.facility_name}
           </p>
         </div>
         <nav className="mt-16 px-6 flex">

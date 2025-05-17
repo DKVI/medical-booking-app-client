@@ -61,16 +61,16 @@ function MedicalNote() {
     try {
       const res = await authApi.getByToken(token);
       setUser(res.user); // Lưu thông tin người dùng vào state
-      await getShedulingDetail();
+      await getShedulingDetail(res.user.id);
     } catch (err) {
       console.error("Failed to fetch user information:", err);
       navigate("/account"); // Điều hướng về trang đăng nhập nếu có lỗi
     }
   };
 
-  const getShedulingDetail = async () => {
+  const getShedulingDetail = async (id) => {
     try {
-      const res = await scheduleDetailApi.getAll();
+      const res = await scheduleDetailApi.getByPatientId(id);
       setSchedulingDetail(res.schedulingDetails);
       console.log(res.schedulingDetails[0].status);
       await getPurchases();

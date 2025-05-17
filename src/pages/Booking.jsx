@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate, useSearchParams } from "react-router-dom"; // Import useSearchParams
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Cookies from "universal-cookie";
+import baseURLApi from "../api/baseURL.api";
 import authApi from "../api/auth.api";
 import {
   Autocomplete,
@@ -26,7 +27,7 @@ import workscheduleApi from "../api/workschedule.api";
 import WorkScheduleElement from "../components/WorkScheduleElement";
 import LoadingScreen from "../components/LoadingScreen";
 import scheduleDetailApi from "../api/scheduledetail.api";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const fadeInVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -93,6 +94,9 @@ function Booking() {
         );
         setOpenDialog(true);
         setIsFullInfo(false);
+        setTimeout(() => {
+          navigate("/profile"); // Chuyển hướng sang trang profile nếu thiếu thông tin
+        }, 3000);
       } else {
         setIsFullInfo(true);
       }
@@ -398,29 +402,80 @@ function Booking() {
           >
             <Card
               sx={{
-                marginBottom: "40px", // Thêm khoảng cách dưới Card
+                marginBottom: "40px",
                 padding: "20px",
               }}
             >
               <Typography variant="h6" gutterBottom>
                 Choose Doctor
               </Typography>
-              <Autocomplete
-                options={doctor}
-                getOptionLabel={(option) => option.fullname || ""}
-                value={doctor.find((d) => d.id === selectedDoctorId) || null}
-                onChange={(event, newValue) => {
-                  setSelectedDoctorId(newValue?.id || null);
+              <div
+                className="doctor-list-container"
+                style={{
+                  minHeight: "200px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose Doctor"
-                    variant="outlined"
-                  />
+              >
+                {doctor.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                    <AnimatePresence>
+                      {doctor.map((doc) => (
+                        <motion.div
+                          key={doc.id}
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 50 }}
+                          transition={{ duration: 0.5 }}
+                          className={`doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white w-[250px] mx-auto cursor-pointer ${
+                            selectedDoctorId === doc.id ? "ring-0" : ""
+                          }`}
+                          style={{
+                            border:
+                              selectedDoctorId === doc.id
+                                ? "3px solid var(--base-color)"
+                                : "1px solid #d1d5db",
+                            boxShadow:
+                              selectedDoctorId === doc.id
+                                ? "0 0 0 4px #e3eaff"
+                                : "0 1px 3px rgba(0,0,0,0.1)",
+                          }}
+                          onClick={() => {
+                            setSelectedDoctorId(doc.id);
+                          }}
+                        >
+                          {/* Avatar */}
+                          <div
+                            className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
+                            style={{
+                              backgroundImage: `url(${
+                                baseURLApi + doc.avatar
+                              })`,
+                            }}
+                          ></div>
+                          {/* Doctor Info */}
+                          <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
+                            {doc.fullname}
+                          </h2>
+                          <p className="text-gray-600 text-center text-sm mb-2">
+                            {specialty.find((e) => e.id == selectedSpecialtyId)
+                              .name || "No description"}
+                          </p>
+                          <p className="text-gray-600 text-center text-sm mb-2">
+                            {facility.find((e) => e.id == selectedFacilityId)
+                              .name || "No description"}
+                          </p>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center mt-4">
+                    No doctors found. Please choose facility and specialty.
+                  </p>
                 )}
-                disabled={!selectedSpecialtyId || doctor.length === 0}
-              />
+              </div>
             </Card>
           </motion.div>
         )}
@@ -533,7 +588,7 @@ function Booking() {
         </div>
         <Dialog
           open={openDialog}
-          onClose={() => handleDialogClose(true)} // Đóng dialog và chuyển hướng
+          onClose={() => setOpenDialog(false)}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
@@ -544,12 +599,18 @@ function Booking() {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
+            <Button onClick={() => setOpenDialog(false)} color="secondary">
+              Cancel
+            </Button>
             <Button
-              onClick={() => handleDialogClose(true)} // Chuyển hướng đến trang checkout
+              onClick={() => {
+                setOpenDialog(false);
+                navigate("/profile");
+              }}
               color="primary"
               autoFocus
             >
-              Proceed to Checkout
+              Yes
             </Button>
           </DialogActions>
         </Dialog>

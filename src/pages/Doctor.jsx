@@ -191,9 +191,7 @@ function Doctor() {
                           className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
                           style={{
                             backgroundImage: `url(${
-                              doctor.gender === "Male"
-                                ? "/doctor-avt-male.png"
-                                : "/doctor-avt-female.png"
+                              "http://localhost:3000" + doctor.avatar
                             })`,
                           }}
                         ></div>

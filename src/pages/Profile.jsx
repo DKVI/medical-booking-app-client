@@ -84,10 +84,6 @@ function Profile() {
       newErrors.idNumber = "ID Number must be 9-12 digits";
     }
 
-    if (!formData.insuranceNumber) {
-      newErrors.insuranceNumber = "Insurance Number is required";
-    }
-
     if (!formData.phoneNumber || !/^\d{10}$/.test(formData.phoneNumber)) {
       newErrors.phoneNumber = "Phone Number must be 10 digits";
     }
@@ -104,30 +100,34 @@ function Profile() {
     return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
   };
 
-  const updatePatient = async (data, callback) => {
+  const updatePatient = async (data) => {
     try {
-      await patientApi.update(data);
-      setTimeout(() => {
-        callback("Profile saved successfully!");
-        setDialogOpen(true);
-        setLoading(false);
-      }, 1000);
+      const res = await patientApi.update(data);
+      if (res && res.success) {
+        setDialogMessage("Update info successfully!");
+      } else {
+        setDialogMessage("System error. Please try again.");
+      }
+      setDialogOpen(true);
+      setLoading(false);
     } catch (err) {
-      setTimeout(() => {
-        callback("Failed to save profile. Please check the form.");
-        setDialogOpen(true);
-        setLoading(false);
-      }, 1000);
+      setDialogMessage("System error. Please try again.");
+      setDialogOpen(true);
+      setLoading(false);
     }
   };
   const handleSubmit = async (e) => {
-    setLoading(true);
-    console.log(formData);
     e.preventDefault();
-    if (validate()) {
-      // Giả lập thành công
-      await updatePatient(formData, setDialogMessage);
-    }
+    setLoading(true);
+    setTimeout(async () => {
+      if (validate()) {
+        await updatePatient(formData);
+      } else {
+        setDialogMessage("System error. Please try again.");
+        setDialogOpen(true);
+        setLoading(false);
+      }
+    }, 1000);
   };
 
   const handleCloseDialog = () => {
@@ -250,7 +250,7 @@ function Profile() {
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
                 <TextField
-                  label="Insurance Number"
+                  label="Insurance Number (optional)"
                   name="insuranceNumber"
                   value={formData.insuranceNumber}
                   onChange={handleChange}

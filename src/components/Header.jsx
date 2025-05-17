@@ -22,6 +22,7 @@ import {
   Typography,
 } from "@mui/material"; // Import CircularProgress và các component Dialog từ MUI
 import LoadingScreen from "./LoadingScreen";
+import baseURL from "../api/baseURL.api";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -142,11 +143,14 @@ export default function Header() {
                       </div>
                     ) : (
                       <img
-                        src={user.avatar}
+                        src={baseURL + user.avatar}
                         width={150}
                         height={150}
-                        className="mb-2 drop-shadow-2xl"
+                        className="mb-2 drop-shadow-2xl rounded-[50%]"
                         alt="User Avatar"
+                        onClick={() => {
+                          navigate("/profile");
+                        }}
                       />
                     )}
                     <div

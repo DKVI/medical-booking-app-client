@@ -26,6 +26,16 @@ const scheduleDetailApi = {
       return error.response?.data || error.message;
     }
   },
+  getByPatientId: async (id) => {
+    try {
+      const respone = await axiosInstance.get(
+        `/schedulingDetail/patient/${id}`
+      );
+      return respone.data;
+    } catch (error) {
+      return error.response?.data || error.message;
+    }
+  },
 };
 
 export default scheduleDetailApi;

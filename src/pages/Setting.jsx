@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import authApi from "../api/auth.api";
+import uploadAvatar from "../api/upload.api";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -15,12 +16,10 @@ import {
   CircularProgress,
   Card,
   CardContent,
-  CardActions,
   Avatar,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import LoadingScreen from "../components/LoadingScreen";
-import AvatarChoosing from "../components/AvatarChoosing";
 import {
   Lock,
   Logout,
@@ -30,6 +29,10 @@ import {
 } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
+import patientApi from "../api/patient.api";
+import axios from "axios";
+import axiosInstance from "../api/axios.config";
+import baseURL from "../api/baseURL.api";
 
 function Setting() {
   const navigate = useNavigate();
@@ -44,7 +47,6 @@ function Setting() {
   const [avatar, setAvatar] = useState("");
   const [loadingAvatar, setLoadingAvatar] = useState(false);
   const [user, setUser] = useState(null);
-  const [openAvtMenu, setOpenAvtMenu] = useState(false);
   const [errors, setErrors] = useState({
     oldPassword: "",
     newPassword: "",
@@ -53,6 +55,10 @@ function Setting() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Thêm state cho xem trước avatar
+  const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const toggleShowOldPassword = () => setShowOldPassword(!showOldPassword);
   const toggleShowNewPassword = () => setShowNewPassword(!showNewPassword);
@@ -66,12 +72,22 @@ function Setting() {
     } else {
       verifyUser(token);
     }
+    // eslint-disable-next-line
   }, []);
 
   const getUser = async (token) => {
     try {
       const res = await authApi.getByToken(token);
       setUser(res.user);
+
+      if (res.user.avatar) {
+        setAvatar(() => {
+          console.log(res.user.avatar);
+          return baseURL + res.user.avatar;
+        });
+      } else {
+        setAvatar("");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -181,37 +197,55 @@ function Setting() {
     setLogoutDialogOpen(false);
   };
 
-  const handleAvatarChange = async (e) => {
+  // Khi chọn file, chỉ xem trước, chưa upload
+  const handleChooseAvatar = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    setSelectedFile(file);
+    setPreviewAvatar(URL.createObjectURL(file));
+  };
 
+  // Khi nhấn Save mới upload và cập nhật
+  const handleSaveAvatar = async () => {
+    if (!selectedFile) return;
     setLoadingAvatar(true);
-
     try {
-      const formData = new FormData();
-      formData.append("avatar", file);
-
-      const res = await authApi.updateAvatar(formData);
+      const res = await uploadAvatar(selectedFile);
       if (res.success) {
-        setAvatar(res.avatar);
-        setDialogMessage("Avatar updated successfully!");
+        try {
+          await patientApi.changeAvt({
+            id: user.user_id,
+            avatar: res.avatarUrl,
+          });
+          setAvatar(res.avatar);
+          setDialogMessage("Avatar updated successfully!");
+          setPreviewAvatar(null);
+          setSelectedFile(null);
+        } catch (err) {
+          setDialogMessage("Upload thành công nhưng cập nhật avatar thất bại!");
+        }
       } else {
         setDialogMessage("Failed to update avatar. Please try again.");
       }
     } catch (error) {
-      setDialogMessage("An error occurred while updating avatar.");
+      setDialogMessage("An error occurred while uploading avatar.");
     }
-
     setLoadingAvatar(false);
     setDialogOpen(true);
   };
 
+  // Hủy xem trước
+  const handleCancelPreview = () => {
+    setPreviewAvatar(null);
+    setSelectedFile(null);
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }} // Bắt đầu với opacity 0 và trượt từ dưới lên
-      animate={{ opacity: 1, y: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
-      exit={{ opacity: 0, y: 50 }} // Khi thoát, trượt xuống và mờ dần
-      transition={{ duration: 0.5 }} // Thời gian chuyển đổi
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ duration: 0.5 }}
     >
       <Box
         sx={{
@@ -227,9 +261,9 @@ function Setting() {
         }}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }} // Bắt đầu với opacity 0 và thu nhỏ
-          animate={{ opacity: 1, scale: 1 }} // Hiển thị với opacity 1 và kích thước bình thường
-          transition={{ duration: 0.5, delay: 0.2 }} // Thời gian và độ trễ
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Typography
             variant="h4"
@@ -248,9 +282,9 @@ function Setting() {
           {/* Change Avatar */}
           <Grid item xs={12} sm={6}>
             <motion.div
-              initial={{ opacity: 0, x: -50 }} // Bắt đầu với opacity 0 và trượt từ trái
-              animate={{ opacity: 1, x: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
-              transition={{ duration: 0.5, delay: 0.3 }} // Thời gian và độ trễ
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
               <Card
                 sx={{
@@ -277,7 +311,7 @@ function Setting() {
                       <CircularProgress color="primary" />
                     ) : (
                       <Avatar
-                        src={user?.avatar}
+                        src={previewAvatar || avatar || user?.avatar}
                         alt="User Avatar"
                         sx={{
                           width: 100,
@@ -287,24 +321,46 @@ function Setting() {
                         }}
                       />
                     )}
-                    <Button
-                      onClick={() => setOpenAvtMenu(true)}
-                      variant="contained"
-                      sx={{
-                        backgroundColor: "var(--base-color)",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "darkblue",
-                        },
-                      }}
-                    >
-                      Change Avatar
-                    </Button>
-                    {openAvtMenu && (
-                      <AvatarChoosing
-                        idUser={user.user_id}
-                        onBack={() => setOpenAvtMenu(false)}
-                      />
+                    {/* 2 nút trên: Upload Avatar */}
+                    <div className="flex gap-3 mt-2">
+                      <Button
+                        component="label"
+                        variant="contained"
+                        sx={{
+                          backgroundColor: "var(--base-color)",
+                          color: "white",
+                          "&:hover": {
+                            backgroundColor: "darkblue",
+                          },
+                        }}
+                      >
+                        Upload Avatar
+                        <input
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={handleChooseAvatar}
+                        />
+                      </Button>
+                    </div>
+                    {/* 2 nút dưới: Save & Cancel */}
+                    {previewAvatar && (
+                      <div className="flex gap-3 mt-4">
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={handleSaveAvatar}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={handleCancelPreview}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </CardContent>
@@ -315,9 +371,9 @@ function Setting() {
           {/* Change Password */}
           <Grid item xs={12} sm={6}>
             <motion.div
-              initial={{ opacity: 0, x: 50 }} // Bắt đầu với opacity 0 và trượt từ phải
-              animate={{ opacity: 1, x: 0 }} // Hiển thị với opacity 1 và vị trí ban đầu
-              transition={{ duration: 0.5, delay: 0.4 }} // Thời gian và độ trễ
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
             >
               <Card
                 sx={{
@@ -341,7 +397,7 @@ function Setting() {
                   </Typography>
                   <TextField
                     label="Old Password"
-                    type={showOldPassword ? "text" : "password"} // Hiển thị hoặc ẩn mật khẩu
+                    type={showOldPassword ? "text" : "password"}
                     fullWidth
                     value={oldPassword}
                     onChange={(e) => {
@@ -367,7 +423,7 @@ function Setting() {
                   />
                   <TextField
                     label="New Password"
-                    type={showNewPassword ? "text" : "password"} // Hiển thị hoặc ẩn mật khẩu
+                    type={showNewPassword ? "text" : "password"}
                     fullWidth
                     value={newPassword}
                     onChange={(e) => {
@@ -449,8 +505,8 @@ function Setting() {
                   variant="h6"
                   gutterBottom
                   sx={{
-                    color: "var(--base-color)", // Màu base color
-                    paddingY: "12px", // py-3
+                    color: "var(--base-color)",
+                    paddingY: "12px",
                     fontWeight: "bold",
                   }}
                 >
@@ -481,7 +537,13 @@ function Setting() {
             <Typography>{dialogMessage}</Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDialog} color="primary">
+            <Button
+              onClick={() => {
+                setDialogOpen(false);
+                window.location.reload();
+              }}
+              color="primary"
+            >
               Close
             </Button>
           </DialogActions>
