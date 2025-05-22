@@ -4,6 +4,7 @@ const rateApi = {
   getByDoctorId: async (id) => {
     try {
       const res = await axiosInstance.get(`/rate/${id}`);
+      console.log(id);
       return res.data;
     } catch (err) {
       console.log(err);

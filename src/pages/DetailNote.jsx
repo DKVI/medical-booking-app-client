@@ -217,12 +217,20 @@ function DetailNote() {
     }
   };
   return (
-    <div className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8] flex gap-[20px]">
+    <div
+      className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] flex gap-[20px]"
+      style={{
+        background: "linear-gradient(120deg, #e3f0ff 0%, #f7fbff 100%)",
+        minHeight: "100vh",
+      }}
+    >
       <motion.div
-        className="checkout-info w-2/3 h-full rounded-[20px] p-[20px]"
+        className="checkout-info w-2/3 h-full rounded-[28px] p-[24px] backdrop-blur-[20px]"
         style={{
-          backgroundColor: "white",
-          boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", // Tăng độ mờ và kích thước shadow
+          background: "rgba(255,255,255,0.85)",
+          boxShadow: "0 8px 32px 0 rgba(33,150,243,0.18)",
+          border: "2px solid #90caf9",
+          backdropFilter: "blur(20px)",
         }}
         initial="hidden"
         animate="visible"
@@ -231,7 +239,7 @@ function DetailNote() {
       >
         <div className="w-full flex">
           <div
-            className="p-3 m-auto flex gap-3 text-[var(--base-color)] text-[24px] rounded-[20px]"
+            className="p-3 m-auto flex gap-3 mb-8 text-[var(--base-color)] text-[24px] rounded-[20px]"
             style={{
               alignItems: "center",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Đổ bóng
@@ -244,9 +252,13 @@ function DetailNote() {
         <div>
           {/* Facility Container */}
           <motion.div
-            className="text-left p-[20px] rounded-[20px] facility-container"
+            className="text-left p-[24px] rounded-[20px] facility-container backdrop-blur-[20px]"
             style={{
-              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", // Tăng độ mờ và kích thước shadow
+              background: "rgba(227,240,255,0.85)",
+              boxShadow: "0 4px 24px 0 rgba(33,150,243,0.12)",
+              border: "1.5px solid #90caf9",
+              marginBottom: "24px",
+              backdropFilter: "blur(20px)",
             }}
             initial="hidden"
             animate="visible"
@@ -307,13 +319,15 @@ function DetailNote() {
               </div>
             </div>
           </motion.div>
-
           <div className="flex gap-6">
             {/* Doctor Container */}
             <motion.div
-              className="text-left p-[20px] rounded-[20px] doctor-container mt-[20px] w-1/2"
+              className="text-left p-[24px] rounded-[20px] doctor-container mt-[20px] w-1/2 backdrop-blur-[20px]"
               style={{
-                boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", // Tăng độ mờ và kích thước shadow
+                background: "rgba(227,240,255,0.85)",
+                boxShadow: "0 4px 24px 0 rgba(33,150,243,0.12)",
+                border: "1.5px solid #90caf9",
+                backdropFilter: "blur(20px)",
               }}
               initial="hidden"
               animate="visible"
@@ -407,12 +421,14 @@ function DetailNote() {
                 </div>
               </div>
             </motion.div>
-
             {/* User Container */}
             <motion.div
-              className="text-left p-[20px] rounded-[20px] user-container mt-[20px] w-1/2"
+              className="text-left p-[24px] rounded-[20px] user-container mt-[20px] w-1/2 backdrop-blur-[20px]"
               style={{
-                boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", // Tăng độ mờ và kích thước shadow
+                background: "rgba(227,240,255,0.85)",
+                boxShadow: "0 4px 24px 0 rgba(33,150,243,0.12)",
+                border: "1.5px solid #90caf9",
+                backdropFilter: "blur(20px)",
               }}
               initial="hidden"
               animate="visible"
@@ -507,9 +523,12 @@ function DetailNote() {
       </motion.div>
       {/* Payment Details or Medical Notes */}
       <motion.div
-        className="checkout-detail w-1/3 h-full p-[20px] rounded-[20px] bg-white"
+        className="checkout-detail w-1/3 h-full p-[24px] rounded-[28px] bg-white backdrop-blur-[20px]"
         style={{
-          boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)", // Tăng độ mờ và kích thước shadow
+          background: "rgba(255,255,255,0.92)",
+          boxShadow: "0 8px 32px 0 rgba(33,150,243,0.18)",
+          border: "2px solid #90caf9",
+          backdropFilter: "blur(20px)",
         }}
         initial="hidden"
         animate="visible"

@@ -222,7 +222,7 @@ function Setting() {
           setPreviewAvatar(null);
           setSelectedFile(null);
         } catch (err) {
-          setDialogMessage("Upload thành công nhưng cập nhật avatar thất bại!");
+          setDialogMessage(err);
         }
       } else {
         setDialogMessage("Failed to update avatar. Please try again.");
@@ -252,12 +252,13 @@ function Setting() {
           marginLeft: "auto",
           marginRight: "auto",
           marginTop: "80px",
-          width: "60%",
-          padding: "40px",
-          backgroundColor: "#f4f6f8",
+          width: { xs: "98%", md: "65%" },
+          padding: { xs: "16px", md: "40px" },
+          background: "linear-gradient(135deg, #e0e7ff 0%, #f4f6f8 100%)",
           textAlign: "center",
-          borderRadius: "16px",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+          borderRadius: "28px",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+          minHeight: "80vh",
         }}
       >
         <motion.div
@@ -266,15 +267,17 @@ function Setting() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Typography
-            variant="h4"
+            variant="h3"
             gutterBottom
             sx={{
               color: "var(--base-color)",
               paddingBottom: "30px",
               fontWeight: "bold",
+              letterSpacing: 2,
+              textShadow: "0 2px 8px rgba(0,0,0,0.08)",
             }}
           >
-            Setting
+            Settings
           </Typography>
         </motion.div>
 
@@ -288,9 +291,16 @@ function Setting() {
             >
               <Card
                 sx={{
-                  padding: "20px",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  padding: "28px 20px",
+                  borderRadius: "20px",
+                  boxShadow: "0 1px 4px rgba(80, 112, 255, 0.04)", // giảm bóng đổ hơn nữa
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-2px) scale(1.01)",
+                    boxShadow: "0 2px 8px rgba(80, 112, 255, 0.08)", // bóng nhẹ khi hover
+                  },
+                  background:
+                    "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)", // màu nền nhạt hơn
                 }}
               >
                 <CardContent>
@@ -301,6 +311,11 @@ function Setting() {
                       color: "var(--base-color)",
                       paddingY: "12px",
                       fontWeight: "bold",
+                      fontSize: "1.2rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
                     }}
                   >
                     <Person sx={{ marginRight: "8px" }} />
@@ -314,23 +329,29 @@ function Setting() {
                         src={previewAvatar || avatar || user?.avatar}
                         alt="User Avatar"
                         sx={{
-                          width: 100,
-                          height: 100,
-                          marginBottom: "16px",
-                          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                          width: 110,
+                          height: 110,
+                          marginBottom: "18px",
+                          boxShadow: "0 4px 16px rgba(80, 112, 255, 0.18)",
+                          border: "4px solid #fff",
+                          background: "#e0e7ff",
                         }}
                       />
                     )}
-                    {/* 2 nút trên: Upload Avatar */}
                     <div className="flex gap-3 mt-2">
                       <Button
                         component="label"
                         variant="contained"
                         sx={{
-                          backgroundColor: "var(--base-color)",
+                          background:
+                            "linear-gradient(90deg, #5061ff 60%, #7f9cf5 100%)",
                           color: "white",
+                          fontWeight: "bold",
+                          borderRadius: "8px",
+                          boxShadow: "0 2px 8px rgba(80, 112, 255, 0.10)",
                           "&:hover": {
-                            backgroundColor: "darkblue",
+                            background:
+                              "linear-gradient(90deg, #3b47b6 60%, #5061ff 100%)",
                           },
                         }}
                       >
@@ -343,13 +364,17 @@ function Setting() {
                         />
                       </Button>
                     </div>
-                    {/* 2 nút dưới: Save & Cancel */}
                     {previewAvatar && (
                       <div className="flex gap-3 mt-4">
                         <Button
                           variant="contained"
                           color="success"
                           onClick={handleSaveAvatar}
+                          sx={{
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                            boxShadow: "0 2px 8px rgba(34,197,94,0.10)",
+                          }}
                         >
                           Save
                         </Button>
@@ -357,6 +382,10 @@ function Setting() {
                           variant="outlined"
                           color="error"
                           onClick={handleCancelPreview}
+                          sx={{
+                            borderRadius: "8px",
+                            fontWeight: "bold",
+                          }}
                         >
                           Cancel
                         </Button>
@@ -377,9 +406,16 @@ function Setting() {
             >
               <Card
                 sx={{
-                  padding: "20px",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  padding: "28px 20px",
+                  borderRadius: "20px",
+                  boxShadow: "0 1px 4px rgba(80, 112, 255, 0.04)",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-2px) scale(1.01)",
+                    boxShadow: "0 2px 8px rgba(80, 112, 255, 0.08)",
+                  },
+                  background:
+                    "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
                 }}
               >
                 <CardContent>
@@ -390,6 +426,11 @@ function Setting() {
                       color: "var(--base-color)",
                       paddingY: "12px",
                       fontWeight: "bold",
+                      fontSize: "1.2rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
                     }}
                   >
                     <Lock sx={{ marginRight: "8px" }} />
@@ -474,12 +515,18 @@ function Setting() {
                     }}
                   />
                   <Button
+                    component="label"
                     variant="contained"
                     sx={{
-                      backgroundColor: "var(--base-color)",
+                      background:
+                        "linear-gradient(90deg, #5061ff 60%, #7f9cf5 100%)",
                       color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 8px rgba(80, 112, 255, 0.10)",
                       "&:hover": {
-                        backgroundColor: "darkblue",
+                        background:
+                          "linear-gradient(90deg, #3b47b6 60%, #5061ff 100%)",
                       },
                     }}
                     onClick={handlePasswordChange}
@@ -497,7 +544,14 @@ function Setting() {
               sx={{
                 padding: "20px",
                 borderRadius: "12px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                boxShadow: "0 1px 4px rgba(80, 112, 255, 0.04)",
+                background:
+                  "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "translateY(-2px) scale(1.01)",
+                  boxShadow: "0 2px 8px rgba(80, 112, 255, 0.08)",
+                },
               }}
             >
               <CardContent>
@@ -515,12 +569,24 @@ function Setting() {
                 </Typography>
                 <Button
                   variant="outlined"
-                  color="secondary"
                   onClick={handleLogout}
                   fullWidth
                   sx={{
                     padding: "10px",
                     borderRadius: "8px",
+                    fontWeight: "bold",
+                    color: "#fff",
+                    background:
+                      "linear-gradient(90deg, #ff4d4f 0%, #ff9a8b 100%)", // đỏ sang cam nhạt
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(255, 77, 79, 0.10)",
+                    transition: "background 0.2s, color 0.2s",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(90deg, #d32f2f 0%, #ff6a6a 100%)", // đỏ đậm sang hồng
+                      color: "#fff",
+                      border: "none",
+                    },
                   }}
                 >
                   Logout

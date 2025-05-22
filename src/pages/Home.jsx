@@ -26,9 +26,18 @@ function Home() {
   }, []);
 
   // Animation variants
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
+  const bounceVariants = {
+    hidden: { opacity: 0, scale: 0.85, y: 50 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        type: "spring",
+        bounce: 0.45,
+      },
+    },
   };
 
   // Intersection Observer for each section
@@ -47,11 +56,9 @@ function Home() {
     threshold: 0.2,
   });
 
-  // Intersection Observer for Contact Us Section
-
   const { ref: contactRef, inView: contactInView } = useInView({
-    triggerOnce: true, // Chỉ kích hoạt một lần
-    threshold: 0.2, // Kích hoạt khi 20% của phần tử vào viewport
+    triggerOnce: true,
+    threshold: 0.2,
   });
 
   return (
@@ -74,30 +81,48 @@ function Home() {
           color: "white",
           fontSize: "3rem",
         }}
-        variants={sectionVariants}
+        variants={bounceVariants}
         initial="hidden"
         animate={bannerInView ? "visible" : "hidden"}
-        transition={{ duration: 1 }}
       >
-        <div className="banner-text w-full h-full lg:w-1/2 flex align-middle">
+        <motion.div
+          className="banner-text w-full h-full lg:w-1/2 flex align-middle"
+          variants={bounceVariants}
+        >
           <div className="inline-block m-auto">
-            <h2
+            <motion.h2
               className="text-[30px] lg:text-[60px]"
               style={{
                 fontWeight: "bold!important",
                 filter: "drop-shadow(0px 4px 6px #cccc)",
               }}
+              initial={{ scale: 0.9, opacity: 0, y: 40 }}
+              animate={bannerInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.45,
+                delay: 0.1,
+              }}
             >
               Simplifying Healthcare Access
-            </h2>
-            <p
+            </motion.h2>
+            <motion.p
               className="text-[16px] lg:text-[20px]"
               style={{
                 filter: "drop-shadow(0px 4px 6px #cccc)",
               }}
+              initial={{ scale: 0.9, opacity: 0, y: 40 }}
+              animate={bannerInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.45,
+                delay: 0.2,
+              }}
             >
               Connecting You to Care - Anytime - Anywhere.
-            </p>
+            </motion.p>
             <div className="pt-[30px]">
               {isLogin ? (
                 <motion.a
@@ -109,6 +134,14 @@ function Home() {
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
+                  initial={{ scale: 0.9, opacity: 0, y: 40 }}
+                  animate={bannerInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+                  transition={{
+                    duration: 0.7,
+                    type: "spring",
+                    bounce: 0.45,
+                    delay: 0.3,
+                  }}
                 >
                   Learn More
                 </motion.a>
@@ -125,79 +158,120 @@ function Home() {
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
+                  initial={{ scale: 0.9, opacity: 0, y: 40 }}
+                  animate={bannerInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+                  transition={{
+                    duration: 0.7,
+                    type: "spring",
+                    bounce: 0.45,
+                    delay: 0.3,
+                  }}
                 >
                   Go To Dashboard
                 </motion.a>
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </motion.section>
 
       {/* Services Section */}
       <motion.section
         ref={servicesRef}
-        className="lg:p-[80px]"
+        className="lg:p-[80px] bg-gradient-to-br from-white via-blue-50 to-blue-100"
         id="services"
         style={{
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           color: "white",
           fontSize: "3rem",
           textShadow: "2px 2px 4px rgba(0, 0, 0, #ccccc)",
         }}
-        variants={sectionVariants}
+        variants={bounceVariants}
         initial="hidden"
         animate={servicesInView ? "visible" : "hidden"}
-        transition={{ duration: 1 }}
       >
         <div className="service-container w-full">
-          <h3
+          <motion.h3
             className="lg:m-[20px] text-center text-[var(--base-color)]"
             style={{ fontWeight: "bold" }}
+            initial={{ scale: 0.9, opacity: 0, y: 40 }}
+            animate={servicesInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+            transition={{
+              duration: 0.7,
+              type: "spring",
+              bounce: 0.45,
+              delay: 0.1,
+            }}
           >
             OUR SERVICES
-          </h3>
+          </motion.h3>
           <motion.div
             className="flex pt-[80px] pb-[80px] justify-center"
             style={{ gap: "80px" }}
           >
-            <motion.div
-              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
-              whileHover={{ scale: 1.05 }}
-            >
-              <FontAwesomeIcon icon={faCalendarDays} />
-              <h4 className="text-[18px]">Online Appointment Booking</h4>
-              <p className="text-[12px] mt-[12px]">
-                Find doctors, browse specialties, and book appointments quickly
-                and easily—anytime, anywhere.
-              </p>
-            </motion.div>
-            <motion.div
-              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
-              whileHover={{ scale: 1.05 }}
-            >
-              <FontAwesomeIcon icon={faHospital} />
-              <h4 className="text-[18px]">Trusted Hospital & Clinic Network</h4>
-              <p className="text-[12px] mt-[12px]">
-                Access a wide network of verified healthcare providers for
-                reliable and professional medical care.
-              </p>
-            </motion.div>
-            <motion.div
-              className="w-[250px] h-[250px] bg-[var(--base-color)] py-3 px-6 rounded-[20px]"
-              whileHover={{ scale: 1.05 }}
-            >
-              <FontAwesomeIcon icon={faNotesMedical} />
-              <h4 className="text-[18px]">
-                Health Records & Appointment Reminders
-              </h4>
-              <p className="text-[12px] mt-[12px]">
-                Keep track of your medical history and get automatic reminders
-                for upcoming visits or follow-ups.
-              </p>
-            </motion.div>
+            {[
+              // Service cards
+              {
+                icon: faCalendarDays,
+                title: "Online Appointment Booking",
+                desc: "Find doctors, browse specialties, and book appointments quickly and easily—anytime, anywhere.",
+              },
+              {
+                icon: faHospital,
+                title: "Trusted Hospital & Clinic Network",
+                desc: "Access a wide network of verified healthcare providers for reliable and professional medical care.",
+              },
+              {
+                icon: faNotesMedical,
+                title: "Health Records & Appointment Reminders",
+                desc: "Keep track of your medical history and get automatic reminders for upcoming visits or follow-ups.",
+              },
+            ].map((service, idx) => (
+              <motion.div
+                key={service.title}
+                className="w-[250px] h-[250px] bg-white/90 border border-blue-100 py-6 px-6 rounded-[24px] shadow-2xl flex flex-col items-center justify-center text-[var(--base-color)]"
+                whileHover={{ scale: 1.08, boxShadow: "0 8px 32px #60a5fa55" }}
+                initial={{ scale: 0.85, opacity: 0, y: 40 }}
+                animate={servicesInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+                transition={{
+                  duration: 0.7,
+                  type: "spring",
+                  bounce: 0.45,
+                  delay: 0.15 + idx * 0.12,
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={service.icon}
+                  className="text-4xl mb-4 text-blue-400 drop-shadow"
+                />
+                <h4 className="text-[20px] font-bold mb-2 text-center">
+                  {service.title}
+                </h4>
+                <p className="text-[13px] text-center text-blue-900">
+                  {service.desc}
+                </p>
+              </motion.div>
+            ))}
           </motion.div>
+          <div className="flex justify-center mt-8 text-[16px]  border-blue-400">
+            <motion.button
+              className="bg-[var(--base-color)] text-blue-400 border font-bold px-5 py-2 rounded-xl shadow-lg hover:bg-blue-700 transition text-[12px]"
+              whileHover={{ scale: 1 }}
+              whileTap={{ scale: 0.8 }}
+              onClick={() => navigate("/account")}
+              initial={{ scale: 0.8, opacity: 0, y: 40 }}
+              animate={servicesInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.45,
+                delay: 0.5,
+              }}
+            >
+              Try Now
+            </motion.button>
+          </div>
         </div>
       </motion.section>
 
@@ -207,18 +281,27 @@ function Home() {
         className="lg:p-[80px] bg-[var(--base-color)]"
         id="about"
         style={{
-          height: "100vh",
+          minHeight: "100vh",
           display: "flex",
           color: "white",
           fontSize: "3rem",
           textShadow: "2px 2px 4px rgba(0, 0, 0, #ccccc)",
         }}
-        variants={sectionVariants}
+        variants={bounceVariants}
         initial="hidden"
         animate={aboutInView ? "visible" : "hidden"}
-        transition={{ duration: 1 }}
       >
-        <div className="about-container w-full">
+        <motion.div
+          className="about-container w-full"
+          initial={{ scale: 0.85, opacity: 0, y: 40 }}
+          animate={aboutInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+          transition={{
+            duration: 0.7,
+            type: "spring",
+            bounce: 0.45,
+            delay: 0.1,
+          }}
+        >
           <h3
             className="lg:m-[20px] text-center text-white"
             style={{ fontWeight: "bold" }}
@@ -248,9 +331,8 @@ function Home() {
                 </p>
               </div>
             </div>
-
             {/* Image Content */}
-            <div
+            <motion.div
               className="w-1/2 h-full lg:mx-[40px] overflow-hidden shadow-xl"
               style={{
                 backgroundImage: "url(/2-banner.jpg)",
@@ -259,29 +341,42 @@ function Home() {
                 border: "none",
                 borderRadius: "20px",
               }}
-            ></div>
+              initial={{ scale: 0.85, opacity: 0, y: 40 }}
+              animate={aboutInView ? { scale: 1, opacity: 1, y: 0 } : {}}
+              transition={{
+                duration: 0.7,
+                type: "spring",
+                bounce: 0.45,
+                delay: 0.2,
+              }}
+            ></motion.div>
           </div>
-        </div>
+        </motion.div>
       </motion.section>
 
+      {/* Contact Section */}
       <motion.section
         ref={contactRef}
         id="contact"
         className="bg-[white]"
         style={{
-          height: "100vh", // Chiều cao toàn màn hình
+          minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          padding: "20px", // Thêm padding để tránh bị nhô lên
+          padding: "20px",
         }}
       >
         {contactInView && (
           <motion.div
-            className="contact-form-container w-full h-full bg-white rounded-[20px] "
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
+            className="contact-form-container w-full h-full bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-[24px] shadow-2xl border border-blue-100 flex items-center justify-center"
+            initial={{ scale: 0.85, opacity: 0, y: 40 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.7,
+              type: "spring",
+              bounce: 0.45,
+            }}
           >
             <ContactForm />
           </motion.div>

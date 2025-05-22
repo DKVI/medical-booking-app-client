@@ -286,336 +286,443 @@ function Booking() {
 
   return (
     <>
-      // Hiển thị màn hình loading
+      {/* Loading overlay */}
+      {onLoading && <LoadingScreen />}
       <div
-        className="dashboard-container"
+        className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 flex flex-col items-center justify-start py-[60px]"
         style={{
-          marginLeft: "200px",
-          marginTop: "80px",
-          width: "calc(100vw - 200px)",
-          padding: "40px", // Thêm padding cho container chính
-          backgroundColor: "#f4f6f8",
+          marginLeft: 0,
+          marginTop: 0,
+          width: "100vw",
+          padding: 0,
+          backgroundColor: undefined,
         }}
       >
-        {/* Stepper */}
-        <Stepper
-          activeStep={activeStep}
-          alternativeLabel
-          sx={{ marginBottom: "40px" }} // Thêm khoảng cách dưới Stepper
-        >
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        {/* Nội dung các bước */}
-        {/* Step 1: Choose Facility */}
-        {activeStep === 0 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.5 }}
-            variants={fadeInVariants}
-          >
-            <Card
-              sx={{
-                marginBottom: "40px", // Thêm khoảng cách dưới Card
-                padding: "20px",
-              }}
+        <div className="w-full max-w-[1200px] mx-auto px-4">
+          <div className="flex flex-col items-center gap-10">
+            {/* Header */}
+            <div className="w-full flex flex-col items-center mb-[100px]">
+              <div className="h-[3px] w-24 bg-gradient-to-r from-blue-400 via-blue-200 to-blue-400 rounded-full mt-2"></div>
+            </div>
+            {/* Stepper */}
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              sx={{ marginBottom: "40px" }}
             >
-              <Typography variant="h6" gutterBottom>
-                Choose Facility
-              </Typography>
-              <Autocomplete
-                options={facility}
-                getOptionLabel={(option) => option.name || ""}
-                value={
-                  facility.find((f) => f.id === selectedFacilityId) || null
-                }
-                onChange={(event, newValue) => {
-                  setSelectedFacilityId(newValue?.id || null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose Facility"
-                    variant="outlined"
-                  />
-                )}
-                disabled={facility.length === 0}
-              />
-            </Card>
-          </motion.div>
-        )}
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            {/* Steps content */}
+            <div className="w-full">
+              {/* Step 1: Choose Facility */}
+              {activeStep === 0 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  transition={{ duration: 0.5 }}
+                  variants={fadeInVariants}
+                >
+                  <div className="bg-white rounded-[24px] border-2 border-blue-100 shadow-xl p-8 mb-10 w-full max-w-2xl mx-auto">
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        color: "var(--base-color)",
+                        fontWeight: "bold",
+                        letterSpacing: 1,
+                        mb: 2,
+                      }}
+                    >
+                      Choose Facility
+                    </Typography>
+                    <Autocomplete
+                      options={facility}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        facility.find((f) => f.id === selectedFacilityId) ||
+                        null
+                      }
+                      onChange={(event, newValue) => {
+                        setSelectedFacilityId(newValue?.id || null);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Choose Facility"
+                          variant="outlined"
+                          sx={{
+                            background:
+                              "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                            borderRadius: "12px",
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                          }}
+                        />
+                      )}
+                      disabled={facility.length === 0}
+                    />
+                  </div>
+                </motion.div>
+              )}
 
-        {/* Step 2: Choose Specialty */}
-        {activeStep === 1 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.5 }}
-            variants={fadeInVariants}
-          >
-            <Card
-              sx={{
-                marginBottom: "40px", // Thêm khoảng cách dưới Card
-                padding: "20px",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Choose Specialty
-              </Typography>
-              <Autocomplete
-                options={specialty}
-                getOptionLabel={(option) => option.name || ""}
-                value={
-                  specialty.find((s) => s.id === selectedSpecialtyId) || null
-                }
-                onChange={(event, newValue) => {
-                  setSelectedSpecialtyId(newValue?.id || null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose Specialty"
-                    variant="outlined"
-                  />
-                )}
-                disabled={!selectedFacilityId || specialty.length === 0}
-              />
-            </Card>
-          </motion.div>
-        )}
+              {/* Step 2: Choose Specialty */}
+              {activeStep === 1 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  transition={{ duration: 0.5 }}
+                  variants={fadeInVariants}
+                >
+                  <div className="bg-white rounded-[24px] border-2 border-blue-100 shadow-xl p-8 mb-10 w-full max-w-2xl mx-auto">
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        color: "var(--base-color)",
+                        fontWeight: "bold",
+                        letterSpacing: 1,
+                        mb: 2,
+                      }}
+                    >
+                      Choose Specialty
+                    </Typography>
+                    <Autocomplete
+                      options={specialty}
+                      getOptionLabel={(option) => option.name || ""}
+                      value={
+                        specialty.find((s) => s.id === selectedSpecialtyId) ||
+                        null
+                      }
+                      onChange={(event, newValue) => {
+                        setSelectedSpecialtyId(newValue?.id || null);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Choose Specialty"
+                          variant="outlined"
+                          sx={{
+                            background:
+                              "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                            borderRadius: "12px",
+                            "& .MuiOutlinedInput-root": {
+                              borderRadius: "12px",
+                            },
+                          }}
+                        />
+                      )}
+                      disabled={!selectedFacilityId || specialty.length === 0}
+                    />
+                  </div>
+                </motion.div>
+              )}
 
-        {/* Step 3: Choose Doctor */}
-        {activeStep === 2 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.5 }}
-            variants={fadeInVariants}
-          >
-            <Card
-              sx={{
-                marginBottom: "40px",
-                padding: "20px",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Choose Doctor
-              </Typography>
-              <div
-                className="doctor-list-container"
-                style={{
-                  minHeight: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+              {/* Step 3: Choose Doctor */}
+              {activeStep === 2 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  transition={{ duration: 0.5 }}
+                  variants={fadeInVariants}
+                >
+                  <div className="bg-white rounded-[24px] border-2 border-blue-100 shadow-xl p-8 mb-10 w-full max-w-4xl mx-auto">
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        color: "var(--base-color)",
+                        fontWeight: "bold",
+                        letterSpacing: 1,
+                        mb: 2,
+                      }}
+                    >
+                      Choose Doctor
+                    </Typography>
+                    <div
+                      className="doctor-list-container"
+                      style={{
+                        minHeight: "200px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {doctor.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
+                          <AnimatePresence>
+                            {doctor.map((doc) => (
+                              <motion.div
+                                key={doc.id}
+                                initial={{ opacity: 0, y: 50 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 50 }}
+                                transition={{ duration: 0.5 }}
+                                className={`doctor-card border-2 rounded-xl p-6 shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-gradient-to-br from-white to-blue-50 w-[250px] mx-auto cursor-pointer ${
+                                  selectedDoctorId === doc.id
+                                    ? "border-[var(--base-color)] ring-2 ring-blue-100"
+                                    : "border-blue-100"
+                                }`}
+                                style={{
+                                  boxShadow:
+                                    selectedDoctorId === doc.id
+                                      ? "0 0 0 4px #e3eaff"
+                                      : "0 1px 3px rgba(0,0,0,0.08)",
+                                }}
+                                onClick={() => {
+                                  setSelectedDoctorId(doc.id);
+                                }}
+                              >
+                                {/* Avatar */}
+                                <div
+                                  className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
+                                  style={{
+                                    backgroundImage: `url(${
+                                      baseURLApi + doc.avatar
+                                    })`,
+                                  }}
+                                ></div>
+                                {/* Doctor Info */}
+                                <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
+                                  {doc.fullname}
+                                </h2>
+                                <p className="text-gray-600 text-center text-sm mb-2">
+                                  {specialty.find(
+                                    (e) => e.id == selectedSpecialtyId
+                                  )?.name || "No description"}
+                                </p>
+                                <p className="text-gray-600 text-center text-sm mb-2">
+                                  {facility.find(
+                                    (e) => e.id == selectedFacilityId
+                                  )?.name || "No description"}
+                                </p>
+                              </motion.div>
+                            ))}
+                          </AnimatePresence>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-center mt-4">
+                          No doctors found. Please choose facility and
+                          specialty.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 4: Pick Date (WorkSchedule) */}
+              {activeStep === 3 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  transition={{ duration: 0.5 }}
+                  variants={fadeInVariants}
+                >
+                  <div className="bg-white rounded-[24px] border-2 border-blue-100 shadow-xl p-8 mb-10 w-full max-w-2xl mx-auto">
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        color: "var(--base-color)",
+                        fontWeight: "bold",
+                        letterSpacing: 1,
+                        mb: 2,
+                      }}
+                    >
+                      Pick Date
+                    </Typography>
+                    <WeekdayDatePicker
+                      onDateChange={(date) => {
+                        setSelectedDate(date);
+                      }}
+                      sx={{
+                        background:
+                          "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                        borderRadius: "12px",
+                        padding: "8px",
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 5: Confirm */}
+              {activeStep === 4 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  transition={{ duration: 0.5 }}
+                  variants={fadeInVariants}
+                >
+                  <div className="bg-white rounded-[24px] border-2 border-blue-100 shadow-xl p-8 mb-10 w-full max-w-2xl mx-auto">
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{
+                        color: "var(--base-color)",
+                        fontWeight: "bold",
+                        letterSpacing: 1,
+                        mb: 2,
+                      }}
+                    >
+                      Confirm Booking Information
+                    </Typography>
+                    <WorkScheduleElement
+                      workschedule={workschedule}
+                      selectedWorkScheduleId={selectedWorkScheduleId}
+                      setSelectedWorkScheduleId={setSelectedWorkScheduleId}
+                      sx={{
+                        background:
+                          "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                        borderRadius: "12px",
+                        padding: "8px",
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </div>
+            {/* Navigation buttons */}
+            <div className="flex flex-col items-center mt-4 w-full max-w-2xl mx-auto">
+              {/* Back */}
+              {!(mode === "doctor" && activeStep === 3) && (
+                <Button
+                  style={{ width: "200px" }}
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
+                  disabled={activeStep === 0}
+                >
+                  Back
+                </Button>
+              )}
+              {/* Next/Confirm */}
+              <Button
+                style={{ width: "200px", marginTop: "10px" }}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (activeStep === steps.length - 1) {
+                    if (canProceedToNextStep()) {
+                      onBooking();
+                    }
+                  } else if (canProceedToNextStep()) {
+                    setActiveStep((prev) =>
+                      Math.min(prev + 1, steps.length - 1)
+                    );
+                  }
                 }}
               >
-                {doctor.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                    <AnimatePresence>
-                      {doctor.map((doc) => (
-                        <motion.div
-                          key={doc.id}
-                          initial={{ opacity: 0, y: 50 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 50 }}
-                          transition={{ duration: 0.5 }}
-                          className={`doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white w-[250px] mx-auto cursor-pointer ${
-                            selectedDoctorId === doc.id ? "ring-0" : ""
-                          }`}
-                          style={{
-                            border:
-                              selectedDoctorId === doc.id
-                                ? "3px solid var(--base-color)"
-                                : "1px solid #d1d5db",
-                            boxShadow:
-                              selectedDoctorId === doc.id
-                                ? "0 0 0 4px #e3eaff"
-                                : "0 1px 3px rgba(0,0,0,0.1)",
-                          }}
-                          onClick={() => {
-                            setSelectedDoctorId(doc.id);
-                          }}
-                        >
-                          {/* Avatar */}
-                          <div
-                            className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
-                            style={{
-                              backgroundImage: `url(${
-                                baseURLApi + doc.avatar
-                              })`,
-                            }}
-                          ></div>
-                          {/* Doctor Info */}
-                          <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
-                            {doc.fullname}
-                          </h2>
-                          <p className="text-gray-600 text-center text-sm mb-2">
-                            {specialty.find((e) => e.id == selectedSpecialtyId)
-                              .name || "No description"}
-                          </p>
-                          <p className="text-gray-600 text-center text-sm mb-2">
-                            {facility.find((e) => e.id == selectedFacilityId)
-                              .name || "No description"}
-                          </p>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-center mt-4">
-                    No doctors found. Please choose facility and specialty.
-                  </p>
-                )}
-              </div>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Step 4: Pick Date */}
-        {activeStep === 3 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.5 }}
-            variants={fadeInVariants}
-          >
-            <Card
-              sx={{
-                marginBottom: "40px", // Thêm khoảng cách dưới Card
-                padding: "20px",
+                {activeStep === steps.length - 1 ? "Confirm" : "Next"}
+              </Button>
+              <div className="h-[100x] w-[100vw]"></div>
+              {/* Error message */}
+              {errorMessage && (
+                <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{ marginTop: "10px", textAlign: "center" }}
+                >
+                  {errorMessage}
+                </Typography>
+              )}
+            </div>
+            {/* Dialog */}
+            <Dialog
+              open={openDialog}
+              onClose={() => setOpenDialog(false)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              PaperProps={{
+                sx: {
+                  borderRadius: "20px",
+                  background:
+                    "linear-gradient(120deg, #fafdff 60%, #f4f8ff 100%)",
+                  boxShadow: "0 8px 32px rgba(80,112,255,0.10)",
+                  padding: 2,
+                },
               }}
             >
-              <Typography variant="h6" gutterBottom>
-                Pick Date
-              </Typography>
-              <WeekdayDatePicker
-                onDateChange={(date) => {
-                  setSelectedDate(date);
+              <DialogTitle
+                id="alert-dialog-title"
+                sx={{
+                  color: "var(--base-color)",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  fontSize: "1.3rem",
+                  letterSpacing: 1,
                 }}
-              />
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Step 5: Confirm */}
-        {activeStep === 4 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.5 }}
-            variants={fadeInVariants}
-          >
-            <Card
-              sx={{
-                marginBottom: "40px", // Thêm khoảng cách dưới Card
-                padding: "20px",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Confirm Booking Information
-              </Typography>
-              <WorkScheduleElement
-                workschedule={workschedule}
-                selectedWorkScheduleId={selectedWorkScheduleId}
-                setSelectedWorkScheduleId={setSelectedWorkScheduleId}
-              />
-            </Card>
-          </motion.div>
-        )}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginTop: "20px",
-            padding: "0 100px 0 100px",
-          }}
-        >
-          {/* Nút Back */}
-          {!(mode === "doctor" && activeStep === 3) && (
-            <Button
-              style={{ width: "200px" }}
-              variant="outlined"
-              color="secondary"
-              onClick={() => setActiveStep((prev) => Math.max(prev - 1, 0))}
-              disabled={activeStep === 0}
-            >
-              Back
-            </Button>
-          )}
-
-          {/* Nút Next hoặc Confirm */}
-          <Button
-            style={{ width: "200px", marginTop: "10px" }}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              if (activeStep === steps.length - 1) {
-                // Nếu ở bước cuối cùng, gọi hàm onBooking
-                if (canProceedToNextStep()) {
-                  onBooking();
-                }
-              } else if (canProceedToNextStep()) {
-                // Nếu không ở bước cuối cùng, chuyển sang bước tiếp theo
-                setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
-              }
-            }}
-          >
-            {activeStep === steps.length - 1 ? "Confirm" : "Next"}
-          </Button>
-
-          {/* Hiển thị thông báo lỗi */}
-          {errorMessage && (
-            <Typography
-              variant="body2"
-              color="error"
-              sx={{ marginTop: "10px", textAlign: "center" }}
-            >
-              {errorMessage}
-            </Typography>
-          )}
+              >
+                {title}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText
+                  id="alert-dialog-description"
+                  sx={{
+                    color: "#374151",
+                    fontSize: "1.1rem",
+                    textAlign: "center",
+                    padding: 1,
+                  }}
+                >
+                  {notification}
+                  {/* Nếu là thông báo check mail */}
+                  {title?.toLowerCase().includes("mail") && (
+                    <div className="flex justify-center mt-4">
+                      <img
+                        src="/mail-check.png"
+                        alt="Check mail"
+                        className="w-20 h-20"
+                        style={{ filter: "drop-shadow(0 2px 8px #a5b4fc)" }}
+                      />
+                    </div>
+                  )}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+                <Button
+                  onClick={() => setOpenDialog(false)}
+                  color="secondary"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    minWidth: "100px",
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setOpenDialog(false);
+                    navigate(`/checkout?id=${bookingId}`); // Chuyển đến trang checkout với ID
+                  }}
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    borderRadius: "8px",
+                    fontWeight: "bold",
+                    minWidth: "100px",
+                  }}
+                  autoFocus
+                >
+                  Yes
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
         </div>
-        <Dialog
-          open={openDialog}
-          onClose={() => setOpenDialog(false)}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {notification}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenDialog(false)} color="secondary">
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenDialog(false);
-                navigate("/profile");
-              }}
-              color="primary"
-              autoFocus
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
-      {onLoading && <LoadingScreen />}
     </>
   );
 }

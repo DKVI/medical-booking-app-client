@@ -80,7 +80,9 @@ export default function Header() {
 
   return (
     <motion.div
-      className="flex glass-morphism w-full h-[80px] lg:fixed absolute py-2 px-2 lg:py-3 lg:px-10"
+      className="flex w-full h-[80px] lg:fixed absolute py-2 px-2 lg:py-3 lg:px-10
+      bg-gradient-to-r from-blue-200 via-blue-150 to-blue-100
+      "
       style={{
         top: 0,
         left: 0,
@@ -131,68 +133,93 @@ export default function Header() {
               />
               {showUserMenu && (
                 <div
-                  className="absolute right-0 w-[200px] bg-white shadow-lg rounded-lg p-5 z-50"
-                  onMouseEnter={() => setShowUserMenu(true)} // Giữ menu hiển thị khi hover vào menu
-                  onMouseLeave={() => setShowUserMenu(false)} // Ẩn menu khi rời khỏi menu
+                  className="absolute right-[-20px] w-[240px] z-50"
+                  style={{
+                    top: "20px",
+                    filter: "drop-shadow(0 8px 32px rgba(33,150,243,0.18))",
+                  }}
+                  onMouseEnter={() => setShowUserMenu(true)}
+                  onMouseLeave={() => setShowUserMenu(false)}
                 >
-                  <div className="px-3 py-1">
-                    {/* Hiển thị loading hoặc avatar */}
-                    {loadingAvatar ? (
-                      <div className="flex justify-center items-center h-[150px]">
-                        <CircularProgress color="primary" />
-                      </div>
-                    ) : (
-                      <img
-                        src={baseURL + user.avatar}
-                        width={150}
-                        height={150}
-                        className="mb-2 drop-shadow-2xl rounded-[50%]"
-                        alt="User Avatar"
-                        onClick={() => {
-                          navigate("/profile");
-                        }}
-                      />
-                    )}
-                    <div
-                      className="flex mb-4 py-3"
-                      style={{
-                        borderBottom: "1px solid var(--base-color)",
-                      }}
-                    >
-                      <p className="text-[var(--base-color)] text-[20px] font-bold m-auto">
+                  <div
+                    className="rounded-2xl p-5"
+                    style={{
+                      background:
+                        "linear-gradient(120deg, #e3f0ff 0%, #f7fbff 100%)",
+                      border: "2px solid #90caf9",
+                      boxShadow: "0 8px 32px 0 rgba(33,150,243,0.18)",
+                      backdropFilter: "blur(20px)",
+                    }}
+                  >
+                    <div className="px-3 py-1 flex flex-col items-center">
+                      {loadingAvatar ? (
+                        <div className="flex justify-center items-center h-[120px]">
+                          <CircularProgress color="primary" />
+                        </div>
+                      ) : (
+                        <img
+                          src={baseURL + user.avatar}
+                          width={90}
+                          height={90}
+                          className="mb-2 drop-shadow-xl rounded-full border-4 border-white"
+                          alt="User Avatar"
+                          style={{
+                            objectFit: "cover",
+                            boxShadow: "0 2px 8px #90caf9aa",
+                            cursor: "pointer",
+                            transition: "transform 0.2s",
+                          }}
+                          onClick={() => {
+                            setShowUserMenu(false); // Thu lại menu khi click
+                            navigate("/profile");
+                          }}
+                        />
+                      )}
+                      <p className="text-[var(--base-color)] text-[18px] font-bold mt-2 mb-1">
                         Hi, {user.username}!
                       </p>
+                      <div
+                        style={{
+                          width: "100%",
+                          borderBottom: "1px solid #90caf9",
+                          margin: "8px 0 12px 0",
+                        }}
+                      />
                     </div>
-                  </div>
-                  <div className="flex flex-col gap-[12px]">
-                    <div className="hover:opacity-70">
-                      <FontAwesomeIcon icon={faChartSimple} />
-                      <Link
-                        className="w-full text-left text-[var(--base-color)] hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
-                        to={"/dashboard"}
-                        onClick={() => setShowUserMenu(false)}
+                    <div className="flex flex-col gap-2">
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-100 transition"
+                        style={{ color: "var(--base-color)", fontWeight: 500 }}
+                        onClick={() => {
+                          setShowUserMenu(false); // Thu lại menu khi click
+                          navigate("/dashboard");
+                        }}
                       >
-                        Go to Dashboard
-                      </Link>
-                    </div>
-                    <div className="hover:opacity-70">
-                      <FontAwesomeIcon icon={faGear} />
-                      <Link
-                        className="w-full text-left text-[var(--base-color)] hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
-                        onClick={() => setShowUserMenu(false)}
-                        to={"/setting"}
+                        <FontAwesomeIcon icon={faChartSimple} />
+                        Dashboard
+                      </button>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-100 transition"
+                        style={{ color: "var(--base-color)", fontWeight: 500 }}
+                        onClick={() => {
+                          setShowUserMenu(false); // Thu lại menu khi click
+                          navigate("/setting");
+                        }}
                       >
+                        <FontAwesomeIcon icon={faGear} />
                         Settings
-                      </Link>
-                    </div>
-                    <div className="hover:opacity-70">
-                      <FontAwesomeIcon icon={faRightFromBracket} color="red" />
-                      <Link
-                        className="w-full text-left text-red-500 hover:bg-gray-100 py-2 px-3 text-[14px] rounded"
-                        onClick={handleLogout}
+                      </button>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-100 transition"
+                        style={{ color: "#e53935", fontWeight: 500 }}
+                        onClick={() => {
+                          setShowUserMenu(false); // Thu lại menu khi click
+                          handleLogout();
+                        }}
                       >
+                        <FontAwesomeIcon icon={faRightFromBracket} />
                         Logout
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>

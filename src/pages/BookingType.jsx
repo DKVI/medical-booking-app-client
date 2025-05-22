@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from "react";
 import authApi from "../api/auth.api";
 import Cookies from "universal-cookie";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const pageVariants = {
-  hidden: { opacity: 0, scale: 0.8 }, // Bắt đầu nhỏ và mờ
-  visible: { opacity: 1, scale: 1 }, // Hiển thị rõ ràng và kích thước bình thường
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.9, y: 40 },
+  visible: (i) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      delay: 0.15 * i,
+      duration: 0.6,
+      type: "spring",
+      bounce: 0.35,
+    },
+  }),
 };
 
 function BookingType() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+
   const getUser = async (token) => {
     try {
       const res = await authApi.getByToken(token);
-      const user = res.user;
-      setUser(user);
-      console.log(res.user);
+      setUser(res.user);
     } catch (error) {
       navigate("/account");
     }
   };
-  useEffect(() => {
-    const cookies = new Cookies();
-    const token = cookies.get("token");
-    if (!token) {
-      navigate("/account");
-    }
-    verifyUser(token);
-    getUser(token);
-  }, []);
 
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
@@ -40,96 +39,95 @@ function BookingType() {
     }
   };
 
+  useEffect(() => {
+    const cookies = new Cookies();
+    const token = cookies.get("token");
+    if (!token) {
+      navigate("/account");
+    }
+    verifyUser(token);
+    getUser(token);
+    // eslint-disable-next-line
+  }, []);
+
   return (
-    <motion.div
-      className="dashboard-container flex"
-      style={{
-        marginLeft: "200px",
-        marginTop: "80px",
-        width: "calc(100vw - 200px)",
-        padding: "40px",
-        height: "calc(100vh - 120px)",
-        backgroundColor: "#f4f6f8",
-      }}
-      initial="hidden"
-      animate="visible"
-      transition={{ duration: 0.5 }} // Thời gian hiệu ứng
-      variants={pageVariants} // Sử dụng animation variants
-    >
-      <div className="flex gap-[100px] m-auto">
-        {/* FIND FACILITY */}
-        <div
-          onClick={() => {
-            navigate("/booking");
-          }}
-          className="h-[400px] cursor-pointer bg-white shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-[var(--base-color)] hover:text-white hover:scale-95"
-        >
-          <h2
-            className="text-[var(--base-color)] font-bold transition-all duration-300"
-            style={{
-              textShadow: "2px 2px 4px #cccc",
-              color: "inherit", // Kế thừa màu từ card cha
-            }}
-          >
-            FIND FACILITY
-          </h2>
-          <div
-            className="flex h-[200px] transition-all duration-300"
-            style={{
-              backgroundImage: "url(/vector-hospital.png)",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              borderRadius: "10px",
-            }}
-          ></div>
-          <div
-            className="description text-[14px] transition-all duration-300"
-            style={{
-              textShadow: "1px 1px 3px #cccc",
-              color: "inherit", // Kế thừa màu từ card cha
-            }}
-          >
-            Easily schedule appointments through partnered hospitals. Browse
-            departments and choose the right specialist for your needs.
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 flex items-center justify-center">
+      <motion.div
+        className="w-full max-w-4xl mx-auto mt-[100px] px-4 py-10"
+        initial={{ opacity: 0, scale: 0.95, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.7, type: "spring", bounce: 0.35 }}
+      >
+        <div className="flex flex-col items-center mb-10">
+          <h1 className="text-3xl font-bold text-[var(--base-color)] mb-2 tracking-wide">
+            Choose Booking Type
+          </h1>
+          <div className="h-[3px] w-24 bg-gradient-to-r from-blue-400  via-blue-200 to-blue-400 rounded-full mt-2"></div>
         </div>
-        <div
-          onClick={() => {
-            navigate("/doctor");
-          }}
-          className="h-[400px] cursor-pointer bg-white shadow-2xl w-[250px] px-3 py-[40px] rounded-3xl flex flex-col justify-between transition-all duration-300 hover:bg-[var(--base-color)] hover:text-white hover:scale-95"
-        >
-          <h2
-            className="text-[var(--base-color)] font-bold transition-all duration-300"
-            style={{
-              textShadow: "2px 2px 4px #cccc",
-              color: "inherit", // Kế thừa màu từ card cha
+        <div className="flex flex-col md:flex-row gap-14 justify-center items-center">
+          {/* FIND FACILITY */}
+          <motion.div
+            custom={0}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={{
+              scale: 0.97,
+              background:
+                "linear-gradient(120deg, oklch(0.882 0.059 254.128) 60%, #dbeafe 100%)", // bg xanh nhạt hơn
+              color: "#fff",
+              boxShadow: "0 8px 32px rgba(80,112,255,0.12)",
             }}
+            className="cursor-pointer bg-white border-2 border-blue-200 shadow-xl w-[260px] h-[410px] px-4 py-10 rounded-[28px] flex flex-col justify-between items-center transition-all duration-300 hover:text-white group"
+            onClick={() => navigate("/booking")}
           >
-            FIND DOCTOR
-          </h2>
-          <div
-            className="flex h-[200px] transition-all duration-300"
-            style={{
-              backgroundImage: "url(/vector-doctor.png)",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              borderRadius: "10px",
+            <h2 className="text-[var(--base-color)] font-bold text-xl mb-4 group-hover:text-white transition-all duration-300">
+              FIND FACILITY
+            </h2>
+            <div
+              className="flex h-[200px] w-full mb-4 rounded-xl bg-cover bg-center transition-all duration-300"
+              style={{
+                backgroundImage: "url(/vector-hospital.png)",
+              }}
+            ></div>
+            <div className="description text-[15px] text-gray-600 group-hover:text-white text-center transition-all duration-300">
+              Easily schedule appointments through partnered hospitals. Browse
+              departments and choose the right specialist for your needs.
+            </div>
+          </motion.div>
+          {/* FIND DOCTOR */}
+          <motion.div
+            custom={1}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={{
+              scale: 0.97,
+              background:
+                "linear-gradient(120deg, oklch(0.882 0.059 254.128) 60%, #dbeafe 100%)", // bg xanh nhạt hơn
+              color: "#fff",
+              boxShadow: "0 8px 32px rgba(80,112,255,0.12)",
             }}
-          ></div>
-          <div
-            className="description text-[14px] transition-all duration-300"
-            style={{
-              textShadow: "1px 1px 3px #cccc",
-              color: "inherit", // Kế thừa màu từ card cha
-            }}
+            className="cursor-pointer bg-white border-2 border-blue-200 shadow-xl w-[260px] h-[410px] px-4 py-10 rounded-[28px] flex flex-col justify-between items-center transition-all duration-300 hover:text-white group"
+            onClick={() => navigate("/doctor")}
           >
-            Connect with your preferred doctor and book an appointment
-            instantly. Personalized care at your convenience.
-          </div>
+            <h2 className="text-[var(--base-color)] font-bold text-xl mb-4 group-hover:text-white transition-all duration-300">
+              FIND DOCTOR
+            </h2>
+            <div
+              className="flex h-[200px] w-full mb-4 rounded-xl bg-cover bg-center transition-all duration-300"
+              style={{
+                backgroundImage: "url(/vector-doctor.png)",
+              }}
+            ></div>
+            <div className="description text-[15px] text-gray-600 group-hover:text-white text-center transition-all duration-300">
+              Connect with your preferred doctor and book an appointment
+              instantly. Personalized care at your convenience.
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
 

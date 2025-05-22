@@ -7,13 +7,14 @@ import {
   Button,
   TextField,
   Typography,
-  Container,
-  CssBaseline,
   Alert,
   IconButton,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserDoctor } from "@fortawesome/free-solid-svg-icons";
 
 function FormAuthDoctor() {
   const cookies = new Cookies();
@@ -79,94 +80,101 @@ function FormAuthDoctor() {
   };
 
   return (
-    <Container component="main" className="pt-[100px]" maxWidth="xs">
-      <CssBaseline />
-      {onLoading && <div>Loading...</div>}
-      <div
-        className="bg-white px-5 pb-10 pt-1 rounded-[20px]"
-        style={{
-          boxShadow: "2px 2px 12px 4px #cccc",
-        }}
-      >
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            component="h1"
-            variant="h5"
-            fontWeight="bold"
-            className="text-[var(--base-color)]"
-          >
-            Login for Doctor
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 1 }}
-          >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
-              autoFocus
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              error={!!errors.username}
-              helperText={errors.username}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={!!errors.password}
-              helperText={errors.password}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            {generalError && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {generalError}
-              </Alert>
-            )}
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Login
-            </Button>
-          </Box>
-        </Box>
+    <Box
+      className="bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl shadow-2xl border border-blue-100 px-8 py-8 flex flex-col items-center w-full"
+      sx={{ maxWidth: 400, margin: "0 auto" }}
+    >
+      <div className="flex items-center gap-3 mb-6">
+        <FontAwesomeIcon
+          icon={faUserDoctor}
+          className="text-blue-500 text-3xl"
+        />
+        <span className="text-[26px] font-extrabold text-[var(--base-color)] drop-shadow">
+          Doctor Login
+        </span>
       </div>
-    </Container>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        noValidate
+        className="w-full"
+      >
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="username"
+          label="Username"
+          name="username"
+          autoComplete="username"
+          autoFocus
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          error={!!errors.username}
+          helperText={errors.username}
+          sx={{
+            background: "#fff",
+            borderRadius: 2,
+            mb: 2,
+            boxShadow: "0 1px 8px #e0e7ff44",
+          }}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          id="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={!!errors.password}
+          helperText={errors.password}
+          sx={{
+            background: "#fff",
+            borderRadius: 2,
+            mb: 2,
+            boxShadow: "0 1px 8px #e0e7ff44",
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword(!showPassword)}
+                  edge="end"
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        {generalError && (
+          <Alert severity="error" sx={{ mt: 2, borderRadius: 2 }}>
+            {generalError}
+          </Alert>
+        )}
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{
+            mt: 3,
+            mb: 2,
+            fontWeight: "bold",
+            fontSize: 18,
+            borderRadius: 3,
+            letterSpacing: 1,
+            background: "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)",
+          }}
+          disabled={onLoading}
+        >
+          {onLoading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+        </Button>
+      </Box>
+    </Box>
   );
 }
 

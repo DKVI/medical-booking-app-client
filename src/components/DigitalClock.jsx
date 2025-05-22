@@ -20,7 +20,11 @@ const DigitalClock = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  return <h1 className="text-[var(--base-color)] font-bold">{time}</h1>;
+  return (
+    <h1 className="text-[var(--base-color)] font-bold">
+      {time ? time : "00:00:00"}
+    </h1>
+  );
 };
 
 export default DigitalClock;

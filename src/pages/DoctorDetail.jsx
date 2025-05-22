@@ -171,8 +171,8 @@ function DoctorDetail() {
         <div className="flex gap-8">
           {/* Phần chi tiết bác sĩ (7 phần) */}
           <motion.div
-            className="flex-1 bg-white p-8 rounded-lg"
-            style={{ boxShadow: "2px 2px 10px 4px #cccc" }}
+            className="flex-1 bg-white p-8 rounded-[24px] shadow-2xl border-2 border-blue-200"
+            style={{ boxShadow: "0 4px 24px 20px rgba(59,130,246,0.10)" }}
             variants={cardVariants}
           >
             <h3 className="text-4xl font-bold mb-6 text-center text-[var(--base-color)]">
@@ -182,9 +182,9 @@ function DoctorDetail() {
               {/* Avatar */}
               <div className="flex justify-center md:justify-start flex-col items-center">
                 <div
-                  className="w-48 h-48 bg-cover bg-center rounded-full pb-[100%]"
+                  className="w-48 h-48 bg-cover bg-center rounded-full pb-[100%] border-2 border-blue-100"
                   style={{
-                    boxShadow: "2px 2px 10px 4px #cccc",
+                    boxShadow: "0 4px 24px 20px rgba(59,130,246,0.10)",
                     backgroundImage: `url(${baseURL + doctor.avatar})`,
                   }}
                 ></div>
@@ -281,9 +281,9 @@ function DoctorDetail() {
 
           {/* Phần đánh giá (3 phần) */}
           <motion.div
-            className="w-1/3 bg-white p-6 rounded-lg"
+            className="w-1/3 bg-white p-6 rounded-[24px] shadow-2xl border-2 border-blue-200"
             style={{
-              boxShadow: "2px 2px 10px 4px #cccc",
+              boxShadow: "0 4px 24px 20px rgba(59,130,246,0.10)",
             }}
             variants={cardVariants}
           >
@@ -295,15 +295,15 @@ function DoctorDetail() {
                 {rates.map((rate, index) => (
                   <div
                     key={index}
-                    className="p-4 border border-gray-200 rounded-lg"
+                    className="p-4 border-2 border-blue-100 rounded-[20px] bg-white shadow"
                     style={{
-                      boxShadow: "2px 2px 10px 4px #cccc",
+                      boxShadow: "0 2px 12px 0 rgba(59,130,246,0.08)",
                     }}
                   >
                     <div className="flex items-center gap-4">
                       {/* Avatar */}
                       <div
-                        className="w-12 h-12 bg-cover bg-center rounded-full"
+                        className="w-12 h-12 bg-cover bg-center rounded-full border-2 border-blue-100"
                         style={{
                           backgroundImage: `url(${
                             baseURL + rate.avatar || "/default-avatar.png"
@@ -316,17 +316,17 @@ function DoctorDetail() {
                       </h3>
                     </div>
                     <div className="flex mt-2">{renderStars(rate.star_no)}</div>
-                    <div className="flex text-[12px] text-gray-500 mt-1">
+                    <div className="flex text-[12px] text-blue-400 mt-1">
                       {ultis.formatDate(rate.date)}
                     </div>
-                    <p className="text-sm text-gray-800 text-left mt-2">
+                    <p className="text-sm text-blue-700 text-left mt-2">
                       {rate.comments}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-500">No reviews available.</p>
+              <p className="text-center text-blue-300">No reviews available.</p>
             )}
           </motion.div>
         </div>

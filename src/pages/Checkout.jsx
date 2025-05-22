@@ -1,4 +1,4 @@
-import { faCheckCircle, faL } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { use, useEffect, useRef, useState } from "react";
 import { useFetcher, useNavigate, useSearchParams } from "react-router-dom";
@@ -16,11 +16,6 @@ import PayPal from "../components/PayPal";
 import { Snackbar, Alert, Slide } from "@mui/material";
 import purchaseApi from "../api/purchase.api";
 import emailApi from "../api/mail.api";
-
-// Hiệu ứng trượt cho Snackbar
-function SlideTransition(props) {
-  return <Slide {...props} direction="down" />;
-}
 
 function Checkout() {
   const navigate = useNavigate();
@@ -158,17 +153,18 @@ function Checkout() {
     <div className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8] flex gap-[20px]">
       <motion.div
         className="checkout-info w-2/3 h-full rounded-[20px] shadow p-[20px]"
-        style={{ backgroundColor: "white" }}
+        style={{ boxShadow: "2px 4px 24px 20px rgba(59,130,246,0.10)" }}
         initial="hidden"
         animate="visible"
         transition={{ duration: 0.5, delay: 0.1 }} // Hiệu ứng trượt
         variants={slideUpVariants}
       >
-        <div className="w-full flex">
+        <div className="w-full flex mb-8">
           <div
-            className="p-3 m-auto flex gap-3 text-[var(--base-color)] text-[24px] shadow-md rounded-[20px]"
+            className="p-3 m-auto flex gap-3 text-[var(--base-color)] text-[24px] shadow-2xl rounded-[24px] border-2 border-blue-200 bg-white transition-all duration-300"
             style={{
               alignItems: "center",
+              boxShadow: "2px 4px 24px 2p30 rgba(59,130,246,0.10)",
             }}
           >
             <FontAwesomeIcon icon={faCheckCircle} />
@@ -178,10 +174,13 @@ function Checkout() {
         <div>
           {/* Facility Container */}
           <motion.div
-            className="text-left p-[20px] shadow-lg rounded-[20px] facility-container"
+            className="text-left p-[20px] rounded-[24px] facility-container shadow-2xl border-2 border-blue-200 bg-white transition-all duration-300"
             initial="hidden"
             animate="visible"
             transition={{ duration: 0.5, delay: 0.2 }}
+            style={{
+              boxShadow: "2px 4px 24px 20px rgba(59,130,246,0.10)",
+            }}
           >
             <h4
               style={{
@@ -242,11 +241,14 @@ function Checkout() {
           <div className="flex gap-6">
             {/* Doctor Container */}
             <motion.div
-              className="text-left p-[20px] shadow-lg rounded-[20px] doctor-container mt-[20px] w-1/2"
+              className="text-left p-[20px] rounded-[24px] doctor-container mt-[20px] w-1/2 shadow-2xl border-2 border-blue-200 bg-white transition-all duration-300"
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.3 }}
               variants={slideUpVariants}
+              style={{
+                boxShadow: "2px 4px 24px 30px rgba(59,130,246,0.10)",
+              }}
             >
               <h4
                 style={{
@@ -338,11 +340,14 @@ function Checkout() {
 
             {/* User Container */}
             <motion.div
-              className="text-left p-[20px] shadow-lg rounded-[20px] user-container mt-[20px] w-1/2"
+              className="text-left p-[20px] rounded-[24px] user-container mt-[20px] w-1/2 shadow-2xl border-2 border-blue-200 bg-white transition-all duration-300"
               initial="hidden"
               animate="visible"
               transition={{ duration: 0.5, delay: 0.4 }}
               variants={slideUpVariants}
+              style={{
+                boxShadow: "2px 4px 24px 30px rgba(59,130,246,0.10)",
+              }}
             >
               <h4
                 style={{
@@ -431,11 +436,14 @@ function Checkout() {
         </div>
       </motion.div>
       <motion.div
-        className="checkout-detail w-1/3 h-full p-[20px] shadow-lg rounded-[20px] bg-white"
+        className="checkout-detail w-1/3 h-full p-[20px] rounded-[24px] shadow-2xl border-2 border-blue-200 bg-white transition-all duration-300"
         initial="hidden"
         animate="visible"
         transition={{ duration: 0.5, delay: 0.5 }} // Hiệu ứng trượt với độ trễ
         variants={slideUpVariants}
+        style={{
+          boxShadow: "2px 4px 24px 20px rgba(59,130,246,0.10)",
+        }}
       >
         <div>
           <h4
@@ -563,42 +571,57 @@ function Checkout() {
 
         <Snackbar
           open={openSnackbar}
-          autoHideDuration={6000} // Tự động ẩn sau 6 giây
-          onClose={() => setOpenSnackbar(false)} // Đóng Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "center" }} // Vị trí hiển thị
-          TransitionComponent={SlideTransition} // Hiệu ứng trượt
+          autoHideDuration={6000}
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          TransitionComponent={SlideTransition}
           sx={{
             "& .MuiSnackbarContent-root": {
-              backgroundColor: "#4caf50", // Màu nền xanh lá
-              color: "#fff", // Màu chữ trắng
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Đổ bóng
-              borderRadius: "8px", // Bo góc
+              background: "linear-gradient(90deg, #4caf50 60%, #2196f3 100%)",
+              color: "#fff",
+              boxShadow: "0px 4px 16px rgba(33,150,243,0.15)",
+              borderRadius: "12px",
+              border: "2px solid #2196f3",
+              padding: "8px 24px",
             },
           }}
         >
           <Alert
             onClose={() => setOpenSnackbar(false)}
-            severity="success" // Loại thông báo (success, error, warning, info)
+            severity="success"
             icon={
-              <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#fff" }} />
-            } // Biểu tượng
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  style={{ color: "#fff", fontSize: 22 }}
+                />
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  style={{ color: "#fff", fontSize: 20 }}
+                />
+              </span>
+            }
             sx={{
               display: "flex",
               alignItems: "center",
               fontSize: "16px",
               fontWeight: "bold",
+              background: "transparent",
+              boxShadow: "none",
               "& .MuiAlert-icon": {
-                marginRight: "10px",
+                marginRight: "14px",
               },
             }}
           >
             <div style={{ textAlign: "left" }}>
-              <p style={{ margin: 0 }}>🎉 Payment Successful!</p>
-              <p style={{ margin: 0 }}>
-                <strong>Location:</strong> {facility?.name}, {facility?.address}
+              <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>
+                🎉 Thanh toán thành công!
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Date:</strong>{" "}
+                <strong>Địa điểm:</strong> {facility?.name}, {facility?.address}
+              </p>
+              <p style={{ margin: 0 }}>
+                <strong>Ngày:</strong>{" "}
                 {new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
                   day: "2-digit",
                   month: "2-digit",
@@ -606,13 +629,24 @@ function Checkout() {
                 })}
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Time:</strong> {workschedule?.times}
+                <strong>Giờ:</strong> {workschedule?.times}
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Booking ID:</strong> {detailCheckout?.id}
+                <strong>Mã đặt lịch:</strong> {detailCheckout?.id}
               </p>
-              <p style={{ margin: 0 }}>
-                We will send you an email as soon as possible.
+              <p
+                style={{
+                  margin: "8px 0 0 0",
+                  color: "#fff",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <FontAwesomeIcon icon={faEnvelope} style={{ color: "#fff" }} />
+                Vui lòng kiểm tra email để xác nhận lịch hẹn!
               </p>
             </div>
           </Alert>

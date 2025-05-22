@@ -9,6 +9,7 @@ import Cookies from "universal-cookie"; // For handling cookies
 import LoadingScreen from "../components/LoadingScreen"; // Import LoadingScreen component
 import rateApi from "../api/rate.api";
 import { Button } from "@mui/material";
+import baseURL from "../api/baseURL.api";
 
 function Doctor() {
   const [searchKeyword, setSearchKeyword] = useState(""); // Từ khóa tìm kiếm
@@ -190,9 +191,7 @@ function Doctor() {
                         <div
                           className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
                           style={{
-                            backgroundImage: `url(${
-                              "http://localhost:3000" + doctor.avatar
-                            })`,
+                            backgroundImage: `url(${baseURL + doctor.avatar})`,
                           }}
                         ></div>
 

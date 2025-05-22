@@ -44,6 +44,65 @@ const doctorApi = {
       return err.response?.data || err.message;
     }
   },
+  getTotalPatients: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/total-patients/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  getTotalAppointmentsToday: async (id) => {
+    try {
+      const res = await axiosInstance.get(
+        `/doctor/total-appointments-today/${id}`
+      );
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  getTotalPatients: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/total-patients/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+
+  getTotalAppointments: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/total-appointments/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  getAppointmentsToday: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/appointments-today/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  getAllAppointments: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/appointments/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  getAppointmentById: async (id) => {
+    try {
+      const res = await axiosInstance.get(`/doctor/appointments/detail/${id}`);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
 };
 
 export default doctorApi;
