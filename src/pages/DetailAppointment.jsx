@@ -254,6 +254,18 @@ function DetailAppointment() {
     setOpenPrescriptionDialog(true);
     // Không log ra console nữa, hiển thị dialog
   };
+  // Xác định trạng thái expired dựa trên ngày/giờ hoặc appointment.status
+  const isExpired =
+    detailCheckout?.status === "Expired" ||
+    appointment?.status === "Expired" ||
+    (() => {
+      if (!detailCheckout?.date || !workschedule?.times) return false;
+      const appointmentDate = new Date(detailCheckout.date);
+      const [hour, minute] = workschedule.times.split(":").map(Number);
+      appointmentDate.setHours(hour);
+      appointmentDate.setMinutes(minute);
+      return appointmentDate < new Date();
+    })();
 
   return (
     <div>
@@ -286,13 +298,22 @@ function DetailAppointment() {
                 <h4 className="text-[22px] font-bold text-[var(--base-color)]">
                   Detail Appointment
                 </h4>
-                {detailCheckout?.status === "Process" ? (
+                {/* Hiển thị status */}
+                {detailCheckout?.status === "Process" && !isExpired && (
                   <span className="px-3 py-1 rounded-full border border-red-500 text-red-600 text-xs font-semibold bg-red-50">
                     In Process
                   </span>
-                ) : (
+                )}
+                {detailCheckout?.status === "Done" && (
                   <span className="px-3 py-1 rounded-full border border-green-500 text-green-600 text-xs font-semibold bg-green-50">
                     Done
+                  </span>
+                )}
+                {(detailCheckout?.status === "Expired" ||
+                  appointment?.status === "Expired" ||
+                  isExpired) && (
+                  <span className="px-3 py-1 rounded-full border border-orange-400 text-orange-600 text-xs font-semibold bg-orange-50">
+                    Expired
                   </span>
                 )}
               </div>
@@ -436,11 +457,35 @@ function DetailAppointment() {
                 className="text-blue-500"
               />
               <span>Medical Note</span>
+              {(detailCheckout?.status === "Expired" ||
+                appointment?.status === "Expired" ||
+                isExpired) && (
+                <span className="ml-2 px-3 py-1 rounded-full border border-orange-400 text-orange-600 text-xs font-semibold bg-orange-50">
+                  Expired
+                </span>
+              )}
             </div>
-            {/* Prescription hoặc nhập thuốc */}
-            {prescription &&
-            Array.isArray(prescription.medicines) &&
-            prescription.medicines.length > 0 ? (
+            {/* Nếu expired thì khóa phần medical note */}
+            {detailCheckout?.status === "Expired" ||
+            appointment?.status === "Expired" ||
+            isExpired ? (
+              <div className="flex flex-col items-center justify-center h-full py-12">
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  className="text-orange-400 text-4xl mb-4"
+                />
+                <p className="text-orange-600 font-bold text-lg mb-2">
+                  This appointment has expired.
+                </p>
+                <p className="text-gray-500 text-center">
+                  Patient missed your appointment, so the medical note is
+                  locked.
+                </p>
+              </div>
+            ) : // ...phần medical note cũ giữ nguyên...
+            prescription &&
+              Array.isArray(prescription.medicines) &&
+              prescription.medicines.length > 0 ? (
               <>
                 <div className="flex flex-col gap-3 mb-6">
                   <label className="block text-left font-semibold text-blue-700 mb-2 text-lg">

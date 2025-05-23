@@ -110,7 +110,7 @@ function Dashboard() {
                 </motion.div>
                 <motion.div
                   className="p-[18px] shadow-2xl cursor-pointer hover:scale-105 hover:bg-[var(--base-color)] hover:text-white w-[220px] h-[220px] flex flex-col items-center justify-center text-[var(--base-color)] bg-white rounded-[24px] transition-all duration-300 border-2 border-blue-200"
-                  onClick={() => navigate("/medical-note")}
+                  onClick={() => navigate("/appointments")}
                   initial="hidden"
                   animate="visible"
                   variants={zoomInVariants}
@@ -120,7 +120,7 @@ function Dashboard() {
                     className="text-[48px] mb-4"
                     icon={faNotesMedical}
                   />
-                  <div className="font-bold text-lg">Medical Note</div>
+                  <div className="font-bold text-lg">Appointments</div>
                 </motion.div>
                 <motion.div
                   className="p-[18px] shadow-2xl cursor-pointer hover:scale-105 hover:bg-[var(--base-color)] hover:text-white w-[220px] h-[220px] flex flex-col items-center justify-center text-[var(--base-color)] bg-white rounded-[24px] transition-all duration-300 border-2 border-blue-200"

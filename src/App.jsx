@@ -22,6 +22,7 @@ import DoctorLayout from "./layouts/DoctorLayout";
 import DashboardDoctor from "./pages/DashboardDoctor";
 import Appointments from "./pages/Appointments";
 import DetailAppointment from "./pages/DetailAppointment";
+import ProfileDoctor from "./pages/ProfileDoctor";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -84,7 +85,7 @@ function AppRoutes() {
       children: [{ path: "", element: <Setting /> }],
     },
     {
-      path: "/medical-note",
+      path: "/appointments",
       element: <ClientLayout />,
       children: [{ path: "", element: <MedicalNote /> }],
     },
@@ -117,6 +118,11 @@ function AppRoutes() {
       path: "/for-doctor/appointment/detail",
       element: <DoctorLayout />,
       children: [{ path: "", element: <DetailAppointment /> }],
+    },
+    {
+      path: "/for-doctor/profile",
+      element: <DoctorLayout />,
+      children: [{ path: "", element: <ProfileDoctor /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

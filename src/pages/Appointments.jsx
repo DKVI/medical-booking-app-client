@@ -127,132 +127,152 @@ function Appointments() {
                   {dateKey}
                 </Typography>
                 <div className="flex flex-wrap gap-8">
-                  {grouped[dateKey].map((item, idx) => (
-                    <motion.div
-                      key={item.id || idx}
-                      className="relative w-[320px] min-w-[270px] bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl shadow-lg border border-blue-100 p-6 flex flex-col items-center cursor-pointer hover:shadow-2xl transition-all duration-300"
-                      initial="hidden"
-                      animate="visible"
-                      variants={fadeScale}
-                      transition={{ delay: i * 0.08 + idx * 0.05 }}
-                      onClick={() => setCurrentAppointment(item)}
-                    >
-                      {/* Status badge */}
-                      <div className="absolute top-4 right-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold shadow ${
-                            item.scheduling_status === "Process"
-                              ? "bg-red-100 text-red-600 border border-red-400"
-                              : "bg-green-100 text-green-600 border border-green-400"
-                          }`}
-                        >
-                          {item.scheduling_status === "Process"
-                            ? "In process"
-                            : "Done"}
-                        </span>
-                      </div>
-                      <img
-                        src={
-                          item.avatar
-                            ? baseURL + item.avatar
-                            : "/default-avatar.png"
-                        }
-                        alt="avatar"
-                        className="w-20 h-20 rounded-full object-cover border-4 border-[var(--base-color)] shadow mb-3"
-                      />
-                      <div className="font-bold text-[var(--base-color)] text-xl mb-1">
-                        {item.fullname}
-                      </div>
-                      <div className="text-gray-500 text-sm mb-1">
-                        {item.gender === "male"
-                          ? "Male"
-                          : item.gender === "female"
-                          ? "Female"
-                          : ""}
-                      </div>
-                      <div className="text-gray-600 text-xs mb-1">
-                        <span className="font-semibold">Phone:</span>{" "}
-                        {item.phone_no}
-                      </div>
-                      <div className="text-gray-600 text-xs mb-1">
-                        <span className="font-semibold">Email:</span>{" "}
-                        {item.email}
-                      </div>
-                      <div className="text-gray-600 text-xs mb-1">
-                        <span className="font-semibold">Time:</span>{" "}
-                        {item.times}
-                      </div>
-                      <div className="text-gray-600 text-xs mb-1">
-                        <span className="font-semibold">DOB:</span>{" "}
-                        {item.dob
-                          ? new Date(item.dob).toLocaleDateString("vi-VN")
-                          : ""}
-                      </div>
-                      <div className="flex gap-2 mt-4">
-                        <a
-                          href={`https://wa.me/84${item.phone_no?.replace(
-                            /^0/,
-                            ""
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ textDecoration: "none" }}
-                        >
+                  {grouped[dateKey].map((item, idx) => {
+                    // Kiểm tra expired
+                    let isExpired = false;
+                    if (item.scheduling_status === "Expired") {
+                      isExpired = true;
+                    } else if (item.date && item.times) {
+                      const appointmentDate = new Date(item.date);
+                      const [hour, minute] = item.times.split(":").map(Number);
+                      appointmentDate.setHours(hour);
+                      appointmentDate.setMinutes(minute);
+                      if (appointmentDate < new Date()) isExpired = true;
+                    }
+
+                    return (
+                      <motion.div
+                        key={item.id || idx}
+                        className="relative w-[320px] min-w-[270px] bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl shadow-lg border border-blue-100 p-6 flex flex-col items-center cursor-pointer hover:shadow-2xl transition-all duration-300"
+                        initial="hidden"
+                        animate="visible"
+                        variants={fadeScale}
+                        transition={{ delay: i * 0.08 + idx * 0.05 }}
+                        onClick={() => setCurrentAppointment(item)}
+                      >
+                        {/* Status badge */}
+                        <div className="absolute top-4 right-4">
+                          {isExpired ? (
+                            <span className="px-3 py-1 rounded-full text-xs font-semibold shadow bg-orange-50 text-orange-600 border border-orange-400">
+                              Expired
+                            </span>
+                          ) : (
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-semibold shadow ${
+                                item.scheduling_status === "Process"
+                                  ? "bg-red-100 text-red-600 border border-red-400"
+                                  : "bg-green-100 text-green-600 border border-green-400"
+                              }`}
+                            >
+                              {item.scheduling_status === "Process"
+                                ? "In process"
+                                : "Done"}
+                            </span>
+                          )}
+                        </div>
+                        <img
+                          src={
+                            item.avatar
+                              ? baseURL + item.avatar
+                              : "/default-avatar.png"
+                          }
+                          alt="avatar"
+                          className="w-20 h-20 rounded-full object-cover border-4 border-[var(--base-color)] shadow mb-3"
+                        />
+                        <div className="font-bold text-[var(--base-color)] text-xl mb-1">
+                          {item.fullname}
+                        </div>
+                        <div className="text-gray-500 text-sm mb-1">
+                          {item.gender === "male"
+                            ? "Male"
+                            : item.gender === "female"
+                            ? "Female"
+                            : ""}
+                        </div>
+                        <div className="text-gray-600 text-xs mb-1">
+                          <span className="font-semibold">Phone:</span>{" "}
+                          {item.phone_no}
+                        </div>
+                        <div className="text-gray-600 text-xs mb-1">
+                          <span className="font-semibold">Email:</span>{" "}
+                          {item.email}
+                        </div>
+                        <div className="text-gray-600 text-xs mb-1">
+                          <span className="font-semibold">Time:</span>{" "}
+                          {item.times}
+                        </div>
+                        <div className="text-gray-600 text-xs mb-1">
+                          <span className="font-semibold">DOB:</span>{" "}
+                          {item.dob
+                            ? new Date(item.dob).toLocaleDateString("vi-VN")
+                            : ""}
+                        </div>
+                        <div className="flex gap-2 mt-4">
+                          <a
+                            href={`https://wa.me/84${item.phone_no?.replace(
+                              /^0/,
+                              ""
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ textDecoration: "none" }}
+                          >
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              sx={{
+                                borderRadius: "20px",
+                                textTransform: "none",
+                                fontSize: "12px",
+                                px: 2,
+                              }}
+                            >
+                              WhatsApp
+                            </Button>
+                          </a>
+                          <a
+                            href={`mailto:${item.email}`}
+                            style={{ textDecoration: "none" }}
+                          >
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              sx={{
+                                borderRadius: "20px",
+                                textTransform: "none",
+                                fontSize: "12px",
+                                px: 2,
+                              }}
+                            >
+                              Email
+                            </Button>
+                          </a>
                           <Button
-                            variant="outlined"
-                            color="primary"
+                            variant="contained"
+                            color="secondary"
                             sx={{
                               borderRadius: "20px",
                               textTransform: "none",
                               fontSize: "12px",
                               px: 2,
+                              bgcolor: "var(--base-color)",
+                              color: "#fff",
+                              "&:hover": { bgcolor: "#1e40af" },
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Xử lý chuyển trang hoặc mở chi tiết
+                              navigate(
+                                `/for-doctor/appointment/detail?id=${item.id}`
+                              );
                             }}
                           >
-                            WhatsApp
+                            Detail
                           </Button>
-                        </a>
-                        <a
-                          href={`mailto:${item.email}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Button
-                            variant="outlined"
-                            color="error"
-                            sx={{
-                              borderRadius: "20px",
-                              textTransform: "none",
-                              fontSize: "12px",
-                              px: 2,
-                            }}
-                          >
-                            Email
-                          </Button>
-                        </a>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          sx={{
-                            borderRadius: "20px",
-                            textTransform: "none",
-                            fontSize: "12px",
-                            px: 2,
-                            bgcolor: "var(--base-color)",
-                            color: "#fff",
-                            "&:hover": { bgcolor: "#1e40af" },
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            // Xử lý chuyển trang hoặc mở chi tiết
-                            navigate(
-                              `/for-doctor/appointment/detail?id=${item.id}`
-                            );
-                          }}
-                        >
-                          Detail
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </motion.div>
             ) : null

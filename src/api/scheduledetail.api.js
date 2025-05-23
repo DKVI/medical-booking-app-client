@@ -36,6 +36,17 @@ const scheduleDetailApi = {
       return error.response?.data || error.message;
     }
   },
+  checkExpired: async (id, body) => {
+    try {
+      const respone = await axiosInstance.post(
+        `schedulingDetail/check-expired/${id}`,
+        body
+      );
+      return respone.data;
+    } catch (error) {
+      return error.response?.data || error.message;
+    }
+  },
 };
 
 export default scheduleDetailApi;

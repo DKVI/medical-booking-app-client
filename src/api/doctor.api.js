@@ -103,6 +103,23 @@ const doctorApi = {
       return err.response?.data || err.message;
     }
   },
+  updateInfo: async (id, body) => {
+    try {
+      const res = await axiosInstance.put(`/doctor/${id}`, body);
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+
+  changeAvt: async (data) => {
+    try {
+      const res = await axiosInstance.post("/doctor/changeAvt", data);
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
 };
 
 export default doctorApi;

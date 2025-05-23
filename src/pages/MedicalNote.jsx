@@ -185,12 +185,26 @@ function MedicalNote() {
                       >
                         In Process
                       </div>
-                    ) : (
+                    ) : detail.status === "Done" ? (
                       <div
                         className="bg-green-500 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
                         style={{ fontWeight: "bold" }}
                       >
-                        Completed
+                        Done
+                      </div>
+                    ) : detail.status === "Expired" ? (
+                      <div
+                        className="bg-orange-400 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        Expired
+                      </div>
+                    ) : (
+                      <div
+                        className="bg-gray-400 text-white px-2 text-[10px] w-[100px] py-1 flex-none rounded-lg text-center"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        {detail.status}
                       </div>
                     )}
                     <div className="date text-[var(--base-color)] font-bold text-sm">

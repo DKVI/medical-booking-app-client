@@ -125,30 +125,53 @@ function Doctor() {
   return (
     <>
       <motion.div
-        className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] bg-[#f4f6f8] flex gap-[20px]"
+        className="dashboard-container ml-[200px] mt-[80px] w-[calc(100vw-200px)] p-[60px] flex gap-[20px]"
+        style={{
+          background: "linear-gradient(120deg, #e3f0ff 0%, #f7fbff 100%)",
+          minHeight: "100vh",
+        }}
         initial="hidden"
         animate="visible"
         exit="exit"
         variants={pageVariants}
         transition={{ duration: 0.5 }}
       >
-        <div className="doctor-page p-6 m-auto">
+        <div
+          className="doctor-page p-8 m-auto rounded-[28px] shadow-xl"
+          style={{
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 8px 32px 0 rgba(33,150,243,0.18)",
+            border: "2px solid #90caf9",
+            backdropFilter: "blur(20px)",
+            minWidth: 340,
+            width: "100%",
+            maxWidth: 1200,
+          }}
+        >
           <h1
-            className="text-3xl font-bold mb-6 text-center"
+            className="text-3xl font-bold mb-8 text-center"
             style={{
-              color: "var(--base-color)", // Màu tiêu đề
-              textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)", // Thêm shadow
+              color: "var(--base-color)",
+              textShadow: "2px 2px 8px rgba(33,150,243,0.15)",
+              letterSpacing: 1,
             }}
           >
             Search for Doctors
           </h1>
-          <div className="mb-6">
+          <div className="mb-8">
             <input
               type="text"
               value={searchKeyword}
               onChange={handleSearch}
               placeholder="Enter doctor name or specialty..."
-              className="border border-gray-300 rounded-lg p-3 w-full shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--base-color)]"
+              className="border border-blue-200 rounded-xl p-4 w-full shadow focus:outline-none focus:ring-2 focus:ring-[var(--base-color)] bg-white"
+              style={{
+                fontSize: 16,
+                background: "rgba(227,240,255,0.7)",
+                boxShadow: "0 2px 8px 0 rgba(33,150,243,0.08)",
+                backdropFilter: "blur(8px)",
+                color: "var(--base-color)",
+              }}
             />
           </div>
           <div
@@ -165,7 +188,7 @@ function Doctor() {
                 Loading doctors...
               </p>
             ) : doctors.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <AnimatePresence>
                   {doctors.map((doctor) => {
                     const specialty = specialties?.find(
@@ -185,24 +208,37 @@ function Doctor() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 50 }}
                         transition={{ duration: 0.5 }}
-                        className="doctor-card border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white w-[250px] mx-auto"
+                        className="doctor-card rounded-2xl p-6"
+                        style={{
+                          background: "rgba(227,240,255,0.92)",
+                          boxShadow: "0 4px 24px 0 rgba(33,150,243,0.12)",
+                          border: "1.5px solid #90caf9",
+                          backdropFilter: "blur(20px)",
+                          minWidth: 220,
+                          maxWidth: 300,
+                          margin: "auto",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                        }}
                       >
                         {/* Avatar */}
                         <div
-                          className="w-full h-40 mb-4 bg-cover bg-center rounded-lg pb-[100%]"
+                          className="w-28 h-28 mb-4 bg-cover bg-center rounded-full border-4 border-white shadow"
                           style={{
                             backgroundImage: `url(${baseURL + doctor.avatar})`,
+                            boxShadow: "0 2px 8px #90caf9aa",
                           }}
                         ></div>
 
                         {/* Doctor Info */}
-                        <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
+                        <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-1">
                           {doctor.fullname}
                         </h2>
-                        <p className="text-gray-600 text-[12px] text-center mb-1">
+                        <p className="text-blue-600 text-[13px] text-center mb-1 font-semibold">
                           {specialty?.name || "N/A"}
                         </p>
-                        <p className="text-gray-600 text-[12px] text-center mb-4">
+                        <p className="text-gray-600 text-[12px] text-center mb-3">
                           {facility?.name || "N/A"}
                         </p>
 
@@ -217,7 +253,7 @@ function Doctor() {
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex gap-4">
+                        <div className="flex gap-3 w-full">
                           {/* Book Appointment Button */}
                           <Button
                             variant="contained"
@@ -225,9 +261,13 @@ function Doctor() {
                             onClick={() => handleBooking(doctor.id)}
                             className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
                             style={{
-                              backgroundColor: "var(--base-color)", // Sử dụng màu base-color
-                              color: "white",
-                              fontSize: "12px",
+                              background:
+                                "linear-gradient(90deg, #90caf9 60%, #1976d2 100%)",
+                              color: "#fff",
+                              fontSize: "13px",
+                              borderRadius: "8px",
+                              fontWeight: "bold",
+                              boxShadow: "0 2px 8px 0 rgba(33,150,243,0.15)",
                             }}
                           >
                             Book
@@ -242,9 +282,12 @@ function Doctor() {
                             }
                             className="flex-1 font-semibold text-lg py-2 transition-transform duration-300 transform hover:scale-105 shadow-md"
                             style={{
-                              borderColor: "var(--base-color)", // Viền màu base-color
-                              color: "var(--base-color)", // Chữ màu base-color
-                              fontSize: "12px",
+                              borderColor: "#90caf9",
+                              color: "#1976d2",
+                              fontSize: "13px",
+                              borderRadius: "8px",
+                              fontWeight: "bold",
+                              background: "#fff",
                             }}
                           >
                             Details

@@ -532,7 +532,7 @@ function DetailNote() {
         }}
         initial="hidden"
         animate="visible"
-        transition={{ duration: 0.5, delay: 0.5 }} // Hiệu ứng trượt với độ trễ
+        transition={{ duration: 0.5, delay: 0.5 }}
         variants={slideUpVariants}
       >
         {(() => {
@@ -547,11 +547,14 @@ function DetailNote() {
             appointmentDate.setMinutes(parseInt(appointmentTime[1], 10));
           }
 
-          if (
-            detailCheckout?.status === "Process" &&
-            appointmentDate <= currentDate
-          ) {
-            // Trạng thái "Expired"
+          // Kiểm tra expired
+          const isExpired =
+            detailCheckout?.status === "Expired" ||
+            (detailCheckout?.status === "Process" &&
+              appointmentDate <= currentDate);
+
+          if (isExpired) {
+            // Expired status
             return (
               <div>
                 <h4
@@ -591,7 +594,7 @@ function DetailNote() {
                       color: "#721c24",
                     }}
                   >
-                    This appointment has expired and cannot be refunded.
+                    You missed this appointment and cannot receive a refund.
                   </p>
                 </div>
               </div>
