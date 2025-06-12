@@ -15,6 +15,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import authApi from "../api/auth.api";
 import baseURL from "../api/baseURL.api";
+import LoadingScreen from "../components/LoadingScreen";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 
 function SideBarDoctor() {
   const cookie = new Cookies();
@@ -33,6 +41,8 @@ function SideBarDoctor() {
     facility_name: null,
     specialty_name: null,
   });
+  const [logoutDialog, setLogoutDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getDoctorByToken = async (doctorToken) => {
     try {
@@ -49,8 +59,25 @@ function SideBarDoctor() {
   useEffect(() => {
     getDoctorByToken(doctorToken);
   }, []);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setLogoutDialog(true);
+  };
+
+  const confirmLogout = () => {
+    setLogoutDialog(false);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      cookie.remove("token");
+      navigate("/for-doctor/login");
+    }, 1000);
+  };
+
   return (
     <div className="px-5 py-6 w-[300px] shadow-2xl bg-gradient-to-br from-white via-blue-50 to-blue-100 h-full fixed top-0 left-0 border-r-2 border-blue-100">
+      {loading && <LoadingScreen />}
       <div>
         <div className="h-[150px] w-full flex items-center justify-center">
           <div className="rounded-full border-4 border-blue-200 shadow-lg p-1 bg-white">
@@ -136,21 +163,92 @@ function SideBarDoctor() {
               <FontAwesomeIcon icon={faGear} className="text-xl" />
               <span>Settings</span>
             </NavLink>
-            <NavLink
-              to="/logout"
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 ${
-                  isActive
-                    ? "bg-red-100 text-red-600 font-bold shadow"
-                    : "text-gray-600"
-                } hover:bg-red-50 hover:text-red-600 hover:shadow`
-              }
+            <a
+              href="#logout"
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-4 py-2 rounded-xl transition-all duration-300 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:shadow"
+              style={{ cursor: "pointer" }}
             >
               <FontAwesomeIcon icon={faRightFromBracket} className="text-xl" />
               <span>Logout</span>
-            </NavLink>
+            </a>
           </div>
         </nav>
+        {/* Logout Confirm Dialog */}
+        <Dialog
+          open={logoutDialog}
+          onClose={() => setLogoutDialog(false)}
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              background: "linear-gradient(120deg, #fff0f0 0%, #ffeaea 100%)",
+              boxShadow: "0 8px 32px 0 rgba(244,67,54,0.12)",
+              border: "2px solid #ef9a9a",
+              minWidth: 340,
+              textAlign: "center",
+              p: 2,
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              color: "#d32f2f",
+              fontWeight: "bold",
+              fontSize: 22,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+              pb: 0,
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faRightFromBracket}
+              className="text-red-400 mr-2"
+            />
+            Confirm Logout
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              color: "#d32f2f",
+              fontWeight: 500,
+              fontSize: 17,
+              py: 2,
+            }}
+          >
+            Are you sure you want to logout?
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+            <Button
+              onClick={() => setLogoutDialog(false)}
+              variant="outlined"
+              sx={{
+                borderRadius: 2,
+                fontWeight: "bold",
+                color: "#d32f2f",
+                borderColor: "#ef9a9a",
+                px: 4,
+                "&:hover": { background: "#ffeaea" },
+              }}
+            >
+              No
+            </Button>
+            <Button
+              onClick={confirmLogout}
+              variant="contained"
+              color="error"
+              sx={{
+                borderRadius: 2,
+                fontWeight: "bold",
+                px: 4,
+                background: "linear-gradient(90deg, #dc2626 60%, #f87171 100%)",
+                color: "#fff",
+              }}
+            >
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );

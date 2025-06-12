@@ -47,6 +47,26 @@ const scheduleDetailApi = {
       return error.response?.data || error.message;
     }
   },
+  markAsDone: async (id) => {
+    try {
+      const res = await axiosInstance.put(
+        `schedulingDetail/mark-as-done/${id}`
+      );
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
+  markAsInprocess: async (id) => {
+    try {
+      const res = await axiosInstance.put(
+        `schedulingDetail/mark-as-inprocess/${id}`
+      );
+      return res.data;
+    } catch (err) {
+      return err.respone?.data || err.message;
+    }
+  },
 };
 
 export default scheduleDetailApi;

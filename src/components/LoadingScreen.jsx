@@ -12,7 +12,7 @@ export default function LoadingScreen() {
         right: 0,
         bottom: 0,
         position: "fixed",
-        zIndex: 1000,
+        zIndex: 100000,
       }}
     >
       <CircularProgress className="m-auto" />

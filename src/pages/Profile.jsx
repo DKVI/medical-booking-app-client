@@ -33,6 +33,8 @@ function Profile() {
     gender: "",
     weight: "", // Thêm weight
     height: "", // Thêm height
+    address: "",
+    dob: "",
   });
 
   const [errors, setErrors] = useState({}); // State để lưu lỗi
@@ -66,6 +68,7 @@ function Profile() {
       const res = await authApi.getByToken(token);
       const user = res.user;
       setUser(user);
+      console.log(res.user);
       setFormData({
         username: user.username || "",
         fullname: user.fullname || "",
@@ -74,8 +77,17 @@ function Profile() {
         phoneNumber: user.phone_no || "",
         gmail: user.email || "",
         gender: user.gender || "",
-        weight: user.weight || "", // Thêm weight
-        height: user.height || "", // Thêm height
+        weight: user.weight || "",
+        height: user.height || "",
+        dob:
+          user.dob &&
+          (() => {
+            const date = new Date(user.dob);
+            // Chuyển sang UTC+7
+            const vnDate = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+            return vnDate.toISOString().slice(0, 10);
+          })(),
+        address: user.address,
       });
       // Lấy avatar
       if (user.avatar) {
@@ -121,6 +133,12 @@ function Profile() {
     if (!formData.weight) {
       newErrors.weight = "Weight is required";
     }
+    if (!formData.dob) {
+      newErrors.dob = "Date of Birth is required";
+    }
+    if (!formData.address) {
+      newErrors.address = "Address is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
@@ -147,10 +165,12 @@ function Profile() {
     setLoading(true);
     setTimeout(async () => {
       if (validate()) {
-        await updatePatient(formData);
+        try {
+          await updatePatient(formData);
+        } catch (err) {
+          setDialogMessage("System error. Please try again.");
+        }
       } else {
-        setDialogMessage("System error. Please try again.");
-        setDialogOpen(true);
         setLoading(false);
       }
     }, 1000);
@@ -549,6 +569,36 @@ function Profile() {
                   variants={fieldVariants}
                   initial="hidden"
                   animate="visible"
+                  transition={{ duration: 0.5, delay: 0.37 }}
+                >
+                  <TextField
+                    label="Address"
+                    name="address"
+                    value={formData.address || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    error={!!errors.address}
+                    helperText={errors.address}
+                    sx={{
+                      background: "#f7fbff",
+                      borderRadius: "8px",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": { borderColor: "#90caf9" },
+                        "&:hover fieldset": { borderColor: "#1976d2" },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#1976d2",
+                          borderWidth: 2,
+                        },
+                      },
+                    }}
+                  />
+                </motion.div>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  variants={fieldVariants}
+                  initial="hidden"
+                  animate="visible"
                   transition={{ duration: 0.5, delay: 0.4 }}
                 >
                   <TextField
@@ -621,6 +671,38 @@ function Profile() {
                     value={formData.height}
                     onChange={handleChange}
                     fullWidth
+                    sx={{
+                      background: "#f7fbff",
+                      borderRadius: "8px",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": { borderColor: "#90caf9" },
+                        "&:hover fieldset": { borderColor: "#1976d2" },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#1976d2",
+                          borderWidth: 2,
+                        },
+                      },
+                    }}
+                  />
+                </motion.div>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <motion.div
+                  variants={fieldVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.5, delay: 0.39 }}
+                >
+                  <TextField
+                    label="Date of Birth"
+                    name="dob"
+                    type="date"
+                    value={formData.dob || ""}
+                    onChange={handleChange}
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                    error={!!errors.dob}
+                    helperText={errors.dob}
                     sx={{
                       background: "#f7fbff",
                       borderRadius: "8px",

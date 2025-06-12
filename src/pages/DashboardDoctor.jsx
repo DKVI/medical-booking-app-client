@@ -14,6 +14,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import baseURL from "../api/baseURL.api";
 import rateApi from "../api/rate.api";
 import { motion } from "framer-motion";
+import statisticApi from "../api/statitics.api";
 
 function DashboardDoctor() {
   const navigate = useNavigate();
@@ -48,9 +49,7 @@ function DashboardDoctor() {
   });
 
   // Chart data mẫu (có thể thay bằng API thực tế)
-  const [appointmentsByMonth, setAppointmentsByMonth] = useState([
-    5, 8, 12, 10, 15, 20, 18, 22, 17, 14, 9, 11,
-  ]);
+  const [appointmentsByMonth, setAppointmentsByMonth] = useState([]);
 
   const getTotalPatients = async (id) => {
     try {
@@ -93,6 +92,7 @@ function DashboardDoctor() {
   const getAppointmentsToday = async (id) => {
     try {
       const res = await doctorApi.getAppointmentsToday(id);
+      console.log(res);
       setAppointmentToday(res.appointments);
       console.log(res.appointments);
     } catch (err) {
@@ -110,12 +110,27 @@ function DashboardDoctor() {
         await getTotalAppoiments(res.doctor.doctor_id);
         await getAppointmentsToday(res.doctor.doctor_id);
         await getRate(res.doctor.doctor_id);
+        await getStatistic(res.doctor.doctor_id);
         // TODO: Gọi API lấy appointmentsByMonth nếu có
       } else {
         navigate("/for-doctor/login");
       }
     } catch (err) {
       navigate("/for-doctor/login");
+    }
+  };
+
+  const getStatistic = async (id) => {
+    try {
+      const result = await statisticApi.getByDoctorAndYear(id);
+      console.log(result.statistics);
+      const list = Array.from(result.statistics).map((item) => {
+        console.log(item);
+        return item.total;
+      });
+      setAppointmentsByMonth(list);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -138,7 +153,7 @@ function DashboardDoctor() {
 
   useEffect(() => {
     getDoctorByToken(doctorToken);
-    fetchNotifications(); // Gọi hàm lấy thông báo khi component được mount
+    fetchNotifications();
   }, []);
 
   // Animation variants
@@ -150,7 +165,7 @@ function DashboardDoctor() {
   return (
     <div>
       {/* Header */}
-      <div className="fixed top-0 left-[300px] right-0 py-5 px-10 font-bold text-[32px] text-[var(--base-color)] text-left shadow-2xl bg-gradient-to-r from-white via-blue-50 to-blue-100 z-[10000] flex items-center gap-4">
+      <div className="fixed top-0 left-[300px] right-0 py-5 px-10 font-bold text-[32px] text-[var(--base-color)] text-left shadow-2xl bg-gradient-to-r from-white via-blue-50 to-blue-100 z-[2] flex items-center gap-4">
         Dashboard
       </div>
       <div className="mt-[100px] ml-[300px] py-10 px-[50px] w-[calc(100vw-300px)] min-h-[calc(100vh-100px)] bg-gradient-to-br from-white via-blue-50 to-blue-100">

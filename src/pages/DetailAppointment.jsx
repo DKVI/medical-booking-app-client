@@ -31,6 +31,7 @@ import medicinceApi from "../api/medicine.api";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import prescriptionApi from "../api/prescription.api";
+import LoadingScreen from "../components/LoadingScreen"; // Thêm dòng này nếu bạn đã có component này
 
 // Hiệu ứng trượt cho Snackbar
 
@@ -61,6 +62,10 @@ function DetailAppointment() {
   const [medicineInputs, setMedicineInputs] = useState([
     { name: null, qty: 1 },
   ]);
+  const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState(false);
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
@@ -237,7 +242,7 @@ function DetailAppointment() {
     setMedicineInputs((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  // Lưu đơn thuốc (in ra console)
+  // Lưu đơn thuốc (hiện dialog)
   const handleSavePrescription = () => {
     const result = medicineInputs
       .filter((item) => item.name && item.qty > 0)
@@ -252,7 +257,32 @@ function DetailAppointment() {
       });
     setPrescriptionResult(result);
     setOpenPrescriptionDialog(true);
-    // Không log ra console nữa, hiển thị dialog
+  };
+  const handleCreatePrescription = async () => {
+    try {
+      await prescriptionApi.createPrescription(id, {
+        notes: medicalNote,
+        medicines: prescriptionResult,
+      });
+      await scheduleDetailApi.markAsDone(id);
+      setOpenPrescriptionDialog(false);
+      setOpenSuccessDialog(true);
+
+      // Reload lại prescription và detail sau khi tạo thành công
+      getPrescription(id);
+      getDetailCheckoutById(id);
+
+      setTimeout(() => {
+        setOpenSuccessDialog(false);
+      }, 1800);
+    } catch (err) {
+      console.log(err);
+      setOpenPrescriptionDialog(false);
+      setOpenErrorDialog(true);
+      setTimeout(() => {
+        setOpenErrorDialog(false);
+      }, 2000);
+    }
   };
   // Xác định trạng thái expired dựa trên ngày/giờ hoặc appointment.status
   const isExpired =
@@ -267,9 +297,24 @@ function DetailAppointment() {
       return appointmentDate < new Date();
     })();
 
+  // Cancel prescription handler
+  const handleCancelPrescription = async () => {
+    setCancelLoading(true);
+    try {
+      const res1 = await prescriptionApi.deletePrescription(prescription?.id);
+      const res2 = await scheduleDetailApi.markAsInprocess(id);
+      setOpenCancelDialog(false);
+      setCancelLoading(false);
+      window.location.reload();
+    } catch (err) {
+      setCancelLoading(false);
+      alert("Failed to cancel prescription. Please try again.");
+    }
+  };
+
   return (
     <div>
-      <div className="fixed top-0 text-[30px] left-[300px] right-0 py-5 px-10 font-bold text-[var(--base-color)] text-left shadow-2xl bg-white z-[10000]">
+      <div className="fixed top-0 text-[30px] left-[300px] right-0 py-5 px-10 font-bold text-[var(--base-color)] text-left shadow-2xl bg-white z-20">
         Appointment
       </div>
       <div className="mt-[100px] ml-[300px] py-10 px-[50px] w-[calc(100vw-300px)] min-h-[calc(100vh-100px)] bg-gray-50">
@@ -530,6 +575,46 @@ function DetailAppointment() {
                     }}
                   />
                 </div>
+                <div className="flex">
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    sx={{
+                      m: "auto",
+                      borderRadius: 3,
+                      fontWeight: "bold",
+                      fontSize: 16,
+                      px: 4,
+                      py: 1.5,
+                      borderColor: "#2563eb",
+                      color: "#2563eb",
+                      background:
+                        "linear-gradient(90deg, #e0e7ff 60%, #f0f9ff 100%)",
+                      boxShadow: "0 2px 8px 0 rgba(37,99,235,0.10)",
+                      letterSpacing: 1,
+                      transition: "all 0.2s",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(90deg, #2563eb 60%, #e0e7ff 100%)",
+                        color: "#fff",
+                        borderColor: "#2563eb",
+                      },
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1.5,
+                    }}
+                    onClick={() => setOpenCancelDialog(true)}
+                    disabled={cancelLoading}
+                    startIcon={
+                      <FontAwesomeIcon
+                        icon={faNotesMedical}
+                        className="text-blue-400"
+                      />
+                    }
+                  >
+                    Cancel Prescription
+                  </Button>
+                </div>
               </>
             ) : (
               <>
@@ -720,41 +805,213 @@ function DetailAppointment() {
           </div>
         </DialogContent>
         <DialogActions className="!px-6 !pb-6 !pt-2 flex gap-3">
+          <div className="flex flex-col flex-1 items-start">
+            <span className="text-xs text-orange-600 font-semibold mb-2">
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                className="mr-1 text-orange-400"
+              />
+              After marking as done, you <b>cannot edit</b> this prescription
+              anymore.
+            </span>
+            <div className="flex gap-3 w-full">
+              <Button
+                variant="contained"
+                color="success"
+                sx={{
+                  fontWeight: "bold",
+                  borderRadius: 2,
+                  fontSize: 14,
+                  px: 3,
+                  background:
+                    "linear-gradient(90deg, #22c55e 0%, #4ade80 100%)",
+                }}
+                onClick={handleCreatePrescription}
+              >
+                Mark as done appointments
+              </Button>
+              <Button
+                onClick={() => setOpenPrescriptionDialog(false)}
+                color="inherit"
+                sx={{
+                  borderRadius: 2,
+                  fontSize: 14,
+                  px: 3,
+                  fontWeight: "bold",
+                  background: "#f3f8ff",
+                  color: "#2563eb",
+                  border: "1px solid #dbeafe",
+                  width: "50%",
+                  "&:hover": { background: "#e0e7ff" },
+                }}
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog thông báo thành công */}
+      <Dialog
+        open={openSuccessDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            background: "linear-gradient(120deg, #e3f0ff 0%, #f7fbff 100%)",
+            boxShadow: "0 8px 32px 0 rgba(33,150,243,0.15)",
+            border: "2px solid #90caf9",
+            minWidth: 340,
+            textAlign: "center",
+            p: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#388e3c",
+            fontWeight: "bold",
+            fontSize: 22,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            pb: 0,
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faCheckCircle}
+            className="text-green-500 mr-2"
+          />
+          Success
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            color: "#388e3c",
+            fontWeight: 500,
+            fontSize: 18,
+            py: 2,
+          }}
+        >
+          Prescription marked as done successfully!
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog thông báo lỗi */}
+      <Dialog
+        open={openErrorDialog}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            background: "linear-gradient(120deg, #fff0f0 0%, #ffeaea 100%)",
+            boxShadow: "0 8px 32px 0 rgba(244,67,54,0.12)",
+            border: "2px solid #ef9a9a",
+            minWidth: 340,
+            textAlign: "center",
+            p: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#d32f2f",
+            fontWeight: "bold",
+            fontSize: 22,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            pb: 0,
+          }}
+        >
+          <FontAwesomeIcon icon={faCheckCircle} className="text-red-400 mr-2" />
+          Error
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            color: "#d32f2f",
+            fontWeight: 500,
+            fontSize: 18,
+            py: 2,
+          }}
+        >
+          Failed to mark prescription as done. Please try again later.
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Prescription Dialog */}
+      <Dialog
+        open={openCancelDialog}
+        onClose={() => setOpenCancelDialog(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            background: "linear-gradient(120deg, #fff0f0 0%, #ffeaea 100%)", // Đổi sang tone đỏ nhạt
+            boxShadow: "0 8px 32px 0 rgba(244,67,54,0.12)",
+            border: "2px solid #ef9a9a",
+            minWidth: 340,
+            textAlign: "center",
+            p: 2,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            color: "#d32f2f", // Đỏ nổi bật
+            fontWeight: "bold",
+            fontSize: 20,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            pb: 0,
+          }}
+        >
+          Cancel Prescription
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            color: "#d32f2f",
+            fontWeight: 500,
+            fontSize: 16,
+            py: 2,
+          }}
+        >
+          Are you sure you want to cancel this prescription?
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
           <Button
-            variant="contained"
-            color="success"
+            onClick={() => setOpenCancelDialog(false)}
+            variant="outlined"
             sx={{
-              fontWeight: "bold",
               borderRadius: 2,
-              fontSize: 16,
-              px: 3,
-              background: "linear-gradient(90deg, #22c55e 0%, #4ade80 100%)",
+              fontWeight: "bold",
+              color: "#d32f2f",
+              borderColor: "#d32f2f",
+              px: 4,
+              "&:hover": { background: "#ffeaea" },
             }}
-            onClick={() => {
-              setOpenPrescriptionDialog(false);
-              // TODO: Gọi API cập nhật trạng thái appointment thành "Done" nếu muốn
-            }}
+            disabled={cancelLoading}
           >
-            Mark as done appointments
+            No
           </Button>
           <Button
-            onClick={() => setOpenPrescriptionDialog(false)}
-            color="inherit"
+            onClick={handleCancelPrescription}
+            variant="contained"
             sx={{
               borderRadius: 2,
-              fontSize: 16,
-              px: 3,
               fontWeight: "bold",
-              background: "#f3f8ff",
-              color: "#2563eb",
-              border: "1px solid #dbeafe",
-              "&:hover": { background: "#e0e7ff" },
+              px: 4,
+              background: "linear-gradient(90deg, #d32f2f 60%, #ffeaea 100%)",
+              color: "#fff",
             }}
+            disabled={cancelLoading}
           >
-            Close
+            Yes, Cancel
           </Button>
         </DialogActions>
       </Dialog>
+      {cancelLoading && <LoadingScreen />}
     </div>
   );
 }

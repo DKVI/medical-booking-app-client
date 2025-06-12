@@ -54,6 +54,47 @@ const emailApi = {
       console.error("Error sending email:", err.response?.data || err.message);
     }
   },
+  sendDoctorAppointmentNotification: async (
+    doctorEmail,
+    appointmentNumber,
+    patientName,
+    address,
+    specialty,
+    appointmentDate,
+    appointmentTime
+  ) => {
+    const body = {
+      to: doctorEmail,
+      subject: "New Appointment Notification - Medical Booking App",
+      html: mailPattern.notifyDoctorAppointment(
+        appointmentNumber,
+        patientName,
+        address,
+        specialty,
+        appointmentDate,
+        appointmentTime,
+        doctorEmail
+      ),
+    };
+
+    try {
+      const res = await axiosInstance.post(
+        "/mail/sendEmail",
+        JSON.stringify(body),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res.message);
+    } catch (err) {
+      console.error(
+        "Error sending doctor notification email:",
+        err.response?.data || err.message
+      );
+    }
+  },
 };
 
 export default emailApi;

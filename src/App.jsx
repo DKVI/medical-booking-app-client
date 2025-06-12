@@ -23,6 +23,7 @@ import DashboardDoctor from "./pages/DashboardDoctor";
 import Appointments from "./pages/Appointments";
 import DetailAppointment from "./pages/DetailAppointment";
 import ProfileDoctor from "./pages/ProfileDoctor";
+import SettingDoctor from "./pages/SettingDoctor";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -123,6 +124,11 @@ function AppRoutes() {
       path: "/for-doctor/profile",
       element: <DoctorLayout />,
       children: [{ path: "", element: <ProfileDoctor /> }],
+    },
+    {
+      path: "/for-doctor/settings",
+      element: <DoctorLayout />,
+      children: [{ path: "", element: <SettingDoctor /> }],
     },
     { path: "*", element: <NotFound /> },
   ]);

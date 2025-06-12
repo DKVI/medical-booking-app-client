@@ -550,12 +550,26 @@ function Checkout() {
                   setPurchase(true);
                   setOpenSnackbar(true);
                   console.log(user?.email);
-                  // Gửi email xác nhận
+                  // Gửi email xác nhận cho người dùng
                   await emailApi.sendAppointmentConfirmation(
                     user?.email, // Email của người dùng
                     detailCheckout?.id, // Mã đặt lịch
                     `${facility?.name}, ${facility?.address}`, // Địa chỉ
                     doctor?.fullname, // Tên bác sĩ
+                    specialty?.name, // Chuyên khoa
+                    new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    }), // Ngày
+                    workschedule?.times // Giờ
+                  );
+                  // Gửi email thông báo cho bác sĩ
+                  await emailApi.sendDoctorAppointmentNotification(
+                    doctor?.email, // Email của bác sĩ
+                    detailCheckout?.id, // Mã đặt lịch
+                    user?.fullname, // Tên bệnh nhân
+                    `${facility?.name}, ${facility?.address}`, // Địa chỉ
                     specialty?.name, // Chuyên khoa
                     new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
                       day: "2-digit",
