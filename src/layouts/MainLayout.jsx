@@ -11,6 +11,7 @@ function MainLayout() {
           position: "relative",
           minHeight: "100vh",
           boxSizing: "border-box",
+          backgroundColor: "#f4f6f8",
         }}
       >
         <Outlet />

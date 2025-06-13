@@ -14,6 +14,7 @@ function DoctorLayout() {
           minHeight: "100vh",
           boxSizing: "border-box",
           overflowX: "hidden",
+          backgroundColor: "#f4f6f8",
         }}
       >
         <Outlet />

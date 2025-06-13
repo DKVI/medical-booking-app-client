@@ -20,6 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import facilityApi from "../api/facility.api";
+import rateApi from "../api/rate.api";
 import specialtyApi from "../api/specialty.api";
 import doctorApi from "../api/doctor.api";
 import WeekdayDatePicker from "../components/WeekdayDatePicker";
@@ -58,6 +59,7 @@ function Booking() {
   const [isFullInfo, setIsFullInfo] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
+  const [doctorRates, setDoctorRates] = useState("");
   const steps = [
     "Choose Facility",
     "Choose Specialty",
@@ -142,6 +144,22 @@ function Booking() {
       }
     }
   };
+  useEffect(() => {
+    const fetchRates = async () => {
+      if (doctor && doctor.length > 0) {
+        const rates = {};
+        await Promise.all(
+          doctor.map(async (doctor) => {
+            const avg = await rateApi.getAverRateByDoctorId(doctor.id);
+            console.log(avg);
+            rates[doctor.id] = avg?.average || 0;
+          })
+        );
+        setDoctorRates(rates);
+      }
+    };
+    fetchRates();
+  }, [doctor]);
 
   useEffect(() => {
     setOnLoading(true);
@@ -456,7 +474,7 @@ function Booking() {
                       }}
                     >
                       {doctor.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full">
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-6 mb-8">
                           <AnimatePresence>
                             {doctor.map((doc) => (
                               <motion.div
@@ -490,7 +508,12 @@ function Booking() {
                                   }}
                                 ></div>
                                 {/* Doctor Info */}
-                                <h2 className="text-xl font-bold text-center text-[var(--base-color)] mb-2">
+                                <h2
+                                  onClick={() => {
+                                    navigate(`/doctor-detail?id=${doc.id}`);
+                                  }}
+                                  className="text-xl font-bold text-center text-[var(--base-color)] mb-2"
+                                >
                                   {doc.fullname}
                                 </h2>
                                 <p className="text-gray-600 text-center text-sm mb-2">
@@ -503,6 +526,19 @@ function Booking() {
                                     (e) => e.id == selectedFacilityId
                                   )?.name || "No description"}
                                 </p>
+                                <span className="mt-2 flex items-center justify-center gap-1 text-yellow-500 font-semibold">
+                                  <span className="text-base">
+                                    {doctorRates[doc.id]?.toFixed(1) || "0.0"}
+                                  </span>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-5 h-5"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
+                                  </svg>
+                                </span>
                               </motion.div>
                             ))}
                           </AnimatePresence>
@@ -583,7 +619,7 @@ function Booking() {
                       setSelectedWorkScheduleId={setSelectedWorkScheduleId}
                       sx={{
                         background:
-                          "linear-gradient(120deg, #fafdff 60%, #f1f4fa 100%)",
+                          "linear-gradient(120deg, #fafdff 60%, #f4f8ff 100%)",
                         borderRadius: "12px",
                         padding: "8px",
                       }}
