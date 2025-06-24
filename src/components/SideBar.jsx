@@ -101,7 +101,7 @@ export default function SideBar() {
               onHover ? "opacity-100" : "opacity-0"
             }`}
           >
-            Booking
+            Booking Type
           </p>
         </Link>
         <Link
@@ -253,6 +253,6 @@ export default function SideBar() {
         />
         {onLoading && <LoadingScreen />}
       </div>
-    </motion.div> 
+    </motion.div>
   );
 }

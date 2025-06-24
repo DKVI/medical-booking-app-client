@@ -1012,32 +1012,6 @@ function DetailAppointment() {
         </DialogActions>
       </Dialog>
       {cancelLoading && <LoadingScreen />}
-
-      {/* Danh sách bác sĩ dạng 1 hàng 3 card, có khoảng cách giữa các card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {doctors?.map((doctor, idx) => (
-          <div>
-            <div className="bg-white rounded-2xl shadow-lg border border-blue-100 p-6 flex flex-col items-center">
-              <img
-                src={
-                  doctor.avatar
-                    ? baseURL + doctor.avatar
-                    : "/default-avatar.png"
-                }
-                alt="avatar"
-                className="w-24 h-24 rounded-full object-cover border-4 border-[var(--base-color)] shadow mb-4"
-              />
-              <span className="font-bold text-lg text-blue-900 mb-1">
-                {doctor.fullname}
-              </span>
-              <span className="text-blue-700 font-medium mb-1">
-                {doctor.specialty?.name}
-              </span>
-              <span className="text-gray-500 text-sm">{doctor.email}</span>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

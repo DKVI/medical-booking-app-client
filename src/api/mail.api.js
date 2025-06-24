@@ -95,6 +95,30 @@ const emailApi = {
       );
     }
   },
+  sendResetPassword: async (email, username, newPassword) => {
+    const body = {
+      to: email,
+      subject: "Your Password Has Been Reset",
+      html: mailPattern.resetPassword(username, email, newPassword),
+    };
+    try {
+      const res = await axiosInstance.post(
+        "/mail/sendEmail",
+        JSON.stringify(body),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res.message);
+    } catch (err) {
+      console.error(
+        "Error sending reset password email:",
+        err.response?.data || err.message
+      );
+    }
+  },
 };
 
 export default emailApi;

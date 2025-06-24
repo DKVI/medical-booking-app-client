@@ -1,3 +1,4 @@
+import ResetPassword from "../pages/ResetPassword";
 import axiosInstance from "./axios.config";
 
 const authApi = {
@@ -64,6 +65,14 @@ const authApi = {
           Authorization: `Bearer ${token}`,
         },
       });
+      return res.data;
+    } catch (err) {
+      return err.response?.data || err.message;
+    }
+  },
+  ResetPassword: async (data) => {
+    try {
+      const res = await axiosInstance.put("/authen/reset-password", data);
       return res.data;
     } catch (err) {
       return err.response?.data || err.message;

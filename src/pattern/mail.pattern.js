@@ -67,6 +67,22 @@ const mailPattern = {
             </div>
         `;
   },
+  resetPassword: (username, email, newPassword) => {
+    return `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #496ea2;">Password Reset Notification</h2>
+        <p>Dear <strong>${username}</strong> (${email}),</p>
+        <p>Your password has been reset. Here is your new temporary password:</p>
+        <div style="background: #f3f8ff; color: #2563eb; font-weight: bold; font-size: 18px; padding: 12px 20px; border-radius: 8px; display: inline-block; margin: 12px 0;">
+          ${newPassword}
+        </div>
+        <p>
+          <strong>Important:</strong> For your security, please log in with this password and change it immediately after logging in.
+        </p>
+        <p style="color: #496ea2;">Best regards,<br>Medical Booking App Team</p>
+      </div>
+    `;
+  },
 };
 
 export default mailPattern;

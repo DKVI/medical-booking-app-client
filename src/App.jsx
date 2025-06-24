@@ -24,6 +24,7 @@ import Appointments from "./pages/Appointments";
 import DetailAppointment from "./pages/DetailAppointment";
 import ProfileDoctor from "./pages/ProfileDoctor";
 import SettingDoctor from "./pages/SettingDoctor";
+import ResetPassword from "./pages/ResetPassword";
 
 function AppRoutes() {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"; // Check login status
@@ -44,6 +45,11 @@ function AppRoutes() {
       path: "/account",
       element: <AuthLayout />,
       children: [{ path: "", element: <Login /> }],
+    },
+    {
+      path: "/forgot-password",
+      element: <AuthLayout />,
+      children: [{ path: "", element: <ResetPassword /> }],
     },
     {
       path: "/dashboard",

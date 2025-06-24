@@ -4,7 +4,15 @@ import doctorApi from "../api/doctor.api";
 import { useNavigate } from "react-router-dom";
 import authApi from "../api/auth.api";
 import baseURL from "../api/baseURL.api";
-import { Button, Typography } from "@mui/material";
+import {
+  Button,
+  Typography,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import prescriptionApi from "../api/prescription.api";
 import { motion } from "framer-motion";
 
@@ -30,6 +38,9 @@ function Appointments() {
     specialty_name: null,
   });
   const [currentAppointment, setCurrentAppointment] = useState(null);
+  const [filterDate, setFilterDate] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const navigate = useNavigate();
 
   const getAllAppointments = async (id) => {
@@ -100,7 +111,48 @@ function Appointments() {
     return { grouped, sortedKeys };
   };
 
-  const { grouped, sortedKeys } = groupAppointmentsByDate(appointment);
+  // Lọc danh sách trước khi group
+  const filteredAppointments = appointment.filter((item) => {
+    // Lọc theo ngày
+    let matchDate = true;
+    if (filterDate) {
+      const itemDate = item.date
+        ? new Date(item.date).toISOString().slice(0, 10)
+        : "";
+      matchDate = itemDate === filterDate;
+    }
+    // Lọc theo tên
+    let matchName = true;
+    if (filterName) {
+      matchName = item.fullname
+        ?.toLowerCase()
+        .includes(filterName.toLowerCase());
+    }
+    // Lọc theo trạng thái
+    let matchStatus = true;
+    if (filterStatus) {
+      if (filterStatus === "Expired") {
+        // Kiểm tra expired logic
+        let isExpired = false;
+        if (item.scheduling_status === "Expired") {
+          isExpired = true;
+        } else if (item.date && item.times) {
+          const appointmentDate = new Date(item.date);
+          const [hour, minute] = item.times.split(":").map(Number);
+          appointmentDate.setHours(hour);
+          appointmentDate.setMinutes(minute);
+          if (appointmentDate < new Date()) isExpired = true;
+        }
+        matchStatus = isExpired;
+      } else {
+        matchStatus = item.scheduling_status === filterStatus;
+      }
+    }
+    return matchDate && matchName && matchStatus;
+  });
+
+  // Group lại theo danh sách đã lọc
+  const { grouped, sortedKeys } = groupAppointmentsByDate(filteredAppointments);
 
   return (
     <div>
@@ -109,6 +161,44 @@ function Appointments() {
         Appointments
       </div>
       <div className="mt-[100px] ml-[300px] py-10 px-[50px] w-[calc(100vw-300px)] min-h-[calc(100vh-100px)] bg-gradient-to-br from-white via-blue-50 to-blue-100">
+        {/* Bộ lọc */}
+        <div className="w-full flex flex-wrap gap-4 mb-8">
+          {/* Lọc theo ngày */}
+          <TextField
+            type="date"
+            label="Filter by Date"
+            size="small"
+            InputLabelProps={{ shrink: true }}
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            sx={{ minWidth: 180, background: "#fff", borderRadius: 2, flex: 1 }}
+          />
+          {/* Lọc theo tên bệnh nhân */}
+          <TextField
+            label="Filter by Patient Name"
+            size="small"
+            value={filterName}
+            onChange={(e) => setFilterName(e.target.value)}
+            sx={{ minWidth: 200, background: "#fff", borderRadius: 2, flex: 2 }}
+          />
+          {/* Lọc theo trạng thái */}
+          <FormControl
+            size="small"
+            sx={{ minWidth: 160, background: "#fff", borderRadius: 2, flex: 1 }}
+          >
+            <InputLabel>Status</InputLabel>
+            <Select
+              label="Status"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Process">Process</MenuItem>
+              <MenuItem value="Done">Done</MenuItem>
+              <MenuItem value="Expired">Expired</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
         {sortedKeys && sortedKeys.length > 0 ? (
           sortedKeys.map((dateKey, i) =>
             grouped[dateKey] && grouped[dateKey].length > 0 ? (

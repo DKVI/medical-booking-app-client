@@ -8,7 +8,13 @@ import authApi from "../api/auth.api"; // API for authentication
 import Cookies from "universal-cookie"; // For handling cookies
 import LoadingScreen from "../components/LoadingScreen"; // Import LoadingScreen component
 import rateApi from "../api/rate.api";
-import { Button } from "@mui/material";
+import {
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import baseURL from "../api/baseURL.api";
 
 function Doctor() {
@@ -21,6 +27,9 @@ function Doctor() {
   const [user, setUser] = useState(null); // Thông tin người dùng
   const navigate = useNavigate();
   const [rates, setRates] = useState([]);
+  const [selectedFacility, setSelectedFacility] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+
   // Hàm lấy token từ cookie và xác thực
   const verifyUser = async (token) => {
     try {
@@ -89,17 +98,28 @@ function Doctor() {
     const keyword = e.target.value;
     setSearchKeyword(keyword);
 
-    if (keyword.trim() === "") {
-      setDoctors([]); // Xóa danh sách bác sĩ nếu từ khóa rỗng
-      return;
-    }
-
     setLoading(true);
-    const res = await doctorApi.search(keyword); // Gọi API tìm kiếm bác sĩ
-    setDoctors(res.doctors || []); // Cập nhật danh sách bác sĩ
-    console.log(res.doctors);
+    if (keyword.trim() === "") {
+      // Nếu không nhập từ khóa, lấy tất cả bác sĩ
+      const res = await doctorApi.getAll();
+      setDoctors(res.doctors || []);
+    } else {
+      const res = await doctorApi.search(keyword); // Gọi API tìm kiếm bác sĩ
+      setDoctors(res.doctors || []);
+    }
     setLoading(false);
   };
+
+  // Lọc danh sách bác sĩ theo facility và specialty
+  const filteredDoctors = doctors.filter((doctor) => {
+    let matchFacility = true;
+    let matchSpecialty = true;
+    if (selectedFacility)
+      matchFacility = doctor.facility_id === selectedFacility;
+    if (selectedSpecialty)
+      matchSpecialty = doctor.specialty_id === selectedSpecialty;
+    return matchFacility && matchSpecialty;
+  });
 
   // Xử lý khi nhấn nút "Book Appointment"
   const handleBooking = (doctorId) => {
@@ -158,7 +178,8 @@ function Doctor() {
           >
             Search for Doctors
           </h1>
-          <div className="mb-8">
+          {/* Search input */}
+          <div className="mb-4 flex flex-col gap-4">
             <input
               type="text"
               value={searchKeyword}
@@ -173,6 +194,65 @@ function Doctor() {
                 color: "var(--base-color)",
               }}
             />
+            {/* 2 filter dưới name */}
+            <div className="flex flex-col md:flex-row gap-4 w-full">
+              <FormControl
+                size="small"
+                className="w-full"
+                sx={{
+                  background: "rgba(227,240,255,0.7)",
+                  borderRadius: 2,
+                  boxShadow: "0 2px 8px 0 rgba(33,150,243,0.08)",
+                  minWidth: 180,
+                }}
+              >
+                <InputLabel>Facility</InputLabel>
+                <Select
+                  label="Facility"
+                  value={selectedFacility}
+                  onChange={(e) => setSelectedFacility(e.target.value)}
+                  sx={{
+                    borderRadius: 2,
+                  }}
+                >
+                  <MenuItem value="">All Facilities</MenuItem>
+                  {facilities &&
+                    facilities.map((f) => (
+                      <MenuItem key={f.id} value={f.id}>
+                        {f.name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+              <FormControl
+                size="small"
+                className="w-full"
+                sx={{
+                  background: "rgba(227,240,255,0.7)",
+                  borderRadius: 2,
+                  boxShadow: "0 2px 8px 0 rgba(33,150,243,0.08)",
+                  minWidth: 180,
+                }}
+              >
+                <InputLabel>Specialty</InputLabel>
+                <Select
+                  label="Specialty"
+                  value={selectedSpecialty}
+                  onChange={(e) => setSelectedSpecialty(e.target.value)}
+                  sx={{
+                    borderRadius: 2,
+                  }}
+                >
+                  <MenuItem value="">All Specialties</MenuItem>
+                  {specialties &&
+                    specialties.map((s) => (
+                      <MenuItem key={s.id} value={s.id}>
+                        {s.name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </div>
           </div>
           <div
             className="doctor-list-container"
@@ -187,10 +267,10 @@ function Doctor() {
               <p className="text-center text-lg text-gray-600">
                 Loading doctors...
               </p>
-            ) : doctors.length > 0 ? (
+            ) : filteredDoctors.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <AnimatePresence>
-                  {doctors.map((doctor) => {
+                  {filteredDoctors.map((doctor) => {
                     const specialty = specialties?.find(
                       (s) => s.id === doctor.specialty_id
                     );
