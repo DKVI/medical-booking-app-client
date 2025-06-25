@@ -57,7 +57,8 @@ function DetailNote() {
     notes: "",
     medicines: [],
   });
-  const [rating, setRating] = useState(0); // Thêm state cho rating
+  const [rating, setRating] = useState(0); // Đang chọn
+  const [submittedRating, setSubmittedRating] = useState(0); // Đã submit
   const [openDialog, setOpenDialog] = useState(false); // Thêm state cho Dialog
   const verifyUser = async (token) => {
     const res = await authApi.verify(token);
@@ -189,6 +190,7 @@ function DetailNote() {
       const res = await rateApi.getBySchedulingId(id);
 
       setRating(res.rate.star_no);
+      setSubmittedRating(res.rate.star_no);
       setFeedback(res.rate.comments);
       console.log(res.rate);
     } catch (err) {
@@ -732,9 +734,20 @@ function DetailNote() {
                     {rating > 0 ? "Your Feedback" : "Rate Your Appointment"}
                   </h5>
 
-                  {rating > 0 ? (
+                  {submittedRating > 0 ? (
                     // Hiển thị đánh giá ở dạng chỉ đọc
-                    <div>
+                    <div
+                      style={{
+                        background:
+                          "linear-gradient(120deg, #e0ffe3 0%, #f7fff7 100%)",
+                        border: "2px solid #4caf50",
+                        boxShadow: "0 4px 24px 0 rgba(76,175,80,0.18)",
+                        borderRadius: "12px",
+                        padding: "24px 16px",
+                        margin: "0 -10px 0 -10px",
+                        transition: "all 0.3s",
+                      }}
+                    >
                       <div
                         style={{
                           display: "flex",
@@ -751,13 +764,14 @@ function DetailNote() {
                               icon={faStar}
                               style={{
                                 fontSize: "24px",
-                                color: star <= rating ? "gold" : "gray",
+                                color:
+                                  star <= submittedRating ? "gold" : "gray",
                               }}
                             />
                           ))}
                         </div>
                         <p className="text-gray-700 text-sm font-medium">
-                          {rating} / 5
+                          {submittedRating} / 5
                         </p>
                       </div>
                       <div
@@ -808,8 +822,13 @@ function DetailNote() {
                           marginTop: "20px",
                           textAlign: "left",
                           fontSize: "14px",
-                          color: "#555",
+                          color: "#388e3c",
                           fontStyle: "italic",
+                          fontWeight: "bold",
+                          background: "#e8f5e9",
+                          borderRadius: "8px",
+                          padding: "12px 16px",
+                          boxShadow: "0 2px 8px 0 #a5d6a7aa",
                         }}
                       >
                         {feedback || "No comments provided."}
@@ -871,8 +890,9 @@ function DetailNote() {
                             date: newDate,
                             star_no: rating,
                             comments: feedback,
-                            scheduling_id: detailCheckout.id,
+                            scheduling_id: id,
                           });
+                          setSubmittedRating(rating);
                         }}
                       >
                         Submit Review

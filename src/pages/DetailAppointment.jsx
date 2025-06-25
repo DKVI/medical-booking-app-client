@@ -274,6 +274,7 @@ function DetailAppointment() {
 
       setTimeout(() => {
         setOpenSuccessDialog(false);
+        window.location.reload();
       }, 1800);
     } catch (err) {
       console.log(err);

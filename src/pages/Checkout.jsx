@@ -13,7 +13,16 @@ import doctorApi from "../api/doctor.api";
 import LoadingScreen from "../components/LoadingScreen";
 import { motion } from "framer-motion"; // Import Framer Motion
 import PayPal from "../components/PayPal";
-import { Snackbar, Alert, Slide } from "@mui/material";
+import {
+  Snackbar,
+  Alert,
+  Slide,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import purchaseApi from "../api/purchase.api";
 import emailApi from "../api/mail.api";
 
@@ -583,88 +592,102 @@ function Checkout() {
             )}
         </div>
 
-        <Snackbar
+        <Dialog
           open={openSnackbar}
-          autoHideDuration={6000}
           onClose={() => setOpenSnackbar(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          TransitionComponent={SlideTransition}
-          sx={{
-            "& .MuiSnackbarContent-root": {
-              background: "linear-gradient(90deg, #4caf50 60%, #2196f3 100%)",
-              color: "#fff",
-              boxShadow: "0px 4px 16px rgba(33,150,243,0.15)",
-              borderRadius: "12px",
-              border: "2px solid #2196f3",
-              padding: "8px 24px",
+          aria-labelledby="payment-success-dialog-title"
+          aria-describedby="payment-success-dialog-description"
+          PaperProps={{
+            style: {
+              background: "#e8f5e9", // Màu xanh lá nhạt
+              color: "#388e3c",
+              borderRadius: "18px",
+              minWidth: 400,
+              maxWidth: 500,
+              textAlign: "center",
+              padding: "24px 16px",
+              boxShadow: "0px 8px 32px 0 rgba(33,150,243,0.18)",
+              border: "2px solid #4caf50",
             },
           }}
         >
-          <Alert
-            onClose={() => setOpenSnackbar(false)}
-            severity="success"
-            icon={
-              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <FontAwesomeIcon
-                  icon={faCheckCircle}
-                  style={{ color: "#fff", fontSize: 22 }}
-                />
-                <FontAwesomeIcon
-                  icon={faEnvelope}
-                  style={{ color: "#fff", fontSize: 20 }}
-                />
-              </span>
-            }
+          <DialogTitle
+            id="payment-success-dialog-title"
             sx={{
+              fontWeight: "bold",
+              fontSize: 24,
+              color: "#388e3c",
               display: "flex",
               alignItems: "center",
-              fontSize: "16px",
-              fontWeight: "bold",
-              background: "transparent",
-              boxShadow: "none",
-              "& .MuiAlert-icon": {
-                marginRight: "14px",
-              },
+              justifyContent: "center",
+              gap: 1.5,
+              mb: 1,
             }}
           >
-            <div style={{ textAlign: "left" }}>
-              <p style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>
-                🎉 Thanh toán thành công!
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              style={{ color: "#4caf50", fontSize: 28 }}
+            />
+            Payment Successful!
+          </DialogTitle>
+          <DialogContent>
+            <div style={{ textAlign: "left", color: "#388e3c", fontSize: 16 }}>
+              <p style={{ margin: 0 }}>
+                <strong>Facility:</strong> {facility?.name}, {facility?.address}
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Địa điểm:</strong> {facility?.name}, {facility?.address}
-              </p>
-              <p style={{ margin: 0 }}>
-                <strong>Ngày:</strong>{" "}
-                {new Date(detailCheckout?.date).toLocaleDateString("vi-VN", {
+                <strong>Date:</strong>{" "}
+                {new Date(detailCheckout?.date).toLocaleDateString("en-GB", {
                   day: "2-digit",
                   month: "2-digit",
                   year: "numeric",
                 })}
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Giờ:</strong> {workschedule?.times}
+                <strong>Time:</strong> {workschedule?.times}
               </p>
               <p style={{ margin: 0 }}>
-                <strong>Mã đặt lịch:</strong> {detailCheckout?.id}
+                <strong>Booking ID:</strong> {detailCheckout?.id}
               </p>
               <p
                 style={{
-                  margin: "8px 0 0 0",
-                  color: "#fff",
+                  margin: "16px 0 0 0",
+                  color: "#2e7d32",
                   fontWeight: 600,
                   fontSize: 16,
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 8,
                 }}
               >
-                <FontAwesomeIcon icon={faEnvelope} style={{ color: "#fff" }} />
-                Vui lòng kiểm tra email để xác nhận lịch hẹn!
+                <FontAwesomeIcon
+                  icon={faEnvelope}
+                  style={{ color: "#388e3c" }}
+                />
+                Please check your email for appointment confirmation!
               </p>
             </div>
-          </Alert>
-        </Snackbar>
+          </DialogContent>
+          <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => setOpenSnackbar(false)}
+              sx={{
+                background: "#4caf50",
+                color: "#fff",
+                fontWeight: "bold",
+                borderRadius: "8px",
+                px: 4,
+                fontSize: 16,
+                "&:hover": {
+                  background: "#388e3c",
+                },
+              }}
+            >
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </motion.div>
     </div>
   );
